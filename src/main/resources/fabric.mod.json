@@ -1,0 +1,45 @@
+{
+	"schemaVersion": 1,
+	"id": "pulchra-occultorum",
+	"version": "${version}",
+	"name": "Pulchra Occultorum",
+	"description": "A mod all about victorian carnival, fairs and occult events.",
+	"authors": [
+		"Dev - ShiroJR",
+		"Dev - Globox",
+		"Dev - MinMaximilian",
+		"Art - Milky",
+		"Art - Apfelrunder",
+		"Art - ShiroJR"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/pulchra-occultorum/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.shirojr.pulchra_occultorum.PulchraOccultorum"
+		],
+		"client": [
+			"net.shirojr.pulchra_occultorum.PulchraOccultorumClient"
+		],
+		"fabric-datagen": [
+			"net.shirojr.pulchra_occultorum.PulchraOccultorumDataGenerator"
+		],
+		"voicechat": [
+			"net.shirojr.pulchra_occultorum.compat.voicechat.SimpleVoiceChatCompat"
+		]
+	},
+	"mixins": [
+		"pulchra-occultorum.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21-",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
