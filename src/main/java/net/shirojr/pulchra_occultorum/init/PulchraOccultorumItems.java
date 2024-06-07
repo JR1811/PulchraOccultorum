@@ -1,7 +1,10 @@
 package net.shirojr.pulchra_occultorum.init;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -17,7 +20,7 @@ public class PulchraOccultorumItems {
     public static final TestItem TEST_ITEM_1 = register("test_item_1", new TestItem(new Item.Settings()),
             null);
     public static final TestItem TEST_ITEM_2 = register("test_item_2", new TestItem(new Item.Settings()),
-            List.of(ItemGroups.COMBAT, PulchraOccultorumItemGroups.ACCESSORIES));
+            List.of(ItemGroups.COMBAT, PulchraOccultorumItemGroups.ITEMS));
 
 
     private static <T extends Item> T register(String name, T item, @Nullable List<RegistryKey<ItemGroup>> itemGroups) {

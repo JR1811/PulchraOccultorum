@@ -2,6 +2,7 @@ package net.shirojr.pulchra_occultorum;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import net.shirojr.pulchra_occultorum.init.PulchraOccultorumBlockEntities;
 import net.shirojr.pulchra_occultorum.init.PulchraOccultorumBlocks;
 import net.shirojr.pulchra_occultorum.init.PulchraOccultorumItemGroups;
 import net.shirojr.pulchra_occultorum.init.PulchraOccultorumItems;
@@ -17,6 +18,7 @@ public class PulchraOccultorum implements ModInitializer {
         PulchraOccultorumItems.initialize();
         PulchraOccultorumItemGroups.initialize();
         PulchraOccultorumBlocks.initialize();
+        PulchraOccultorumBlockEntities.initialize();
 
         LoggerUtil.devLogger("Initialized common entrypoint");
     }
