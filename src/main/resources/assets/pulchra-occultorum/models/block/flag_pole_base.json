@@ -1,0 +1,23 @@
+{
+	"credit": "Made with Blockbench by ShiroJR",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "pulchra-occultorum:block/flag_pole_base",
+		"particle": "pulchra-occultorum:block/flag_pole_base"
+	},
+	"elements": [
+		{
+			"from": [3, 0, 3],
+			"to": [13, 16, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 0, 3]},
+			"faces": {
+				"north": {"uv": [0, 0, 5, 8], "texture": "#0"},
+				"east": {"uv": [0, 0, 5, 8], "texture": "#0"},
+				"south": {"uv": [0, 0, 5, 8], "texture": "#0"},
+				"west": {"uv": [0, 0, 5, 8], "texture": "#0"},
+				"up": {"uv": [15, 5, 10, 0], "texture": "#0"},
+				"down": {"uv": [10, 0, 5, 5], "texture": "#0"}
+			}
+		}
+	]
+}
