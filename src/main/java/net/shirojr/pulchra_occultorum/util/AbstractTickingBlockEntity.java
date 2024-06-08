@@ -38,9 +38,14 @@ public abstract class AbstractTickingBlockEntity extends BlockEntity implements 
         markDirty();
     }
 
+    /**
+     * Increment tick by one.
+     * @param saveToNbt if false, avoids saving the value to the nbt, instantly.
+     */
     @Override
-    public void incrementTick() {
+    public void incrementTick(boolean saveToNbt) {
         this.tick++;
+        if (saveToNbt) markDirty();
     }
 
     @Override

@@ -15,7 +15,7 @@ public class TestBlockEntity extends AbstractTickingBlockEntity {
 
     public static void tick(World world, BlockPos pos, BlockState state, TestBlockEntity blockEntity) {
         if (world.isClient()) return;
-        blockEntity.incrementTick();
+        blockEntity.incrementTick(false);
         if (blockEntity.getTick() >= 100) blockEntity.resetTick();
         LoggerUtil.devLogger("Ticked BE: " + blockEntity.getTick());
     }
