@@ -14,7 +14,7 @@ import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 @SuppressWarnings("unused")
-public class PulchraOccultorumItemGroups {
+public class ItemGroups {
     public static final RegistryKey<ItemGroup> ITEMS = registerItemGroup("items", Items.STICK);
     public static final RegistryKey<ItemGroup> BLOCKS = registerItemGroup("blocks", Items.STICK);
 

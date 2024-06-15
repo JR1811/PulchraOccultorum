@@ -9,7 +9,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.persistent.PersistentStateHandler;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
-import net.shirojr.pulchra_occultorum.util.PulchraOccultorumOccultEvents;
+import net.shirojr.pulchra_occultorum.util.occult.PulchraOccultorumOccultEvents;
 import net.shirojr.pulchra_occultorum.util.data.OccultEventsPlayerData;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class TestItem extends Item {
                 playerData.addOccultEvents(List.of(lootEvent));
                 playerData.addOccultEvents(List.of(mobEvent));
 
-                playerData.getPastOccultEventsList().forEach(event -> LoggerUtil.devLogger("Event: " + event.getIdentifier().toString()));
+                playerData.getPastOccultEventsList().forEach(event -> LoggerUtil.devLogger("OccultEvent: " + event.getIdentifier().toString()));
             }
         }
         return super.use(world, user, hand);

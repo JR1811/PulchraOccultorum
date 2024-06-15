@@ -1,11 +1,13 @@
 {
-	"required": true,
-	"package": "net.shirojr.pulchra_occultorum.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "net.shirojr.pulchra_occultorum.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractHorseEntityMixin",
+    "AmbientStandGoalMixin",
+    "MobEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }

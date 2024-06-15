@@ -6,9 +6,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.shirojr.pulchra_occultorum.util.handler.TickHandler;
+import net.shirojr.pulchra_occultorum.util.handler.BlockEntityTickHandler;
 
-public abstract class AbstractTickingBlockEntity extends BlockEntity implements TickHandler {
+public abstract class AbstractTickingBlockEntity extends BlockEntity implements BlockEntityTickHandler {
     private int tick = 0;
 
     public AbstractTickingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -40,6 +40,7 @@ public abstract class AbstractTickingBlockEntity extends BlockEntity implements 
 
     /**
      * Increment tick by one.
+     *
      * @param saveToNbt if false, avoids saving the value to the nbt, instantly.
      */
     @Override

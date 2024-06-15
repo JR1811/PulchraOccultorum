@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "pulchra-occultorum:item/whip_00"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "animation": 0.1
+      },
+      "model": "pulchra-occultorum:item/whip_01"
+    },
+    {
+      "predicate": {
+        "animation": 0.4
+      },
+      "model": "pulchra-occultorum:item/whip_02"
+    },
+    {
+      "predicate": {
+        "animation": 0.7
+      },
+      "model": "pulchra-occultorum:item/whip_03"
+    }
+  ]
+}

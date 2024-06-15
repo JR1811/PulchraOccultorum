@@ -2,10 +2,8 @@ package net.shirojr.pulchra_occultorum;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
-import net.shirojr.pulchra_occultorum.init.PulchraOccultorumBlockEntities;
-import net.shirojr.pulchra_occultorum.init.PulchraOccultorumBlocks;
-import net.shirojr.pulchra_occultorum.init.PulchraOccultorumItemGroups;
-import net.shirojr.pulchra_occultorum.init.PulchraOccultorumItems;
+import net.shirojr.pulchra_occultorum.init.Registries;
+import net.shirojr.pulchra_occultorum.init.*;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 public class PulchraOccultorum implements ModInitializer {
@@ -15,10 +13,13 @@ public class PulchraOccultorum implements ModInitializer {
     public void onInitialize() {
         LoggerUtil.LOGGER.info("The Ringmaster appears...");
 
-        PulchraOccultorumItems.initialize();
-        PulchraOccultorumItemGroups.initialize();
-        PulchraOccultorumBlocks.initialize();
-        PulchraOccultorumBlockEntities.initialize();
+        Items.initialize();
+        ItemGroups.initialize();
+        Blocks.initialize();
+        CustomDataComponents.initialize();
+        BlockEntities.initialize();
+        Entities.initialize();
+        Registries.initialize();
 
         LoggerUtil.devLogger("Initialized common entrypoint");
     }

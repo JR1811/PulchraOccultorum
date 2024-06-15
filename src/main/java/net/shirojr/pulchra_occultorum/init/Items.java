@@ -3,24 +3,26 @@ package net.shirojr.pulchra_occultorum.init;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.item.TestItem;
+import net.shirojr.pulchra_occultorum.item.WhipItem;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class PulchraOccultorumItems {
+public class Items {
     public static final TestItem TEST_ITEM_1 = register("test_item_1", new TestItem(new Item.Settings()),
             null);
     public static final TestItem TEST_ITEM_2 = register("test_item_2", new TestItem(new Item.Settings()),
-            List.of(ItemGroups.COMBAT, PulchraOccultorumItemGroups.ITEMS));
+            List.of(net.minecraft.item.ItemGroups.COMBAT, ItemGroups.ITEMS));
+    public static final WhipItem WHIP = register("whip", new WhipItem(new Item.Settings().maxCount(1)),
+            List.of(ItemGroups.ITEMS));
 
 
     private static <T extends Item> T register(String name, T item, @Nullable List<RegistryKey<ItemGroup>> itemGroups) {
