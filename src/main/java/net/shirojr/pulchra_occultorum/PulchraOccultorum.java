@@ -2,8 +2,11 @@ package net.shirojr.pulchra_occultorum;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
-import net.shirojr.pulchra_occultorum.init.Registries;
+import net.shirojr.pulchra_occultorum.init.CustomRegistries;
 import net.shirojr.pulchra_occultorum.init.*;
+import net.shirojr.pulchra_occultorum.network.CustomC2SNetworking;
+import net.shirojr.pulchra_occultorum.network.NetworkPayloads;
+import net.shirojr.pulchra_occultorum.init.SoundEvents;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 public class PulchraOccultorum implements ModInitializer {
@@ -15,11 +18,14 @@ public class PulchraOccultorum implements ModInitializer {
 
         Items.initialize();
         ItemGroups.initialize();
-        Blocks.initialize();
         CustomDataComponents.initialize();
+        Blocks.initialize();
         BlockEntities.initialize();
         Entities.initialize();
-        Registries.initialize();
+        SoundEvents.initialize();
+        CustomRegistries.initialize();
+        NetworkPayloads.initialize();
+        CustomC2SNetworking.initialize();
 
         LoggerUtil.devLogger("Initialized common entrypoint");
     }

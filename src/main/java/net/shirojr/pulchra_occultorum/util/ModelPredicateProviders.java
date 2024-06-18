@@ -4,8 +4,8 @@ import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.shirojr.pulchra_occultorum.init.Items;
+import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingItem;
 
 @SuppressWarnings("SameParameterValue")
 public class ModelPredicateProviders {

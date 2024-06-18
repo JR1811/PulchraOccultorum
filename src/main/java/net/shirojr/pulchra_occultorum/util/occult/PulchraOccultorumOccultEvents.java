@@ -4,7 +4,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.api.OccultEvent;
-import net.shirojr.pulchra_occultorum.init.Registries;
+import net.shirojr.pulchra_occultorum.init.CustomRegistries;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 import java.util.Optional;
@@ -31,12 +31,12 @@ public enum PulchraOccultorumOccultEvents implements OccultEvent {
 
     @SuppressWarnings("UnusedReturnValue")
     public static Optional<OccultEvent> registerOccultEvent(OccultEvent occultEvent) {
-        if (Registries.OCCULT_EVENTS.stream().anyMatch(event -> event.getIdentifier().equals(occultEvent.getIdentifier()))) {
+        if (CustomRegistries.OCCULT_EVENTS.stream().anyMatch(event -> event.getIdentifier().equals(occultEvent.getIdentifier()))) {
             LoggerUtil.LOGGER.error("Tried to register an occult event, which already exists. [ %s ]"
                     .formatted(occultEvent.getIdentifier().toString()));
             return Optional.empty();
         }
-        OccultEvent registeredEvent = Registry.register(Registries.OCCULT_EVENTS, occultEvent.getIdentifier(), occultEvent);
+        OccultEvent registeredEvent = Registry.register(CustomRegistries.OCCULT_EVENTS, occultEvent.getIdentifier(), occultEvent);
         return Optional.of(registeredEvent);
     }
 

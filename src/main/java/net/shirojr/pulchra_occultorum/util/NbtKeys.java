@@ -7,4 +7,5 @@ public class NbtKeys {
     public static final String SPOTLIGHT_ANGLE_Y = "YAngle";
     public static final String SPOTLIGHT_COLOR = "color";
     public static final String AGGRESSOR_UUID = "aggressor";
+    public static final String IS_IN_AIR = "in_air";
 }

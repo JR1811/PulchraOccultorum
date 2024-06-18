@@ -8,7 +8,7 @@ import net.shirojr.pulchra_occultorum.api.OccultEvent;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 @SuppressWarnings("SameParameterValue")
-public class Registries {
+public class CustomRegistries {
     public static final RegistryKey<Registry<OccultEvent>> OCCULT_EVENTS_REGISTRY_KEY =
             RegistryKey.ofRegistry(PulchraOccultorum.identifierOf("occult_events"));
 

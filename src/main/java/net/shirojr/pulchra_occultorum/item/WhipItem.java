@@ -6,25 +6,21 @@ import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.CustomDataComponents;
 import net.shirojr.pulchra_occultorum.util.Fright;
-import net.shirojr.pulchra_occultorum.util.AbstractTickingItem;
+import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingItem;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class WhipItem extends AbstractTickingItem {
     public WhipItem(Settings settings) {

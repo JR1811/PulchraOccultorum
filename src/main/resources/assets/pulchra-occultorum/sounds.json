@@ -1,0 +1,14 @@
+{
+  "unicycle_land": {
+    "subtitle": "sound.pulchra-occultorum.unicycle.land",
+    "sounds": [
+      "pulchra-occultorum:unicycle_land"
+    ]
+  },
+  "unicycle_roll": {
+    "subtitle": "sound.pulchra-occultorum.unicycle.roll",
+    "sounds": [
+      "pulchra-occultorum:unicycle_roll"
+    ]
+  }
+}

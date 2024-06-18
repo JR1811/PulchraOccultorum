@@ -1,4 +1,4 @@
-package net.shirojr.pulchra_occultorum.util;
+package net.shirojr.pulchra_occultorum.util.boilerplate;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

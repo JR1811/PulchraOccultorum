@@ -12,7 +12,7 @@ import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 public class Entities {
     public static final EntityType<UnicycleEntity> UNICYCLE = register("unicycle",
             EntityType.Builder.create(UnicycleEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.3f, 0.7f)
+                    .dimensions(0.4f, 1.2f)
                     .spawnableFarFromPlayer()
                     .trackingTickInterval(1)
                     .build());
@@ -22,6 +22,7 @@ public class Entities {
     }
 
     public static void initialize() {
+        EntityAttributes.initialize();
         LoggerUtil.devLogger("Initialized entities");
     }
 }

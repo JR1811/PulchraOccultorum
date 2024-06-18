@@ -1,4 +1,4 @@
-package net.shirojr.pulchra_occultorum.util;
+package net.shirojr.pulchra_occultorum.util.boilerplate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;

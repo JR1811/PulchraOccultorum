@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.shirojr.pulchra_occultorum.api.OccultEventCallback;
-import net.shirojr.pulchra_occultorum.init.Registries;
+import net.shirojr.pulchra_occultorum.init.CustomRegistries;
 
 public class ServerEvents {
     static {
@@ -14,7 +14,7 @@ public class ServerEvents {
     public static void test(MinecraftServer server) {
         ServerWorld world = server.getOverworld();
         long time = world.getTimeOfDay();
-        Registries.OCCULT_EVENTS.stream().filter(occultEvent -> occultEvent.getStartTime().contains(time))
+        CustomRegistries.OCCULT_EVENTS.stream().filter(occultEvent -> occultEvent.getStartTime().contains(time))
                 .forEach(occultEvent -> OccultEventCallback.EVENT.invoker().invoke(occultEvent));
     }
 }

@@ -10,6 +10,7 @@ import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class UnicycleEntityModel<T extends UnicycleEntity> extends SinglePartEntityModel<T> {
     private final List<ModelPart> parts = new ArrayList<>();
     private final ModelPart base, bottom, wheel, inner, holder, top;
@@ -18,11 +19,11 @@ public class UnicycleEntityModel<T extends UnicycleEntity> extends SinglePartEnt
     public UnicycleEntityModel(ModelPart root) {
         super(RenderLayer::getEntityCutoutNoCull);
         this.base = root.getChild("base");
-        this.bottom = root.getChild("bottom");
-        this.wheel = root.getChild("wheel");
-        this.inner = root.getChild("inner");
-        this.holder = root.getChild("holder");
-        this.top = root.getChild("top");
+        this.bottom = base.getChild("bottom");
+        this.wheel = bottom.getChild("wheel");
+        this.inner = wheel.getChild("inner");
+        this.holder = bottom.getChild("holder");
+        this.top = bottom.getChild("top");
         this.parts.addAll(List.of(base, top, bottom, wheel, inner, holder));
     }
 

@@ -6,7 +6,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
-import net.shirojr.pulchra_occultorum.util.AbstractTickingBlockEntity;
+import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
 import net.shirojr.pulchra_occultorum.util.NbtKeys;
 
 public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
