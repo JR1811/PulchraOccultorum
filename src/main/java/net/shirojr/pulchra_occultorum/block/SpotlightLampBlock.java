@@ -1,24 +1,30 @@
 package net.shirojr.pulchra_occultorum.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.blockentity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class SpotlightLampBlock extends BlockWithEntity {
     public static final MapCodec<SpotlightLampBlock> CODEC = createCodec(SpotlightLampBlock::new);
@@ -53,13 +59,31 @@ public class SpotlightLampBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        boolean isLit = state.get(LIT);
+        SoundEvent soundEvent = SoundEvents.BLOCK_LEVER_CLICK;
+        if (!world.isClient()) {
+            state = state.with(LIT, !isLit);
+            world.setBlockState(pos, state);
+            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, isLit ? 0.6F : 0.5F);
+        }
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
+    protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+        return true;
     }
 
     @Override
     protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
-        return super.getCullingShape(state, world, pos);
+        return VoxelShapes.empty();
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return Block.createCuboidShape(6 , 0, 6, 10, 12, 10);
+
     }
 
     @Override

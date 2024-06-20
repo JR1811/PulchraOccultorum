@@ -21,7 +21,8 @@ public class Blocks {
     public static final Block FLAG_POLE_BASE =
             registerWithDefaultBlockItem("flag_pole_base", new FlagPoleBaseBlock(AbstractBlock.Settings.create().nonOpaque()));
     public static final SpotlightLampBlock SPOTLIGHT_LAMP =
-            registerWithDefaultBlockItem("spotlight_lamp", new SpotlightLampBlock(AbstractBlock.Settings.create().nonOpaque()));
+            registerWithDefaultBlockItem("spotlight_lamp",
+                    new SpotlightLampBlock(AbstractBlock.Settings.create().nonOpaque()));
 
 
     /**

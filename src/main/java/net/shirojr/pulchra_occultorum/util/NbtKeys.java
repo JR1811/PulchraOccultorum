@@ -8,4 +8,5 @@ public class NbtKeys {
     public static final String SPOTLIGHT_COLOR = "color";
     public static final String AGGRESSOR_UUID = "aggressor";
     public static final String IS_IN_AIR = "in_air";
+    public static final String SPOTLIGHT_LIT = "spotlight_lit";
 }
