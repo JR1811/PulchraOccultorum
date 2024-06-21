@@ -5,6 +5,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
@@ -20,11 +21,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.shirojr.pulchra_occultorum.blockentity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.ToIntFunction;
 
 public class SpotlightLampBlock extends BlockWithEntity {
     public static final MapCodec<SpotlightLampBlock> CODEC = createCodec(SpotlightLampBlock::new);
@@ -46,6 +49,12 @@ public class SpotlightLampBlock extends BlockWithEntity {
         return this.getDefaultState().with(LIT, false);
     }
 
+    @Override
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        if (world.getBlockState(pos.down()).isAir()) return false;
+        return super.canPlaceAt(state, world, pos);
+    }
+
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
@@ -65,7 +74,7 @@ public class SpotlightLampBlock extends BlockWithEntity {
         if (!world.isClient()) {
             state = state.with(LIT, !isLit);
             world.setBlockState(pos, state);
-            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, isLit ? 0.6F : 0.5F);
+            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, isLit ? 0.5F : 0.6F);
         }
         return ActionResult.SUCCESS;
     }
@@ -84,6 +93,11 @@ public class SpotlightLampBlock extends BlockWithEntity {
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return Block.createCuboidShape(6 , 0, 6, 10, 12, 10);
 
+    }
+
+    public static int luminanceFromBlockState(BlockState state) {
+        if (!state.contains(LIT)) return 0;
+        return state.get(LIT) ? 10 : 0;
     }
 
     @Override

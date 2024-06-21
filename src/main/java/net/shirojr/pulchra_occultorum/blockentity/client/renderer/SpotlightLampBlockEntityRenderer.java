@@ -30,11 +30,18 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        rotator.pitch = (float) Math.sin(rotationInDeg(blockEntity.getTick()) * 8);
+        horizontal.yaw = rotationInDeg(blockEntity.getTick());
+
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
         matrices.pop();
+    }
+
+    private float rotationInDeg(int degrees) {
+        return degrees * (float) (Math.PI / 180.0);
     }
 
     private RenderLayer getRenderLayer(T blockEntity) {

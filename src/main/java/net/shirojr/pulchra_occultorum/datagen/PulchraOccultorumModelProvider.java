@@ -10,6 +10,9 @@ import net.minecraft.data.client.Models;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.util.Identifier;
+import net.shirojr.pulchra_occultorum.PulchraOccultorum;
+import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Items;
 
 import java.util.Locale;
@@ -21,7 +24,10 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(Blocks.SAFETY_NET, getIdentifier("block/safety_net")));
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(Blocks.ELASTIC_SAND, getIdentifier("block/elastic_sand")));
     }
 
     @Override
@@ -29,5 +35,9 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
         for (int i = 0; i <= 4; i++) {
             itemModelGenerator.register(Items.WHIP, String.format(Locale.ROOT, "_%02d", i), Models.GENERATED);
         }
+    }
+
+    private Identifier getIdentifier(String name) {
+        return PulchraOccultorum.identifierOf(name);
     }
 }

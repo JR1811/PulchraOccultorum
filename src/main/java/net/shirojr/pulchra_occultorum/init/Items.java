@@ -17,10 +17,6 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class Items {
-    public static final TestItem TEST_ITEM_1 = register("test_item_1", new TestItem(new Item.Settings()),
-            null);
-    public static final TestItem TEST_ITEM_2 = register("test_item_2", new TestItem(new Item.Settings()),
-            List.of(net.minecraft.item.ItemGroups.COMBAT, ItemGroups.ITEMS));
     public static final WhipItem WHIP = register("whip", new WhipItem(new Item.Settings().maxCount(1)),
             List.of(ItemGroups.ITEMS));
 

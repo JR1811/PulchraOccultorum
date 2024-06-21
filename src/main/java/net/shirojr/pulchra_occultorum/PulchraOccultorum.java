@@ -23,6 +23,7 @@ public class PulchraOccultorum implements ModInitializer {
         BlockEntities.initialize();
         Entities.initialize();
         SoundEvents.initialize();
+        ScreenHandlers.initialize();
         CustomRegistries.initialize();
         NetworkPayloads.initialize();
         CustomC2SNetworking.initialize();
