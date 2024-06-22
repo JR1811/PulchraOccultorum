@@ -1,8 +1,7 @@
 package net.shirojr.pulchra_occultorum.block;
 
-import com.mojang.serialization.MapCodec;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FallingBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -12,12 +11,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class SafetyNetBlock extends FallingBlock {
-    public final MapCodec<SafetyNetBlock> CODEC;
-
+public class SafetyNetBlock extends Block {
     public SafetyNetBlock(Settings settings) {
         super(settings);
-        this.CODEC = createCodec(SafetyNetBlock::new);
     }
 
     @Override
@@ -46,10 +42,5 @@ public class SafetyNetBlock extends FallingBlock {
     @Override
     protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
-    }
-
-    @Override
-    protected MapCodec<? extends FallingBlock> getCodec() {
-        return CODEC;
     }
 }

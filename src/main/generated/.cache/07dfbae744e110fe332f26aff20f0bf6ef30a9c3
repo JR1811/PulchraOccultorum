@@ -1,6 +1,8 @@
-// 1.21	2024-06-21T16:48:36.4335762	Pulchra Occultorum/Model Definitions
+// 1.21	2024-06-22T12:40:04.993324	Pulchra Occultorum/Model Definitions
+b9c3ab948bddd356ecb065f19822c407d92a9f40 assets\pulchra-occultorum\blockstates\flag_pole.json
 e3d989352cff04e899d644e193cdcad0d7dd44fa assets\pulchra-occultorum\blockstates\safety_net.json
 1aba05e1272473cb3630d535446c5f4c809964d0 assets\pulchra-occultorum\models\item\whip_01.json
+cbcf06deaddf9035a9ed773f297a6518181b787f assets\pulchra-occultorum\models\item\flag_pole.json
 2a3fff3fa4efad2b99bd811540f2514f1c47cb60 assets\pulchra-occultorum\models\item\safety_net.json
 ce1e7c5dc3984c8942a822b8dba11c77fd5b3433 assets\pulchra-occultorum\models\item\whip_00.json
 b780889e5a2a3403a6b2fe0181180b779c7268eb assets\pulchra-occultorum\models\item\whip_04.json

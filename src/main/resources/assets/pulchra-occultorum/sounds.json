@@ -10,5 +10,11 @@
     "sounds": [
       "pulchra-occultorum:unicycle_roll"
     ]
+  },
+  "unicycle_clank": {
+    "subtitle": "sound.pulchra-occultorum.unicycle.clank",
+    "sounds": [
+      "pulchra-occultorum:unicycle_clank"
+    ]
   }
 }

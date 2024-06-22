@@ -1,6 +1,9 @@
 {
   "variants": {
-    "": {
+    "lit=false": {
+      "model": "pulchra-occultorum:block/spotlight_lamp"
+    },
+    "lit=true": {
       "model": "pulchra-occultorum:block/spotlight_lamp"
     }
   }

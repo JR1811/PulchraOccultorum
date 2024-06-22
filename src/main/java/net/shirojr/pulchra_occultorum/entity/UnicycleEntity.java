@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.SoundEvents;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class UnicycleEntity extends AbstractRideableEntity {
     private static final float JUMP_STRENGTH = 1.5f;
@@ -50,6 +51,17 @@ public class UnicycleEntity extends AbstractRideableEntity {
         ServerPlayNetworking.send(player, new UnicycleSoundPacket(this.getId(), false));
     }
 
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.UNICYCLE_CLANK;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.UNICYCLE_CLANK;
+    }
 
     @Override
     protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {

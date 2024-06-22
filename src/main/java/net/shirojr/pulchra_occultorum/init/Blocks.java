@@ -9,10 +9,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.block.ElasticSandBlock;
-import net.shirojr.pulchra_occultorum.block.FlagPoleBaseBlock;
-import net.shirojr.pulchra_occultorum.block.SafetyNetBlock;
-import net.shirojr.pulchra_occultorum.block.SpotlightLampBlock;
+import net.shirojr.pulchra_occultorum.block.*;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,9 +17,12 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class Blocks {
-    public static final Block FLAG_POLE_BASE =
+    public static final FlagPoleBaseBlock FLAG_POLE_BASE =
             registerWithDefaultBlockItem("flag_pole_base",
-                    new FlagPoleBaseBlock(AbstractBlock.Settings.create().nonOpaque()));
+                    new FlagPoleBaseBlock(AbstractBlock.Settings.create()));
+
+    public static final FlagPoleBlock FLAG_POLE = registerWithDefaultBlockItem("flag_pole",
+            new FlagPoleBlock(AbstractBlock.Settings.create().nonOpaque()));
 
     public static final SpotlightLampBlock SPOTLIGHT_LAMP =
             registerWithDefaultBlockItem("spotlight_lamp",

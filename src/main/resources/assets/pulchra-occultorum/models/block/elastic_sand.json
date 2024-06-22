@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/elastic_sand"
+    "all": "pulchra-occultorum:block/elastic_sand"
   }
 }

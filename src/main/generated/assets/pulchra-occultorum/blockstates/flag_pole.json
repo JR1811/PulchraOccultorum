@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "part=flag_pole": {
+      "model": "pulchra-occultorum:block/flag_pole"
+    },
+    "part=flag_pole_top": {
+      "model": "pulchra-occultorum:block/flag_pole_top"
+    }
+  }
+}

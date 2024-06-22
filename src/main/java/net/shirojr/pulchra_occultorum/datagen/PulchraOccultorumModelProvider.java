@@ -4,9 +4,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.Models;
+import net.minecraft.data.client.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryBuilder;
@@ -14,6 +12,7 @@ import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Items;
+import net.shirojr.pulchra_occultorum.util.BlockStateProperties;
 
 import java.util.Locale;
 
@@ -28,6 +27,9 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
                 BlockStateModelGenerator.createSingletonBlockState(Blocks.SAFETY_NET, getIdentifier("block/safety_net")));
         blockStateModelGenerator.blockStateCollector.accept(
                 BlockStateModelGenerator.createSingletonBlockState(Blocks.ELASTIC_SAND, getIdentifier("block/elastic_sand")));
+
+        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.FLAG_POLE)
+                .coordinate(createFlagPoleBlockState()));
     }
 
     @Override
@@ -39,5 +41,12 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
 
     private Identifier getIdentifier(String name) {
         return PulchraOccultorum.identifierOf(name);
+    }
+
+    private BlockStateVariantMap createFlagPoleBlockState() {
+        return BlockStateVariantMap.create(BlockStateProperties.FLAG_POLE_STATE).register(flagPoleState -> {
+            String path = "block/" + flagPoleState.asString();
+            return BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf(path));
+        });
     }
 }

@@ -10,6 +10,7 @@ import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 public class SoundEvents {
     public static SoundEvent UNICYCLE_LAND = register("unicycle_land");
     public static SoundEvent UNICYCLE_ROLL = register("unicycle_roll");
+    public static SoundEvent UNICYCLE_CLANK = register("unicycle_clank");
 
     private static SoundEvent register(String name) {
         Identifier identifier = PulchraOccultorum.identifierOf(name);
