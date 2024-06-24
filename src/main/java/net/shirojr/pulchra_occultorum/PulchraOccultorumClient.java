@@ -11,6 +11,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.shirojr.pulchra_occultorum.block.entity.client.renderer.FlagPoleBlockEntityRenderer;
 import net.shirojr.pulchra_occultorum.block.entity.client.renderer.SpotlightLampBlockEntityRenderer;
 import net.shirojr.pulchra_occultorum.entity.client.model.UnicycleEntityModel;
+import net.shirojr.pulchra_occultorum.entity.client.renderer.MonolithEntityRenderer;
 import net.shirojr.pulchra_occultorum.entity.client.renderer.UnicycleEntityRenderer;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Blocks;
@@ -19,6 +20,8 @@ import net.shirojr.pulchra_occultorum.network.CustomS2CNetworking;
 import net.shirojr.pulchra_occultorum.sound.SoundManager;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.init.ModelPredicateProviders;
+
+import javax.swing.text.html.parser.Entity;
 
 public class PulchraOccultorumClient implements ClientModInitializer {
     public static SoundManager soundManager = SoundManager.getInstance();
@@ -39,6 +42,8 @@ public class PulchraOccultorumClient implements ClientModInitializer {
 
         EntityRendererRegistry.register(Entities.UNICYCLE, UnicycleEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(UNICYCLE_ENTITY_LAYER, UnicycleEntityModel::getTexturedModelData);
+
+        EntityRendererRegistry.register(Entities.MONOLITH, MonolithEntityRenderer::new);
 
         BlockEntityRendererFactories.register(BlockEntities.SPOTLIGHT_LAMP_BLOCK_ENTITY, context ->
                 new SpotlightLampBlockEntityRenderer<>(context.getLayerModelPart(PulchraOccultorumClient.SPOTLIGHT_LAMP_BLOCK_ENTITY_LAYER)));

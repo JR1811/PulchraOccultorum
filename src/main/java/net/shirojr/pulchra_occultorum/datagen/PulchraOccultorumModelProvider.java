@@ -1,16 +1,11 @@
 package net.shirojr.pulchra_occultorum.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.client.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.PulchraOccultorumClient;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Items;
 import net.shirojr.pulchra_occultorum.util.BlockStateProperties;
@@ -33,7 +28,12 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
                 .coordinate(createFlagPoleBlockState()));
 
         blockStateModelGenerator.blockStateCollector.accept(
-                BlockStateModelGenerator.createSingletonBlockState(Blocks.FLAG_POLE_BASE, PulchraOccultorum.identifierOf("block/flag_pole_base"))
+                BlockStateModelGenerator.createSingletonBlockState(Blocks.FLAG_POLE_BASE, PulchraOccultorum.identifierOf("block/flag_pole_base")));
+
+        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier
+                .create(Blocks.MONOLITH)
+                .coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates())
+                .coordinate(createDoubleBlockBlockState())
         );
     }
 
@@ -53,5 +53,14 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
             String path = "block/" + flagPoleState.asString();
             return BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf(path));
         });
+    }
+
+    private BlockStateVariantMap createDoubleBlockBlockState() {
+        return BlockStateVariantMap.create(Properties.DOUBLE_BLOCK_HALF).register(part ->
+                switch (part) {
+                    case UPPER -> BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/monolith_top"));
+                    case LOWER -> BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/monolith_bottom"));
+                }
+        );
     }
 }

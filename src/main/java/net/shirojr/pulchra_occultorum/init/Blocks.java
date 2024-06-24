@@ -35,6 +35,9 @@ public class Blocks {
     public static final SafetyNetBlock SAFETY_NET = registerWithDefaultBlockItem("safety_net",
             new SafetyNetBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.WHITE_WOOL)));
 
+    public static final MonolithBlock MONOLITH = registerWithDefaultBlockItem("monolith",
+            new MonolithBlock(AbstractBlock.Settings.create()));
+
 
     private static <T extends Block> T register(String name, T block, @Nullable BlockItemData blockItemData) {
         if (blockItemData != null) {

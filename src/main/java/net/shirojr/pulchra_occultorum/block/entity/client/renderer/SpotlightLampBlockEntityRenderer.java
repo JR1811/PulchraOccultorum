@@ -81,7 +81,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
             MatrixStack.Entry entry = matrices.peek();
             int primColor = ColorHelper.Argb.fromFloats(0.1f, 1.0F, 1.0F, 0.7F);
-            int secColor = ColorHelper.Argb.fromFloats(0.0f, 1.0F, 0.6F, 0.3F); // 16711935
+            int secColor = ColorHelper.Argb.fromFloats(0.0f, 1.0F, 0.6F, 0.3F); // original: 16711935
             var vertexConsumer = vertexConsumers.getBuffer(RenderLayers.SPOTLIGHT_LAMP_RAY);
             vertexConsumer.vertex(entry, vertex1).color(primColor);
             vertexConsumer.vertex(entry, vertex2).color(secColor);
@@ -94,9 +94,6 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
             vertexConsumer.vertex(entry, vertex1).color(primColor);
             vertexConsumer.vertex(entry, vertex3).color(secColor);
             vertexConsumer.vertex(entry, vertex4).color(secColor);
-
-
-
         }
 
         matrices.pop();
