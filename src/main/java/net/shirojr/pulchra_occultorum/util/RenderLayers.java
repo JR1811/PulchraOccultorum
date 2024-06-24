@@ -7,7 +7,7 @@ import net.minecraft.client.render.VertexFormats;
 
 public class RenderLayers extends RenderLayer {
     public static final RenderLayer SPOTLIGHT_LAMP_RAY =
-            RenderLayer.of("spotlight_lamp_ray", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS,
+            RenderLayer.of("spotlight_lamp_ray", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLES,
                     1536, false, false,
                     RenderLayer.MultiPhaseParameters.builder()
                             .program(RenderPhase.LIGHTNING_PROGRAM)
