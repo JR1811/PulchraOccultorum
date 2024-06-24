@@ -8,6 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
+import net.shirojr.pulchra_occultorum.item.TarotItem;
 import net.shirojr.pulchra_occultorum.item.WhipItem;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +18,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class Items {
     public static final WhipItem WHIP = register("whip", new WhipItem(new Item.Settings().maxCount(1)),
+            List.of(ItemGroups.ITEMS));
+
+    public static final TarotItem TAROT_WARLORD = register("tarot_warlord",
+            new TarotItem(new Item.Settings().maxCount(1), List.of(OccultEvents.HOSTILE_HORDE)),
+            List.of(ItemGroups.ITEMS));
+
+    public static final TarotItem TAROT_MONOLITH = register("tarot_monolith",
+            new TarotItem(new Item.Settings().maxCount(1), List.of(OccultEvents.MONOLITH)),
             List.of(ItemGroups.ITEMS));
 
 
