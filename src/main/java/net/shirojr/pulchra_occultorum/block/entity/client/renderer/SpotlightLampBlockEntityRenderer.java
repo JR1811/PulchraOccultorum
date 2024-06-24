@@ -1,4 +1,4 @@
-package net.shirojr.pulchra_occultorum.blockentity.client.renderer;
+package net.shirojr.pulchra_occultorum.block.entity.client.renderer;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.model.*;
@@ -6,12 +6,10 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.SpotlightLampBlock;
-import net.shirojr.pulchra_occultorum.blockentity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;

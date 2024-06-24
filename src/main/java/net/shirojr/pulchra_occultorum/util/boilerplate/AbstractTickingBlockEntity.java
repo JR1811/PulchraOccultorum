@@ -41,12 +41,13 @@ public abstract class AbstractTickingBlockEntity extends BlockEntity implements 
     /**
      * Increment tick by one.
      *
-     * @param saveToNbt if false, avoids saving the value to the nbt, instantly.
+     * @param saveInstantlyToNbt if false, avoids saving the value to the nbt, instantly.
+     *                           This value will still be saved and loaded when the world gets saved or loaded.
      */
     @Override
-    public void incrementTick(boolean saveToNbt) {
+    public void incrementTick(boolean saveInstantlyToNbt) {
         this.tick++;
-        if (saveToNbt) markDirty();
+        if (saveInstantlyToNbt) markDirty();
     }
 
     @Override

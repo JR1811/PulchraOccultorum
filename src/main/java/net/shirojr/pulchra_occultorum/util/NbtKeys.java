@@ -8,4 +8,7 @@ public class NbtKeys {
     public static final String AGGRESSOR_UUID = "aggressor";
     public static final String IS_IN_AIR = "in_air";
     public static final String SPOTLIGHT_LIT = "spotlight_lit";
+    public static final String FLAG_IS_HOISTED = "hoisted";
+    public static final String FLAG_HOISTED_STATE = "hoisted_state";
+    public static final String FLAG_INVENTORY = "saved_flags";
 }

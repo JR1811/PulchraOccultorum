@@ -8,7 +8,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.item.TestItem;
 import net.shirojr.pulchra_occultorum.item.WhipItem;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;

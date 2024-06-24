@@ -5,7 +5,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
@@ -22,12 +21,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.shirojr.pulchra_occultorum.blockentity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
-import java.util.function.ToIntFunction;
 
 public class SpotlightLampBlock extends BlockWithEntity {
     public static final MapCodec<SpotlightLampBlock> CODEC = createCodec(SpotlightLampBlock::new);

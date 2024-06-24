@@ -10,6 +10,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
+import net.shirojr.pulchra_occultorum.PulchraOccultorumClient;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Items;
 import net.shirojr.pulchra_occultorum.util.BlockStateProperties;
@@ -30,6 +31,10 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
 
         blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.FLAG_POLE)
                 .coordinate(createFlagPoleBlockState()));
+
+        blockStateModelGenerator.blockStateCollector.accept(
+                BlockStateModelGenerator.createSingletonBlockState(Blocks.FLAG_POLE_BASE, PulchraOccultorum.identifierOf("block/flag_pole_base"))
+        );
     }
 
     @Override
