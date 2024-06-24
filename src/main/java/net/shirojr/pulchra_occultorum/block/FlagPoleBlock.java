@@ -114,7 +114,7 @@ public class FlagPoleBlock extends BlockWithEntity {
             return state;
         }
         BlockStateProperties.FlagPoleState poleState = BlockStateProperties.FlagPoleState.MIDDLE;
-        if (world.getBlockState(pos.up()).isAir()) poleState = BlockStateProperties.FlagPoleState.TOP;
+        if (!world.getBlockState(pos.up()).getBlock().equals(world.getBlockState(pos).getBlock())) poleState = BlockStateProperties.FlagPoleState.TOP;
         return this.getDefaultState().with(POLE_STATE, poleState);
     }
 

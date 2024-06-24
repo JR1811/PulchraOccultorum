@@ -45,7 +45,6 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
 
         itemModelGenerator.register(Items.TAROT_WARLORD, Models.GENERATED);
         itemModelGenerator.register(Items.TAROT_MONOLITH, Models.GENERATED);
-
     }
 
     private Identifier getIdentifier(String name) {

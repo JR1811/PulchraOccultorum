@@ -3,28 +3,20 @@ package net.shirojr.pulchra_occultorum.block.entity.client.renderer;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.random.Random;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.SpotlightLampBlock;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.RenderLayers;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity> implements BlockEntityRenderer<T> {
     private final List<ModelPart> modelParts = new ArrayList<>();
@@ -40,10 +32,10 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        rotator.pitch = -0.4f;
-        // rotator.pitch = (float) Math.sin(rotationInDeg(blockEntity.getTick()) * 8);
-        horizontal.yaw = 0.2f;
-        // horizontal.yaw = rotationInDeg(blockEntity.getTick());
+        // rotator.pitch = -0.4f;
+        rotator.pitch = (float) Math.sin(rotationInDeg(blockEntity.getTick()) * 8);
+        // horizontal.yaw = 0.2f;
+        horizontal.yaw = rotationInDeg(blockEntity.getTick());
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
@@ -72,7 +64,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
             matrices.multiply(rotation);
 
-            float halfSquareRootOfThree = (float)(Math. sqrt(3.0) / 2.0);
+            float halfSquareRootOfThree = (float) (Math.sqrt(3.0) / 2.0);
             float width = 13.0f, length = 25f;
 
             vertex2.set(-halfSquareRootOfThree * width, length, -0.5F * width);
