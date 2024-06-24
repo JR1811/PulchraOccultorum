@@ -3,6 +3,7 @@ package net.shirojr.pulchra_occultorum.block.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
@@ -20,7 +21,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public boolean isLit() {
-        return this.isLit;
+        var potentialState = this.getCachedState().getOrEmpty(Properties.LIT);
+        return potentialState.orElse(false);
     }
 
     public void setLit(boolean lit) {
@@ -28,6 +30,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, SpotlightLampBlockEntity blockEntity) {
+        if (!blockEntity.isLit()) return;
         blockEntity.incrementTick(false);
         if (blockEntity.getTick() >= 360) blockEntity.setTick(0);
     }

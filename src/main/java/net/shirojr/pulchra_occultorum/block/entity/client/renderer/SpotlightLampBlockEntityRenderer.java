@@ -6,13 +6,24 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.random.Random;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.SpotlightLampBlock;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
+import net.shirojr.pulchra_occultorum.util.RenderLayers;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity> implements BlockEntityRenderer<T> {
     private final List<ModelPart> modelParts = new ArrayList<>();
@@ -35,6 +46,77 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         matrices.translate(0.5, 1.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
+        if (!blockEntity.isLit()) {
+            matrices.pop();
+            return;
+        }
+
+        //region rays
+        matrices.push();
+        matrices.translate(0.0f, 1.0f, 0.0f);
+        int amount = 1;
+        float thickness = 0.8f;
+        Quaternionf rotation = new Quaternionf();
+        Random random = Random.create(432L);
+        Vector3f vertex1 = new Vector3f();
+        Vector3f vertex2 = new Vector3f();
+        Vector3f vertex3 = new Vector3f();
+        Vector3f vertex4 = new Vector3f();
+
+        for (int i = 0; i < amount; i++) {
+            /*rotation.rotationXYZ(
+                    (random.nextFloat() * (float) Math.PI * 2),
+                    (random.nextFloat() * (float) Math.PI * 2),
+                    (random.nextFloat() * (float) Math.PI * 2)
+            ).rotateXYZ(
+                    random.nextFloat() * (float) (Math.PI * 2),
+                    random.nextFloat() * (float) (Math.PI * 2),
+                    random.nextFloat() * (float) (Math.PI * 2) + amount * (float) (Math.PI / 2)
+            );*/
+            float additionalYawForBeam = (float) Math.toRadians(270);
+            Quaternionf pitchRotation = new Quaternionf().rotateAxis(rotator.pitch + additionalYawForBeam, 1, 0, 0);
+            Quaternionf yawRotation = new Quaternionf().rotateAxis(horizontal.yaw, 0, 1, 0);
+            // Quaternionf rollRotation = new Quaternionf().rotateAxis(-0.5f, 0, 1, 0); // roll is 0, 0, 1
+            yawRotation.mul(pitchRotation, rotation);
+            matrices.multiply(rotation);
+
+            float g = 30.0f /*random.nextFloat() * 20.0F + 5.0F + thickness * 10.0F*/;
+            float h = 5.0f /*random.nextFloat() * 2.0F + 1.0F + thickness * 2.0F*/;
+            float HALF_SQRT_3 = (float)(Math. sqrt(3.0) / 2.0);
+
+            vertex1.set(0.0f, 0.0f, 0.0f);
+            vertex2.set(-HALF_SQRT_3 * h, g, -0.5F * h);
+            vertex3.set(HALF_SQRT_3 * h, g, -0.5F * h);
+            vertex4.set(0.0F, g, h);
+
+            MatrixStack.Entry entry = matrices.peek();
+            float transparency = 0.3f;
+            int color = ColorHelper.Argb.fromFloats(transparency, 1.0F, 1.0F, 1.0F);
+            int secondaryColor = 16711935;
+            var vertexConsumer = vertexConsumers.getBuffer(RenderLayers.SPOTLIGHT_LAMP_RAY);
+
+            vertexConsumer.vertex(entry, vertex1).color(color);
+            vertexConsumer.vertex(entry, vertex2).color(secondaryColor);
+            vertexConsumer.vertex(entry, vertex3).color(secondaryColor);
+
+            vertexConsumer.vertex(entry, vertex1).color(color);
+            vertexConsumer.vertex(entry, vertex3).color(secondaryColor);
+            vertexConsumer.vertex(entry, vertex4).color(secondaryColor);
+
+            vertexConsumer.vertex(entry, vertex1).color(color);
+            vertexConsumer.vertex(entry, vertex4).color(secondaryColor);
+            vertexConsumer.vertex(entry, vertex2).color(secondaryColor);
+
+            /*vertexConsumer.vertex(entry, vertex2).color(secondaryColor);
+            vertexConsumer.vertex(entry, vertex3).color(secondaryColor);
+            vertexConsumer.vertex(entry, vertex4).color(secondaryColor);*/
+
+        }
+
+        matrices.pop();
+        //endregion
+
+
         matrices.pop();
     }
 
