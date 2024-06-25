@@ -24,31 +24,25 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     private final SimpleInventory flagInventory;
     private boolean hoisted = false;
     private float hoistedState = 0.0f;
-    @Nullable
-    private BlockPos baseBlockPos = null;
 
     public FlagPoleBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntities.FLAG_POLE_BLOCK_ENTITY, pos, state);
         this.flagInventory = new SimpleInventory(1);
-        if (this.getWorld() == null) return;
-        setBaseBlockPos(FlagPoleBlock.getBaseBlockPos(this.getWorld(), pos));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, FlagPoleBlockEntity blockEntity) {
-        if (!state.contains(BlockStateProperties.FLAG_POLE_STATE) ||
-                !state.get(BlockStateProperties.FLAG_POLE_STATE).equals(BlockStateProperties.FlagPoleState.TOP))
-            return;
-
+        if (!state.contains(BlockStateProperties.FLAG_POLE_STATE)) return;
+        if (!(world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock)) return;
         blockEntity.incrementTick(false);
+        if (blockEntity.getFlagInventory().isEmpty()) return;
         blockEntity.modifyHoistedState(world, pos, 0.01f);
         if (world instanceof ServerWorld serverWorld) {
             if (blockEntity.getTick() % 10 == 0 && blockEntity.isHoistStateMoving()) {
                 if (blockEntity.getBaseBlockPos() != null && blockEntity.getTopBlockPos() != null) {
-                    BlockPos soundPos =
-                            new BlockPos(
-                                    blockEntity.getTopBlockPos().getX(),
-                                    MathHelper.lerp(blockEntity.getHoistedState(), blockEntity.getBaseBlockPos().getY(), blockEntity.getTopBlockPos().getY()),
-                                    blockEntity.getTopBlockPos().getZ());
+                    BlockPos soundPos = new BlockPos(
+                            blockEntity.getTopBlockPos().getX(),
+                            MathHelper.lerp(blockEntity.getHoistedState(), blockEntity.getBaseBlockPos().getY(), blockEntity.getTopBlockPos().getY()),
+                            blockEntity.getTopBlockPos().getZ());
                     serverWorld.playSound(null, soundPos,
                             SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.BLOCKS,
                             1.0f, MathHelper.lerp(serverWorld.getRandom().nextFloat(), 0.7f, 1.1f));
@@ -71,13 +65,17 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         markDirty();
     }
 
-    public void setBaseBlockPos(BlockPos baseBlockPos) {
-        this.baseBlockPos = baseBlockPos;
+    @Nullable
+    public static BlockPos getPosForInventoryStorage(World world, BlockPos flagPolePos) {
+        BlockPos baseBlockPos = FlagPoleBlock.getBaseBlockPos(world, flagPolePos);
+        if (baseBlockPos == null) return null;
+        return baseBlockPos.up();
     }
 
     @Nullable
     public BlockPos getBaseBlockPos() {
-        return this.baseBlockPos;
+        if (this.getWorld() == null) return null;
+        return FlagPoleBlock.getBaseBlockPos(this.getWorld(), this.getPos());
     }
 
     public boolean isHoisted() {
@@ -153,11 +151,6 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     public void addOrReplaceFlagItemStack(ItemStack newStack) {
         dropFlagInventory();
         this.getFlagInventory().setStack(0, newStack);
-    }
-
-    public static void transferBlockEntityValues(FlagPoleBlockEntity oldBlockEntity, FlagPoleBlockEntity newBlockEntity) {
-        newBlockEntity.setHoistedState(oldBlockEntity.getHoistedState());
-        newBlockEntity.setFlagInventory(oldBlockEntity.getFlagInventory());
     }
 
     @Override

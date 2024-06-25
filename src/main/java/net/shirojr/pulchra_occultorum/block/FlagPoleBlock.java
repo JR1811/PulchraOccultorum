@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -114,15 +115,16 @@ public class FlagPoleBlock extends BlockWithEntity {
             return state;
         }
         BlockStateProperties.FlagPoleState poleState = BlockStateProperties.FlagPoleState.MIDDLE;
-        if (!world.getBlockState(pos.up()).getBlock().equals(world.getBlockState(pos).getBlock())) poleState = BlockStateProperties.FlagPoleState.TOP;
+        if (!world.getBlockState(pos.up()).getBlock().equals(world.getBlockState(pos).getBlock()))
+            poleState = BlockStateProperties.FlagPoleState.TOP;
         return this.getDefaultState().with(POLE_STATE, poleState);
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        BlockState stateBelow = world.getBlockState(pos.down());
-        if (stateBelow.getBlock() instanceof FlagPoleBlock) {
-            world.setBlockState(pos.down(), stateBelow.with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE), NOTIFY_ALL_AND_REDRAW);
+        BlockState stateAbove = world.getBlockState(pos.down());
+        if (stateAbove.getBlock() instanceof FlagPoleBlock) {
+            world.setBlockState(pos.down(), stateAbove.with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE), NOTIFY_ALL_AND_REDRAW);
         }
         super.onPlaced(world, pos, state, placer, itemStack);
     }
@@ -132,14 +134,7 @@ public class FlagPoleBlock extends BlockWithEntity {
         if (!state.contains(BlockStateProperties.FLAG_POLE_STATE)) {
             return super.onBreak(world, pos, state, player);
         }
-        var posList = FlagPoleBlock.connectedFlagPoleBlocks(world, pos);
-        BlockPos oldTopPos = getTopBlockPos(world, pos);
-        if (world.getBlockEntity(oldTopPos) instanceof FlagPoleBlockEntity oldTopBlockEntity) {
-            if (world.getBlockEntity(oldTopBlockEntity.getBaseBlockPos()) instanceof FlagPoleBlockEntity newTopBlockEntity) {
-
-            }
-        }
-
+        List<BlockPos> posList = FlagPoleBlock.connectedFlagPoleBlocks(world, pos);
         return super.onBreak(world, pos, state, player);
     }
 
@@ -196,12 +191,18 @@ public class FlagPoleBlock extends BlockWithEntity {
         return count;
     }
 
+    /**
+     * The first pos in the list will always be the base block and not a pos block!
+     */
     public static List<BlockPos> connectedFlagPoleBlocks(World world, BlockPos pos) {
         BlockPos bottom = getBaseBlockPos(world, pos);
         BlockPos top = getTopBlockPos(world, pos);
         if (bottom == null || top == null) return List.of();
         List<BlockPos> list = new ArrayList<>();
-        BlockPos.iterate(bottom, top).forEach(list::add);
+        for (int y = bottom.getY(); y <= top.getY(); y++) {
+            list.add(new BlockPos(bottom.getX(), y, bottom.getZ()));
+        }
+        // BlockPos.iterate(bottom, top).forEach(list::add);
         return list;
     }
 

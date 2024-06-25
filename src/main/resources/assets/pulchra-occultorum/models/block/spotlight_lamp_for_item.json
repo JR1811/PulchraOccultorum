@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench by ShiroJR",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "pulchra-occultorum:entity/spotlight_lamp"
+		"0": "pulchra-occultorum:item/spotlight_lamp"
 	},
 	"elements": [
 		{

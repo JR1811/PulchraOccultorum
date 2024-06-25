@@ -13,11 +13,19 @@ public class RenderLayers extends RenderLayer {
                             .program(RenderPhase.LIGHTNING_PROGRAM)
                             .writeMaskState(RenderPhase.COLOR_MASK)
                             .transparency(RenderPhase.LIGHTNING_TRANSPARENCY)
-                            //.cull(RenderPhase.DISABLE_CULLING)
                             .build(false));
 
+/*    public static final RenderLayer SPOTLIGHT_LAMP_RAY_DEPTH =
+            RenderLayer.of("spotlight_lamp_ray_depth", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLES,
+                    1536, false, false,
+                    RenderLayer.MultiPhaseParameters.builder().program(RenderPhase.WATER_MASK_PROGRAM)
+                            .cull(RenderPhase.DISABLE_CULLING)
+                            .writeMaskState(RenderPhase.DEPTH_MASK)
+                            // .program(RenderPhase.POSITION_PROGRAM)
+                            .build(false));*/
+
     private RenderLayers(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize,
-                                        boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
+                         boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
         super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
         // private constructor to avoid instantiation
     }

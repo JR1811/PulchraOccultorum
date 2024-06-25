@@ -46,7 +46,9 @@ public class FlagPoleBaseBlock extends Block implements Waterloggable {
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!stack.isIn(ItemTags.BANNERS)) return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        if (!stack.isIn(ItemTags.BANNERS)) {
+            return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        }
         FlagPoleBlockEntity blockEntity = isValidFlagStructure(hit, world);
         if (blockEntity == null) return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
         blockEntity.addOrReplaceFlagItemStack(stack.copyWithCount(1));
@@ -60,8 +62,7 @@ public class FlagPoleBaseBlock extends Block implements Waterloggable {
         BlockPos flagPolePos = hit.getBlockPos().up();
         if (!world.getBlockState(flagPolePos).contains(BlockStateProperties.FLAG_POLE_STATE))
             return null;
-        BlockPos topPos = FlagPoleBlock.getTopBlockPos(world, flagPolePos);
-        if (!(world.getBlockEntity(topPos) instanceof FlagPoleBlockEntity flagPoleBlockEntity)) return null;
+        if (!(world.getBlockEntity(flagPolePos) instanceof FlagPoleBlockEntity flagPoleBlockEntity)) return null;
         return flagPoleBlockEntity;
     }
 

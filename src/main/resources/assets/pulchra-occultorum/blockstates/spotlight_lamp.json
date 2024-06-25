@@ -1,10 +1,10 @@
 {
   "variants": {
     "lit=false": {
-      "model": "pulchra-occultorum:block/spotlight_lamp"
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
     },
     "lit=true": {
-      "model": "pulchra-occultorum:block/spotlight_lamp"
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
     }
   }
 }
