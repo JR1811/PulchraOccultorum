@@ -35,15 +35,15 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         // this.lampRotation = Rotation.fromNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
-        this.color = nbt.getInt(NbtKeys.SPOTLIGHT_COLOR);
-        this.isLit = nbt.getBoolean(NbtKeys.SPOTLIGHT_LIT);
+        this.color = nbt.getInt(NbtKeys.BLOCK_COLOR);
+        this.isLit = nbt.getBoolean(NbtKeys.BLOCK_COLOR);
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         // this.lampRotation.toNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
-        nbt.putInt(NbtKeys.SPOTLIGHT_COLOR, this.color);
+        nbt.putInt(NbtKeys.BLOCK_COLOR, this.color);
         nbt.putBoolean(NbtKeys.SPOTLIGHT_LIT, this.isLit);
     }
 }

@@ -16,12 +16,10 @@ import net.shirojr.pulchra_occultorum.entity.client.renderer.UnicycleEntityRende
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Entities;
+import net.shirojr.pulchra_occultorum.init.ModelPredicateProviders;
 import net.shirojr.pulchra_occultorum.network.CustomS2CNetworking;
 import net.shirojr.pulchra_occultorum.sound.SoundManager;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
-import net.shirojr.pulchra_occultorum.init.ModelPredicateProviders;
-
-import javax.swing.text.html.parser.Entity;
 
 public class PulchraOccultorumClient implements ClientModInitializer {
     public static SoundManager soundManager = SoundManager.getInstance();

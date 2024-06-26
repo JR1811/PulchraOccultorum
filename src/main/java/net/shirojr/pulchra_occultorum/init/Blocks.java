@@ -18,25 +18,37 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class Blocks {
     public static final FlagPoleBaseBlock FLAG_POLE_BASE =
-            registerWithDefaultBlockItem("flag_pole_base",
-                    new FlagPoleBaseBlock(AbstractBlock.Settings.create()));
+            register("flag_pole_base",
+                    new FlagPoleBaseBlock(AbstractBlock.Settings.create()),
+                    new BlockItemData(new Item.Settings(),
+                            List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.REDSTONE)));
 
-    public static final FlagPoleBlock FLAG_POLE = registerWithDefaultBlockItem("flag_pole",
-            new FlagPoleBlock(AbstractBlock.Settings.create().nonOpaque()));
+    public static final FlagPoleBlock FLAG_POLE = register("flag_pole",
+            new FlagPoleBlock(AbstractBlock.Settings.create().nonOpaque()),
+            new BlockItemData(new Item.Settings(),
+                    List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
     public static final SpotlightLampBlock SPOTLIGHT_LAMP =
-            registerWithDefaultBlockItem("spotlight_lamp",
+            register("spotlight_lamp",
                     new SpotlightLampBlock(AbstractBlock.Settings.create()
-                            .nonOpaque().luminance(SpotlightLampBlock::luminanceFromBlockState)));
+                            .nonOpaque().luminance(SpotlightLampBlock::luminanceFromBlockState)),
+                    new BlockItemData(new Item.Settings(),
+                            List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
-    public static final ElasticSandBlock ELASTIC_SAND = registerWithDefaultBlockItem("elastic_sand",
-            new ElasticSandBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.SAND)));
+    public static final ElasticSandBlock ELASTIC_SAND = register("elastic_sand",
+            new ElasticSandBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.SAND)),
+            new BlockItemData(new Item.Settings(),
+                    List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
-    public static final SafetyNetBlock SAFETY_NET = registerWithDefaultBlockItem("safety_net",
-            new SafetyNetBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.WHITE_WOOL)));
+    public static final SafetyNetBlock SAFETY_NET = register("safety_net",
+            new SafetyNetBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.WHITE_WOOL)),
+            new BlockItemData(new Item.Settings(),
+                    List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
-    public static final MonolithBlock MONOLITH = registerWithDefaultBlockItem("monolith",
-            new MonolithBlock(AbstractBlock.Settings.create()));
+    public static final MonolithBlock MONOLITH = register("monolith",
+            new MonolithBlock(AbstractBlock.Settings.create()),
+            new BlockItemData(new Item.Settings(),
+                    List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
 
     private static <T extends Block> T register(String name, T block, @Nullable BlockItemData blockItemData) {
