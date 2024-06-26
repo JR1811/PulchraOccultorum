@@ -10,6 +10,8 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -40,7 +42,7 @@ public class FlagPoleBaseBlock extends Block implements Waterloggable {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         FlagPoleBlockEntity blockEntity = isValidFlagStructure(hit, world);
         if (blockEntity == null) return super.onUse(state, world, pos, player, hit);
-        if (blockEntity.dropFlagInventory()) return ActionResult.SUCCESS;
+        if (blockEntity.dropFlagInventory(player)) return ActionResult.SUCCESS;
         return super.onUse(state, world, pos, player, hit);
     }
 
@@ -51,15 +53,18 @@ public class FlagPoleBaseBlock extends Block implements Waterloggable {
         }
         FlagPoleBlockEntity blockEntity = isValidFlagStructure(hit, world);
         if (blockEntity == null) return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
-        blockEntity.addOrReplaceFlagItemStack(stack.copyWithCount(1));
+        blockEntity.addOrReplaceFlagItemStack(player, stack.copyWithCount(1));
         if (!player.isCreative()) stack.decrement(1);
-
+        world.playSound(null, blockEntity.getPos(), SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, SoundCategory.BLOCKS, 1.0f, 1.0f);
         return ItemActionResult.SUCCESS;
     }
 
     @Nullable
     private FlagPoleBlockEntity isValidFlagStructure(BlockHitResult hit, World world) {
         BlockPos flagPolePos = hit.getBlockPos().up();
+        flagPolePos = FlagPoleBlock.getBaseBlockPos(world, flagPolePos);
+        if (flagPolePos == null) return null;
+        flagPolePos = flagPolePos.up();
         if (!world.getBlockState(flagPolePos).contains(BlockStateProperties.FLAG_POLE_STATE))
             return null;
         if (!(world.getBlockEntity(flagPolePos) instanceof FlagPoleBlockEntity flagPoleBlockEntity)) return null;

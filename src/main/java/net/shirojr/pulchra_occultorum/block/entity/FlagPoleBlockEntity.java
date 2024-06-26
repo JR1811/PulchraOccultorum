@@ -1,14 +1,21 @@
 package net.shirojr.pulchra_occultorum.block.entity;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.inventory.Inventories;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -20,19 +27,25 @@ import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
-    private final SimpleInventory flagInventory;
+    private static final int invSize = 1;
+    private SimpleInventory flagInventory = new SimpleInventory(invSize);
     private boolean hoisted = false;
     private float hoistedState = 0.0f;
 
+    @Environment(EnvType.CLIENT)
+    public float flagAnimationProgress = 0;
+
     public FlagPoleBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntities.FLAG_POLE_BLOCK_ENTITY, pos, state);
-        this.flagInventory = new SimpleInventory(1);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, FlagPoleBlockEntity blockEntity) {
         if (!state.contains(BlockStateProperties.FLAG_POLE_STATE)) return;
-        if (!(world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock)) return;
+        if (world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock) return;
         blockEntity.incrementTick(false);
         if (blockEntity.getFlagInventory().isEmpty()) return;
         blockEntity.modifyHoistedState(world, pos, 0.01f);
@@ -62,7 +75,13 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         for (int i = 0; i < inventory.getHeldStacks().size(); i++) {
             this.getFlagInventory().setStack(i, inventory.getStack(i));
         }
-        markDirty();
+    }
+
+    public void modifyInventory(Consumer<SimpleInventory> inventoryConsumer) {
+        inventoryConsumer.accept(this.getFlagInventory());
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+        }
     }
 
     @Nullable
@@ -114,6 +133,15 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     public boolean isHoistStateMoving() {
         return !isFullyHoisted() && getHoistedState() > 0.0f;
     }
+
+    @Nullable
+    public BlockPos getFlagPos() {
+        if (this.getWorld() == null) return null;
+        List<BlockPos> connectedFlagPoleBlocks = FlagPoleBlock.connectedFlagPoleBlocks(world, pos);
+        if (connectedFlagPoleBlocks.isEmpty()) return null;
+        int getFlagY = MathHelper.lerp(this.getHoistedState(), connectedFlagPoleBlocks.getFirst().getY(), connectedFlagPoleBlocks.getLast().getY());
+        return new BlockPos(this.getPos().getX(), getFlagY, this.getPos().getZ());
+    }
     //endregion
 
     @SuppressWarnings("SameParameterValue")
@@ -138,19 +166,38 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         markDirty();
     }
 
-    public boolean dropFlagInventory() {
-        if (!(this.getWorld() == null)) return false;
-        if (this.getHoistedState() > 0) return false;
+    public boolean dropFlagInventory(PlayerEntity player) {
+        if (this.getWorld() == null) return false;
+        if (this.isHoisted()) {
+            player.sendMessage(Text.translatable("chat.pulchra-occultorum.flag_still_hoisted"), true);
+            return false;
+        }
         if (this.getFlagInventory().isEmpty()) return false;
         if (this.getBaseBlockPos() == null) return false;
-        ItemScatterer.spawn(world, this.getBaseBlockPos().up().north(1), this.getFlagInventory());
-        this.getFlagInventory().removeStack(0);
+        this.modifyInventory(inventory -> {
+            ItemScatterer.spawn(world, this.getBaseBlockPos().up().north(1), inventory);
+            inventory.removeStack(0);
+        });
+        this.getWorld().playSound(null, this.getPos(), SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, SoundCategory.BLOCKS, 1.0f, 0.7f);
         return true;
     }
 
-    public void addOrReplaceFlagItemStack(ItemStack newStack) {
-        dropFlagInventory();
-        this.getFlagInventory().setStack(0, newStack);
+    public void addOrReplaceFlagItemStack(PlayerEntity user, ItemStack newStack) {
+        this.dropFlagInventory(user);
+        this.modifyInventory(inventory -> inventory.setStack(0, newStack));
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        NbtCompound nbt = new NbtCompound();
+        this.writeNbt(nbt, registryLookup);
+        return nbt;
     }
 
     @Override
@@ -163,7 +210,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
             setHoistedState(Math.clamp(nbt.getFloat(NbtKeys.FLAG_HOISTED_STATE), 0, 1.0f));
         }
         if (nbt.contains(NbtKeys.FLAG_INVENTORY)) {
-            Inventories.writeNbt(nbt, this.getFlagInventory().getHeldStacks(), registryLookup);
+            this.flagInventory.readNbtList(nbt.getList(NbtKeys.FLAG_INVENTORY, NbtElement.COMPOUND_TYPE), registryLookup);
         }
     }
 
@@ -172,6 +219,6 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         super.writeNbt(nbt, registryLookup);
         nbt.putBoolean(NbtKeys.FLAG_IS_HOISTED, isHoisted());
         nbt.putFloat(NbtKeys.FLAG_HOISTED_STATE, getHoistedState());
-        Inventories.readNbt(nbt, this.getFlagInventory().getHeldStacks(), registryLookup);
+        nbt.put(NbtKeys.FLAG_INVENTORY, this.flagInventory.toNbtList(registryLookup));
     }
 }

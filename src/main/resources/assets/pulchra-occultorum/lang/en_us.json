@@ -1,5 +1,8 @@
 {
   "itemgroup.pulchra-occultorum.blocks": "Pulchra Occultorum Blocks",
   "itemgroup.pulchra-occultorum.items": "Pulchra Occultorum Items",
-  "block.pulchra-occultorum.flag_pole_base": "Flag Pole Base"
+
+  "block.pulchra-occultorum.flag_pole_base": "Flag Pole Base",
+
+  "chat.pulchra-occultorum.flag_still_hoisted": "§4[Warning]§r Flag is still hoisted!"
 }

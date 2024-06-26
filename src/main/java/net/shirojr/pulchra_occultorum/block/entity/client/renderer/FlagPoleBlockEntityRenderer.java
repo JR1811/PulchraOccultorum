@@ -17,7 +17,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.block.entity.FlagPoleBlockEntity;
-import net.shirojr.pulchra_occultorum.util.BlockStateProperties;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implements BlockEntityRenderer<T> {
@@ -40,30 +39,35 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
 
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (!blockEntity.getCachedState().get(BlockStateProperties.FLAG_POLE_STATE).equals(BlockStateProperties.FlagPoleState.TOP))
-            return;
         if (blockEntity.getFlagInventory().isEmpty()) return;
+        if (blockEntity.isFullyHoisted()) {
+            if (blockEntity.flagAnimationProgress > 1) blockEntity.flagAnimationProgress = 0;
+            blockEntity.flagAnimationProgress += tickDelta / 500;
+        }
         ItemStack bannerStack = blockEntity.getFlagInventory().getStack(0).copy();
         BannerPatternsComponent bannerPatternsComponent = bannerStack.get(DataComponentTypes.BANNER_PATTERNS);
 
         VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
 
         float scale = 1.2f;
-        double minHeight = - blockEntity.getFlagPoleCount() + 1;
-        double maxHeight = 0;
+        double minHeight = 1;
+        double maxHeight = blockEntity.getFlagPoleCount() - 1;
 
         matrices.push();
-        matrices.translate(0.0f, 1.0f, - 0.2f);
 
         double flagHeightOnPole = MathHelper.lerp(blockEntity.getHoistedState(), minHeight, maxHeight);
-        matrices.translate(0.0f, flagHeightOnPole, 0.0f);
+        matrices.translate(0.6f, flagHeightOnPole + 0.2, 0.3125f);
 
-        centerBannerMatrices(matrices, scale);
+        // trans orig to pivot do scaling then move origin back then rot
+
+        matrices.translate(0.0f, 0.6, 0.0);
 
         verticalRotation(matrices, blockEntity, 90, blockEntity.isFullyHoisted());
         horizontalRotation(matrices, blockEntity, 90, blockEntity.isFullyHoisted());
 
-        matrices.translate(-0.2f, 0.0f, 0.0f);
+        matrices.scale(scale, scale, scale);
+        matrices.translate(0.6,  0, 0.0);
+
 
         if (bannerPatternsComponent == null) {
             LoggerUtil.LOGGER.warn("Couldn't find Banner Pattern from ItemStack for Flag");
@@ -84,6 +88,7 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
             );
         }
         matrices.pop();
+
     }
 
     private void centerBannerMatrices(MatrixStack matrices, float scale) {
@@ -97,19 +102,19 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
     private void verticalRotation(MatrixStack matrices, FlagPoleBlockEntity blockEntity, int baseRotation, boolean shouldSway) {
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(baseRotation));
         if (shouldSway) {
-            float offsetFromPole = - 0.5f;
+            float offsetFromPole = -0.5f;
             double swaySpeed = 0.06;
-            matrices.translate(0.0f, 0.0f, - 0.5);
-            int verticalSwing = (int) ((Math.sin(blockEntity.getTick() *  swaySpeed) ) * 5); // FIXME: tick steps are too big for client frames (interpolate?)
+            // matrices.translate(0.0f, 0.0f, -0.5);
+            float verticalSwing = MathHelper.sin(blockEntity.flagAnimationProgress * MathHelper.TAU) * 3;
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(verticalSwing));
-            matrices.translate(0.0f, 0.0f, -offsetFromPole);
+            // matrices.translate(0.0f, 0.0f, -offsetFromPole);
         }
     }
 
     @SuppressWarnings("SameParameterValue")
     private void horizontalRotation(MatrixStack matrices, FlagPoleBlockEntity blockEntity, int baseRotation, boolean shouldSway) {
-        int horizontalSwing = (int) (Math.cos(blockEntity.getTick() * 0.05) * 5); // FIXME: tick steps are too big for client frames (interpolate?)
-        int horizontalRotation = shouldSway ? baseRotation + horizontalSwing : baseRotation;
+        float horizontalSwing = MathHelper.cos(blockEntity.flagAnimationProgress * MathHelper.TAU) * 5;
+        float horizontalRotation = shouldSway ? baseRotation + horizontalSwing : baseRotation;
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(horizontalRotation));
     }
 }

@@ -40,7 +40,7 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        for (int i = 0; i <= 4; i++) {
+        for (int i = 0; i <= 5; i++) {
             itemModelGenerator.register(Items.WHIP, String.format(Locale.ROOT, "_%02d", i), Models.GENERATED);
         }
 

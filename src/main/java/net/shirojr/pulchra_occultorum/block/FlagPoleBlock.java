@@ -10,10 +10,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -40,7 +43,9 @@ public class FlagPoleBlock extends BlockWithEntity {
 
     public FlagPoleBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState().with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE));
+        this.setDefaultState(this.getDefaultState()
+                .with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE)
+                .with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -67,7 +72,7 @@ public class FlagPoleBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(POLE_STATE);
+        builder.add(POLE_STATE, Properties.HORIZONTAL_FACING);
     }
 
     @Nullable
@@ -96,6 +101,19 @@ public class FlagPoleBlock extends BlockWithEntity {
         world.playSound(null, posForPlacement, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.7f, 0.7f);
 
         return ItemActionResult.SUCCESS;
+    }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (world.getBlockEntity(hit.getBlockPos().up()) instanceof FlagPoleBlockEntity blockEntity && !blockEntity.getFlagInventory().isEmpty()) {
+            if (blockEntity.getFlagPos() != null && !world.isClient()) {
+                world.playSound(null, blockEntity.getFlagPos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.7f, 0.7f);
+                if (blockEntity.dropFlagInventory(player)) {
+                    return ActionResult.SUCCESS;
+                }
+            }
+        }
+        return super.onUse(state, world, pos, player, hit);
     }
 
     @Override
@@ -213,5 +231,10 @@ public class FlagPoleBlock extends BlockWithEntity {
             shape = VoxelShapes.union(shape, Block.createCuboidShape(5, 14, 5, 11, 16, 11));
         }
         return shape;
+    }
+
+    @Override
+    protected BlockSoundGroup getSoundGroup(BlockState state) {
+        return BlockSoundGroup.ANVIL;
     }
 }
