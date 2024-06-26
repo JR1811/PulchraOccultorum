@@ -9,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -19,6 +18,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -148,24 +148,17 @@ public class FlagPoleBlock extends BlockWithEntity {
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!state.contains(BlockStateProperties.FLAG_POLE_STATE)) {
-            return super.onBreak(world, pos, state, player);
-        }
-        List<BlockPos> posList = FlagPoleBlock.connectedFlagPoleBlocks(world, pos);
-        return super.onBreak(world, pos, state, player);
-    }
-
-    @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock()) || newState.contains(BlockStateProperties.FLAG_POLE_STATE)) {
             super.onStateReplaced(state, world, pos, newState, moved);
             return;
-        }/*
-        BlockPos oldTopPos = getTopBlockPos(world, pos);
-        if (world.getBlockEntity(oldTopPos) instanceof FlagPoleBlockEntity flagPoleBlockEntity) {
-
-        }*/
+        }
+        if (world.getBlockEntity(pos) instanceof FlagPoleBlockEntity blockEntity) {
+            if (!world.isClient() && !blockEntity.getFlagInventory().isEmpty()) {
+                ItemScatterer.spawn(world, pos, blockEntity.getFlagInventory());
+                // blockEntity.syncedInventoryModification(inventory -> { ... });
+            }
+        }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
 

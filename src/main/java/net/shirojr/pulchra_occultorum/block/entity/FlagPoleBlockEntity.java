@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     private static final int invSize = 1;
-    private SimpleInventory flagInventory = new SimpleInventory(invSize);
+    private final SimpleInventory flagInventory = new SimpleInventory(invSize);
     private boolean hoisted = false;
     private float hoistedState = 0.0f;
 
@@ -70,25 +70,11 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         return this.flagInventory;
     }
 
-    public void setFlagInventory(SimpleInventory inventory) {
-        if (inventory.size() != getFlagInventory().size()) return;
-        for (int i = 0; i < inventory.getHeldStacks().size(); i++) {
-            this.getFlagInventory().setStack(i, inventory.getStack(i));
-        }
-    }
-
-    public void modifyInventory(Consumer<SimpleInventory> inventoryConsumer) {
+    public void syncedInventoryModification(Consumer<SimpleInventory> inventoryConsumer) {
         inventoryConsumer.accept(this.getFlagInventory());
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
         }
-    }
-
-    @Nullable
-    public static BlockPos getPosForInventoryStorage(World world, BlockPos flagPolePos) {
-        BlockPos baseBlockPos = FlagPoleBlock.getBaseBlockPos(world, flagPolePos);
-        if (baseBlockPos == null) return null;
-        return baseBlockPos.up();
     }
 
     @Nullable
@@ -174,7 +160,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         }
         if (this.getFlagInventory().isEmpty()) return false;
         if (this.getBaseBlockPos() == null) return false;
-        this.modifyInventory(inventory -> {
+        this.syncedInventoryModification(inventory -> {
             ItemScatterer.spawn(world, this.getBaseBlockPos().up().north(1), inventory);
             inventory.removeStack(0);
         });
@@ -184,7 +170,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
 
     public void addOrReplaceFlagItemStack(PlayerEntity user, ItemStack newStack) {
         this.dropFlagInventory(user);
-        this.modifyInventory(inventory -> inventory.setStack(0, newStack));
+        this.syncedInventoryModification(inventory -> inventory.setStack(0, newStack));
     }
 
     @Nullable
