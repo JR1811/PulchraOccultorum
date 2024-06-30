@@ -36,6 +36,7 @@
 	"mixins": [
 		"pulchra-occultorum.mixins.json"
 	],
+	"accessWidener": "pulchra-occultorum.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.15.11",
 		"minecraft": "~1.21-",

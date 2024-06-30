@@ -9,6 +9,7 @@ import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 public class Tags {
     public static class Blocks {
         public static TagKey<Block> SUPPORTS_FLAG_POLE = createTag("supports_flag_pole");
+        public static TagKey<Block> SENDS_UPDATE_POWER_VERTICALLY = createTag("sends_update_power_vertically");
 
         @SuppressWarnings("SameParameterValue")
         private static TagKey<Block> createTag(String name) {

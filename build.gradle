@@ -38,6 +38,10 @@ dependencies {
 	modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_version}"
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/pulchra-occultorum.accesswidener")
+}
+
 processResources {
 	inputs.property "version", project.version
 

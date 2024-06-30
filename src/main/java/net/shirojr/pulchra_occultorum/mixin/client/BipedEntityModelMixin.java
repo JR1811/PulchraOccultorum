@@ -14,6 +14,7 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -40,6 +41,9 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
 
     @Shadow @Final public ModelPart head;
 
+    @Unique private float releasedStateRight = 0;
+    @Unique private float releasedStateLeft = 0;
+
     @ModifyExpressionValue(method = "setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/entity/model/BipedEntityModel;riding:Z", opcode = Opcodes.GETFIELD))
     private boolean ridingPoseExceptions(boolean original, @Local(ordinal = 0, argsOnly = true) T livingEntity) {
         if (livingEntity.getVehicle() instanceof UnicycleEntity) return false;
@@ -57,6 +61,19 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
             leftArm.pitch = MathHelper.sin(animationProgress * 0.3f) * 0.5f;
             head.pitch = -0.4f;
         }
+        UnicycleEntity.DirectionInput inputLeft = unicycleEntity.getDirectionInputs()[0];
+        UnicycleEntity.DirectionInput inputRight = unicycleEntity.getDirectionInputs()[1];
+        if (inputLeft != null) {
+            leftArm.roll += 0.5f;
+        }
+        if (inputRight != null) {
+            releasedStateRight = 0.5f;
+        }
+        if (releasedStateRight > 0) releasedStateRight = releasedStateRight - 0.03f;
+        if (releasedStateLeft > 0) releasedStateLeft = releasedStateLeft - 0.03f;
+        leftArm.roll -= releasedStateLeft;
+        rightArm.roll -= releasedStateRight;
+
         rightArm.roll += armSplit;
         leftArm.roll -= armSplit;
         rightLeg.roll = legSplit;

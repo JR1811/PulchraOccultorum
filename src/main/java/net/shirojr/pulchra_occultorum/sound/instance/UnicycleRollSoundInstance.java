@@ -96,9 +96,6 @@ public class UnicycleRollSoundInstance extends MovingSoundInstance {
         float normalizedIntensity = (MAX_DISTANCE - soundInstance.clampedDistance) / MAX_DISTANCE;
 
         soundInstance.volume = MathHelper.lerp(normalizedIntensity, 0.0f, 1.3f);
-        if (soundInstance.clampedDistance > 0) {
-            LoggerUtil.devLogger(String.valueOf(soundInstance.clampedDistance));
-        }
     }
 
     @SuppressWarnings("SameParameterValue")

@@ -13,10 +13,7 @@ import net.shirojr.pulchra_occultorum.block.entity.client.renderer.SpotlightLamp
 import net.shirojr.pulchra_occultorum.entity.client.model.UnicycleEntityModel;
 import net.shirojr.pulchra_occultorum.entity.client.renderer.MonolithEntityRenderer;
 import net.shirojr.pulchra_occultorum.entity.client.renderer.UnicycleEntityRenderer;
-import net.shirojr.pulchra_occultorum.init.BlockEntities;
-import net.shirojr.pulchra_occultorum.init.Blocks;
-import net.shirojr.pulchra_occultorum.init.Entities;
-import net.shirojr.pulchra_occultorum.init.ModelPredicateProviders;
+import net.shirojr.pulchra_occultorum.init.*;
 import net.shirojr.pulchra_occultorum.network.CustomS2CNetworking;
 import net.shirojr.pulchra_occultorum.sound.SoundManager;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
@@ -35,6 +32,7 @@ public class PulchraOccultorumClient implements ClientModInitializer {
     public void onInitializeClient() {
         ModelPredicateProviders.initialize();
         CustomS2CNetworking.initialize();
+        Events.registerClient();
 
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.SAFETY_NET, RenderLayer.getCutout());
 

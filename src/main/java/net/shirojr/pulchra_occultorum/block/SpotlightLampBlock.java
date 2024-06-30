@@ -16,10 +16,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
@@ -67,12 +69,24 @@ public class SpotlightLampBlock extends BlockWithEntity {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         boolean isLit = state.get(LIT);
         SoundEvent soundEvent = SoundEvents.BLOCK_LEVER_CLICK;
-        if (!world.isClient()) {
+        if (!world.isClient() && world.getReceivedRedstonePower(hit.getBlockPos()) > 0) {
             state = state.with(LIT, !isLit);
             world.setBlockState(pos, state);
-            world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, isLit ? 0.5F : 0.6F);
+            world.playSound(null, hit.getBlockPos(), soundEvent, SoundCategory.BLOCKS, 1.0f, 0.5f);
+            return ActionResult.SUCCESS;
         }
-        return ActionResult.SUCCESS;
+        return super.onUse(state,world, pos, player, hit);
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (world.getReceivedRedstonePower(pos.down()) > 0) {
+            world.setBlockState(pos, state.with(LIT, true), NOTIFY_ALL_AND_REDRAW);
+            //TODO: change strength field in BE
+        } else {
+            world.setBlockState(pos, state.with(LIT, false), NOTIFY_ALL_AND_REDRAW);
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.item.TarotItem;
+import net.shirojr.pulchra_occultorum.item.UnicycleItem;
 import net.shirojr.pulchra_occultorum.item.WhipItem;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,10 @@ public class Items {
 
     public static final TarotItem TAROT_MONOLITH = register("tarot_monolith",
             new TarotItem(new Item.Settings().maxCount(1), List.of(OccultEvents.MONOLITH)),
+            List.of(ItemGroups.ITEMS));
+
+    public static final UnicycleItem UNICYCLE = register("unicycle",
+            new UnicycleItem(new Item.Settings()),
             List.of(ItemGroups.ITEMS));
 
 

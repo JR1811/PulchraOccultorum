@@ -14,7 +14,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
     public static final int TURNING_SPEED = 20; // TODO: cap the turning speed to a max number
     private float currentYaw, currentPitch, targetYaw, targetPitch;
     private int color = 0x000000;
-    private boolean isLit = false;
+
+    public float flagAnimationProgress = 0;
 
     public SpotlightLampBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntities.SPOTLIGHT_LAMP_BLOCK_ENTITY, pos, state);
@@ -36,7 +37,6 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
         super.readNbt(nbt, registryLookup);
         // this.lampRotation = Rotation.fromNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         this.color = nbt.getInt(NbtKeys.BLOCK_COLOR);
-        this.isLit = nbt.getBoolean(NbtKeys.BLOCK_COLOR);
     }
 
     @Override
@@ -44,6 +44,5 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity {
         super.writeNbt(nbt, registryLookup);
         // this.lampRotation.toNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         nbt.putInt(NbtKeys.BLOCK_COLOR, this.color);
-        nbt.putBoolean(NbtKeys.SPOTLIGHT_LIT, this.isLit);
     }
 }

@@ -122,7 +122,7 @@ public class FlagPoleBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!isSupported(world, pos)) {
             boolean shouldDrop = false;
             var flagPoleState = world.getBlockState(pos).getOrEmpty(BlockStateProperties.FLAG_POLE_STATE);

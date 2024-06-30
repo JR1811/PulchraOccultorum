@@ -36,7 +36,6 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     private boolean hoisted = false;
     private float hoistedState = 0.0f;
 
-    @Environment(EnvType.CLIENT)
     public float flagAnimationProgress = 0;
 
     public FlagPoleBlockEntity(BlockPos pos, BlockState state) {
@@ -48,7 +47,8 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         if (world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock) return;
         blockEntity.incrementTick(false);
         if (blockEntity.getFlagInventory().isEmpty()) return;
-        blockEntity.modifyHoistedState(world, pos, 0.01f);
+        blockEntity.modifyHoistedState(world, pos);
+
         if (world instanceof ServerWorld serverWorld) {
             if (blockEntity.getTick() % 10 == 0 && blockEntity.isHoistStateMoving()) {
                 if (blockEntity.getBaseBlockPos() != null && blockEntity.getTopBlockPos() != null) {
@@ -131,24 +131,11 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     //endregion
 
     @SuppressWarnings("SameParameterValue")
-    private void modifyHoistedState(World world, BlockPos pos, float speed) {
-        float hoistedState = this.getHoistedState();
+    private void modifyHoistedState(World world, BlockPos pos) {
         BlockPos basePos = FlagPoleBlock.getBaseBlockPos(world, pos);
-        if (world.isReceivingRedstonePower(basePos)) {
-            if (!this.isFullyHoisted()) {
-                hoistedState += speed;
-                this.setHoistedState(hoistedState);
-            }
-        } else if (this.getHoistedState() > 0) {
-            hoistedState -= speed;
-            this.setHoistedState(hoistedState);
-        }
-
-        if (this.getHoistedState() <= 0) {
-            if (this.isHoisted()) this.setHoisted(false);
-        } else {
-            if (!this.isHoisted()) this.setHoisted(true);
-        }
+        float redstonePower = world.getReceivedRedstonePower(basePos);
+        float height = redstonePower / 15;
+        this.setHoistedState(height);
         markDirty();
     }
 

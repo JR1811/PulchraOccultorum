@@ -16,6 +16,8 @@ public class PulchraOccultorumTagProvider {
     public static class BlockTags extends FabricTagProvider.BlockTagProvider {
         private static final TagKey<Block> SUPPORTS_FLAG_POLE =
                 TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.identifierOf("supports_flag_pole"));
+        private static final TagKey<Block> SENDS_UPDATE_POWER_VERTICALLY =
+                TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.identifierOf("sends_update_power_vertically"));
 
 
         public BlockTags(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -27,6 +29,10 @@ public class PulchraOccultorumTagProvider {
             getOrCreateTagBuilder(SUPPORTS_FLAG_POLE)
                     .add(Blocks.FLAG_POLE)
                     .add(Blocks.FLAG_POLE_BASE);
+            getOrCreateTagBuilder(SENDS_UPDATE_POWER_VERTICALLY)
+                    .add(Blocks.FLAG_POLE)
+                    .add(net.minecraft.block.Blocks.IRON_BARS)
+                    .addTag(net.minecraft.registry.tag.BlockTags.WALLS);
         }
     }
 }

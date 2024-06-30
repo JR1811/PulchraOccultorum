@@ -1,16 +1,17 @@
 package net.shirojr.pulchra_occultorum.entity;
 
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,12 +23,20 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.SoundEvents;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class UnicycleEntity extends AbstractRideableEntity {
-    private static final float JUMP_STRENGTH = 1.5f;
+    public static final float JUMP_STRENGTH = 1.5f, INTERVAL_SPEED = 0.25f;
+    ;
     private boolean hasMovementInputs = false;
+    private static final TrackedData<Float> LEFT_IMPORTANT_STATE = DataTracker.registerData(UnicycleEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    @Nullable
+    private DirectionInput[] directionInputs = new DirectionInput[]{null, null, null};
 
     public UnicycleEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -40,6 +49,18 @@ public class UnicycleEntity extends AbstractRideableEntity {
     }
 
     @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(LEFT_IMPORTANT_STATE, 0f);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+    }
+
+    @Override
     public void onStartedTrackingBy(ServerPlayerEntity player) {
         super.onStartedTrackingBy(player);
         ServerPlayNetworking.send(player, new UnicycleSoundPacket(this.getId(), true));
@@ -49,6 +70,28 @@ public class UnicycleEntity extends AbstractRideableEntity {
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         super.onStoppedTrackingBy(player);
         ServerPlayNetworking.send(player, new UnicycleSoundPacket(this.getId(), false));
+    }
+
+    public DirectionInput[] getDirectionInputs() {
+        return this.directionInputs;
+    }
+
+    public void setDirectionInputs(@Nullable DirectionInput inputLeft, @Nullable DirectionInput inputRight) {
+        this.setDirectionInputs(new DirectionInput[]{inputLeft, inputRight});
+    }
+
+    public void setDirectionInputs(@Nullable DirectionInput[] input) {
+        this.directionInputs = input;
+        LoggerUtil.devLogger("received packet" + Arrays.toString(input));
+    }
+
+    public float getLeftImportantState() {
+        return this.dataTracker.get(LEFT_IMPORTANT_STATE);
+    }
+
+    public void setLeftImportantState(float state) {
+        state = MathHelper.clamp(state, -1, 1);
+        this.dataTracker.set(LEFT_IMPORTANT_STATE, state);
     }
 
     @Nullable
@@ -91,29 +134,56 @@ public class UnicycleEntity extends AbstractRideableEntity {
         this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
 
         if (!this.isLogicalSideForUpdatingMovement()) return;
-        if (!this.isOnGround()) return;
+        this.move(movementInput);
+    }
+
+    @Override
+    public void onLanding() {
+        super.onLanding();
         this.setInAir(false);
-        if (movementInput.length() > 0) {
-            this.move(movementInput);
-        }
     }
 
     protected void move(Vec3d movementInput) {
-        float speed = 0.5f;
-        this.velocityDirty = true;
+        float speed = 0;
+        DirectionInput[] input = this.getDirectionInputs();
+        DirectionInput left = input[0];
+        DirectionInput right = input[1];
+        DirectionInput jump = input[2];
+        if (left == null && right == null && jump == null) return;
 
-        if (movementInput.z > 0.0) {
-            float zDirection = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
-            float xDirection = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
-            float jumpStrength = this.getJumpVelocity(UnicycleEntity.JUMP_STRENGTH);
-            if (!MinecraftClient.getInstance().options.jumpKey.isPressed()) jumpStrength = 0.0f;
-            if (this.isInAir() && !this.isLogicalSideForUpdatingMovement()) jumpStrength = 0.0f;
-            if (jumpStrength > 0.0f) {
-                this.setInAir(true);
-                speed += 0.8f;
-            }
-            this.setVelocity(new Vec3d(-speed * zDirection, jumpStrength, speed * xDirection));
+        boolean goesForward = false;
+        boolean goesBackward = false;
+        boolean jumped = false;
+
+        if (left != null) {
+            goesForward = left.equals(DirectionInput.LEFT) && this.getLeftImportantState() > 0;
+            goesBackward = left.equals(DirectionInput.LEFT) && this.getLeftImportantState() < 0;
         }
+        if (right != null) {
+            goesForward = right.equals(DirectionInput.RIGHT) && this.getLeftImportantState() < 0;
+            goesBackward = right.equals(DirectionInput.RIGHT) && this.getLeftImportantState() > 0;
+        }
+        if (jump != null) {
+            jumped = jump.equals(DirectionInput.JUMP) && !this.isInAir();   // maybe use onGround instead?
+        }
+
+        if (goesForward) speed = 0.2f;
+        if (goesBackward) speed = - 0.2f;
+
+
+        LoggerUtil.devLogger(String.valueOf(speed));
+        if (speed == 0 && !jumped) return;
+
+        this.velocityDirty = true;
+        float zDirection = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+        float xDirection = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
+        float jumpStrength = jumped ? this.getJumpVelocity(UnicycleEntity.JUMP_STRENGTH) : 0.0f;
+        if (jumpStrength > 0.0f) {
+            this.setInAir(true);
+            speed += 0.8f;
+        }
+        this.addVelocity(new Vec3d(-speed * zDirection, jumpStrength, speed * xDirection));
+        // this.directionInputs = new DirectionInput[] {null, null, null};
     }
 
     @Override
@@ -159,5 +229,29 @@ public class UnicycleEntity extends AbstractRideableEntity {
     @Override
     public boolean isCollidable() {
         return true;
+    }
+
+    public enum DirectionInput {
+        LEFT("input_left"),
+        RIGHT("input_right"),
+        JUMP("input_jump");
+
+        private final String name;
+
+        DirectionInput(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        @Nullable
+        public static DirectionInput fromString(String name) {
+            for (DirectionInput entry : DirectionInput.values()) {
+                if (entry.getName().equals(name)) return entry;
+            }
+            return null;
+        }
     }
 }

@@ -2,7 +2,25 @@
   "itemgroup.pulchra-occultorum.blocks": "Pulchra Occultorum Blocks",
   "itemgroup.pulchra-occultorum.items": "Pulchra Occultorum Items",
 
+  "block.pulchra-occultorum.flag_pole": "Flag Pole",
+  "block.pulchra-occultorum.flag_pole.tooltip1": "Can be stacked on top of each other if supported properly",
   "block.pulchra-occultorum.flag_pole_base": "Flag Pole Base",
+  "block.pulchra-occultorum.flag_pole_base.tooltip1": "Hoists equipped banners when receiving a Redstone signal.",
+  "block.pulchra-occultorum.flag_pole_base.tooltip2": "Use a banner item on this Block to modify a flag structure's inventory",
+  "block.pulchra-occultorum.spotlight_lamp": "Spotlight Lamp",
+  "block.pulchra-occultorum.elastic_sand": "Elastic Sand",
+  "block.pulchra-occultorum.safety_net": "Safety Net",
+  "block.pulchra-occultorum.monolith": "Monolith",
 
-  "chat.pulchra-occultorum.flag_still_hoisted": "§4[Warning]§r Flag is still hoisted!"
+  "item.pulchra-occultorum.whip": "Whip",
+  "item.pulchra-occultorum.unicycle": "Unicycle",
+  "item.pulchra-occultorum.tarot_warlord": "The Warlord Tarot Card",
+  "item.pulchra-occultorum.tarot_monolith": "Monolith Tarot Card",
+
+  "sound.pulchra-occultorum.unicycle.land": "Unicycle landed",
+  "sound.pulchra-occultorum.unicycle.clank": "Unicycle hurt",
+  "sound.pulchra-occultorum.unicycle.roll": "Unicycle rolling",
+
+
+  "chat.pulchra-occultorum.flag_still_hoisted": "§6[Warning]§r Flag is still hoisted"
 }
