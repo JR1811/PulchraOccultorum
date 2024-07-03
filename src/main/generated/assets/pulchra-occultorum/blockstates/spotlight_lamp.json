@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "power=0": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=1": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=10": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=11": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=12": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=13": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=14": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=15": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=2": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=3": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=4": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=5": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=6": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=7": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=8": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    },
+    "power=9": {
+      "model": "pulchra-occultorum:block/spotlight_lamp_for_item"
+    }
+  }
+}

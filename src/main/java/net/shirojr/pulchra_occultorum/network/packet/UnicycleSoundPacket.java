@@ -21,6 +21,4 @@ public record UnicycleSoundPacket(int entityNetworkId, boolean shouldPlay) imple
     public Id<? extends CustomPayload> getId() {
         return IDENTIFIER;
     }
-
-
 }

@@ -13,8 +13,8 @@ import net.shirojr.pulchra_occultorum.util.BlockStateProperties;
 import java.util.Locale;
 import java.util.Optional;
 
-public class PulchraOccultorumModelProvider extends FabricModelProvider {
-    public PulchraOccultorumModelProvider(FabricDataOutput output) {
+public class ModelProvider extends FabricModelProvider {
+    public ModelProvider(FabricDataOutput output) {
         super(output);
     }
 
@@ -24,6 +24,10 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
                 BlockStateModelGenerator.createSingletonBlockState(Blocks.SAFETY_NET, getIdentifier("block/safety_net")));
         blockStateModelGenerator.blockStateCollector.accept(
                 BlockStateModelGenerator.createSingletonBlockState(Blocks.ELASTIC_SAND, getIdentifier("block/elastic_sand")));
+        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier
+                .create(Blocks.SPOTLIGHT_LAMP)
+                .coordinate(createSpotlightBlockState())
+        );
 
         blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.FLAG_POLE)
                 .coordinate(createFlagPoleBlockState()));
@@ -70,6 +74,12 @@ public class PulchraOccultorumModelProvider extends FabricModelProvider {
                     case LOWER ->
                             BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/monolith_bottom"));
                 }
+        );
+    }
+
+    private BlockStateVariantMap createSpotlightBlockState() {
+        return BlockStateVariantMap.create(Properties.POWER).register(part ->
+                BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/spotlight_lamp_for_item"))
         );
     }
 }

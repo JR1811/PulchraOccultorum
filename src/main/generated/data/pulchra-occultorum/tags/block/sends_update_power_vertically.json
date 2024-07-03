@@ -1,0 +1,10 @@
+{
+  "values": [
+    "pulchra-occultorum:flag_pole",
+    "minecraft:iron_bars",
+    {
+      "id": "#minecraft:walls",
+      "required": false
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
@@ -15,6 +16,7 @@ import net.shirojr.pulchra_occultorum.entity.client.renderer.MonolithEntityRende
 import net.shirojr.pulchra_occultorum.entity.client.renderer.UnicycleEntityRenderer;
 import net.shirojr.pulchra_occultorum.init.*;
 import net.shirojr.pulchra_occultorum.network.CustomS2CNetworking;
+import net.shirojr.pulchra_occultorum.screen.SpotlightLampScreen;
 import net.shirojr.pulchra_occultorum.sound.SoundManager;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
@@ -35,6 +37,8 @@ public class PulchraOccultorumClient implements ClientModInitializer {
         Events.registerClient();
 
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.SAFETY_NET, RenderLayer.getCutout());
+
+        HandledScreens.register(ScreenHandlers.SPOTLIGHT_LAMP_SCREEN_HANDLER, SpotlightLampScreen::new);
 
         EntityRendererRegistry.register(Entities.UNICYCLE, UnicycleEntityRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(UNICYCLE_ENTITY_LAYER, UnicycleEntityModel::getTexturedModelData);

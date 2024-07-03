@@ -1,19 +1,31 @@
 package net.shirojr.pulchra_occultorum.screen.handler;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.world.World;
+import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.ScreenHandlers;
-import org.jetbrains.annotations.Nullable;
 
 public class SpotlightLampScreenHandler extends ScreenHandler {
-    private final Inventory playerInventory;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final PlayerInventory playerInventory;
+    private SpotlightLampBlockEntity blockEntity;
 
-    public SpotlightLampScreenHandler(int syncId, Inventory playerInventory) {
+    public SpotlightLampScreenHandler(int syncId, PlayerInventory playerInventory, SpotlightLampBlockEntity.Data data) {
         super(ScreenHandlers.SPOTLIGHT_LAMP_SCREEN_HANDLER, syncId);
         this.playerInventory = playerInventory;
+        if (playerInventory.player.getWorld() instanceof World world) {
+            if (world.getBlockEntity(data.pos()) instanceof SpotlightLampBlockEntity spotlightLampBlockEntity) {
+                this.blockEntity = spotlightLampBlockEntity;
+            }
+        }
+    }
+
+
+    public SpotlightLampBlockEntity getBlockEntity() {
+        return blockEntity;
     }
 
     @Override
@@ -23,6 +35,6 @@ public class SpotlightLampScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return false;
+        return true;
     }
 }

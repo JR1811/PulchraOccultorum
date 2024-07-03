@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "w": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "pattern": [
+    "w w",
+    " w ",
+    "w w"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pulchra-occultorum:safety_net"
+  }
+}

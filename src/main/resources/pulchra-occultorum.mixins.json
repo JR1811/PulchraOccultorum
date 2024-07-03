@@ -3,7 +3,6 @@
   "package": "net.shirojr.pulchra_occultorum.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "AbstractBlockStateMixin",
     "AbstractHorseEntityMixin",
     "AmbientStandGoalMixin",
     "MobEntityMixin"

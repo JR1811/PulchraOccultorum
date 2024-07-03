@@ -7,6 +7,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
@@ -34,15 +35,15 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         // rotator.pitch = -0.4f;
-        rotator.pitch = (float) Math.sin(rotationInDeg(blockEntity.getTick()) * 8);
+        rotator.pitch = blockEntity.getRotation().getX();
         // horizontal.yaw = 0.2f;
-        horizontal.yaw = rotationInDeg(blockEntity.getTick());
+        horizontal.yaw = blockEntity.getRotation().getY();
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
-        if (!blockEntity.isLit()) {
+        if (blockEntity.getStrength() < 1) {
             matrices.pop();
             return;
         }
@@ -53,7 +54,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         RenderSystem.disableBlend();
         matrices.translate(0, 0.95, 0);
 
-        float height = 2f;
+        float height = blockEntity.getStrength() * 2;
         float side = 1.5f * height;
         Quaternionf rotation = new Quaternionf();
         Vector3f a = new Vector3f(0, 0, 0);
@@ -115,8 +116,8 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
     private boolean isLit(T blockEntity) {
         BlockState state = blockEntity.getCachedState();
-        if (!state.contains(SpotlightLampBlock.LIT)) return false;
-        return state.get(SpotlightLampBlock.LIT);
+        if (!state.contains(Properties.POWER)) return false;
+        return state.get(Properties.POWER) > 0;
     }
 
     public static TexturedModelData getTexturedModelData() {

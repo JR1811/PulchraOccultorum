@@ -1,11 +1,13 @@
-// 1.21	2024-06-25T04:00:48.7554912	Pulchra Occultorum/Model Definitions
+// 1.21	2024-07-03T13:42:23.9814433	Pulchra Occultorum/Model Definitions
 4db5c38c60b0d596e8df370b291524c9eedcc88b assets\pulchra-occultorum\models\item\tarot_monolith.json
 8b8eb8d822fcd82ce100cbb2134a68436e692f04 assets\pulchra-occultorum\blockstates\flag_pole_base.json
 2a3fff3fa4efad2b99bd811540f2514f1c47cb60 assets\pulchra-occultorum\models\item\safety_net.json
 cbcf06deaddf9035a9ed773f297a6518181b787f assets\pulchra-occultorum\models\item\flag_pole.json
+881d40efbbdb9e89a36e342d9b811f3a4f5ae6ae assets\pulchra-occultorum\models\item\whip_05.json
 2ae053a765fdf4898f865b2a2190f2390c767474 assets\pulchra-occultorum\models\item\spotlight_lamp.json
 93ab1dfefbb48992916c267fcb89571a97f859a9 assets\pulchra-occultorum\models\item\whip_03.json
 026c4c607a3086869e8d8434cdcda4915dcf2c32 assets\pulchra-occultorum\models\item\flag_pole_base.json
+7a8ed423e4ac3f8895b6bc54956b68a6fb0f70e8 assets\pulchra-occultorum\blockstates\spotlight_lamp.json
 b9c3ab948bddd356ecb065f19822c407d92a9f40 assets\pulchra-occultorum\blockstates\flag_pole.json
 594badda07e0fafcfe735a42534cedf46716bd32 assets\pulchra-occultorum\models\item\tarot_warlord.json
 3ce758d350d0f6425aabbf61e44d76960365a54f assets\pulchra-occultorum\blockstates\monolith.json

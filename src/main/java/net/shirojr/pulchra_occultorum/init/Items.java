@@ -30,7 +30,7 @@ public class Items {
             List.of(ItemGroups.ITEMS));
 
     public static final UnicycleItem UNICYCLE = register("unicycle",
-            new UnicycleItem(new Item.Settings()),
+            new UnicycleItem(new Item.Settings().maxCount(2)),
             List.of(ItemGroups.ITEMS));
 
 
