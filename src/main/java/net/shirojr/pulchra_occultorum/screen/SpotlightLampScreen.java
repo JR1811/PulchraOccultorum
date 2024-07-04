@@ -9,9 +9,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
+import net.shirojr.pulchra_occultorum.screen.widget.ScreenElement;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import org.jetbrains.annotations.Nullable;
@@ -103,18 +103,19 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         for (ScreenElement entry : this.screenElementList) {
             if (entry.isPressed() || entry.isInDefaultPosition()) continue;
             if (entry.getName().equals("big_handle")) {
-                float normalizedX = (entry.getShape().getSquareStart().getX() - entry.getMin().getX()) /
-                        (entry.getMax().getX() - entry.getMin().getX());
-                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMin().getY()) /
-                        (entry.getMax().getY() - entry.getMin().getY());
+                float normalizedX = (entry.getShape().getSquareStart().getX() - entry.getMinBoundary().getX()) /
+                        (entry.getMaxBoundary().getX() - entry.getMinBoundary().getX());
+                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
+                        (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
 
                 ClientPlayNetworking.send(new PositionPacket(entry.getName(), handler.getBlockEntity().getPos(),
                         Optional.of(normalizedX), Optional.of(normalizedY)));
             }
             if (entry.getName().equals("small_handle")) {
-                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMin().getY()) /
-                        (entry.getMax().getY() - entry.getMin().getY());
+                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
+                        (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
                 sendPacket(entry, null, normalizedY);
+                LoggerUtil.devLogger(String.valueOf(normalizedY));
             }
         }
     }
@@ -161,85 +162,11 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
             int draggedVerticalDistance = (int) mouseY - this.prevY;
             entry.getShape().moveSquareWithBoundaries(
                     draggedHorizontalDistance, draggedVerticalDistance,
-                    entry.getMin(), entry.getMax()
+                    entry.getMinBoundary(), entry.getMaxBoundary()
             );
 
             this.prevX = (int) mouseX;
             this.prevY = (int) mouseY;
-
-            /*LoggerUtil.devLogger("%s %s | %s %s".formatted(entry.shape.getSquareStart().getX(), entry.shape.getSquareStart().getY(),
-                    entry.defaultShape.getSquareStart().getX(), entry.defaultShape.getSquareStart().getY()));*/
-        }
-    }
-
-
-    static class ScreenElement {
-        private final String name;
-        private ShapeUtil.Square shape;
-        private final ShapeUtil.Square defaultShape;
-        private boolean isPressed;
-        private final ShapeUtil.Position min;
-        private final ShapeUtil.Position max;
-
-        public ScreenElement(String name, boolean isPressed, ShapeUtil.Square shape, ShapeUtil.Square defaultShape, ShapeUtil.Position min, ShapeUtil.Position max) {
-            this.name = name;
-            this.shape = shape;
-            this.defaultShape = defaultShape;
-            this.isPressed = isPressed;
-            this.min = min;
-            this.max = max;
-        }
-
-        @Nullable
-        public static ScreenElement fromList(String name, List<ScreenElement> elements) {
-            for (ScreenElement element : elements) {
-                if (element.getName().equals(name)) return element;
-            }
-            return null;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public ShapeUtil.Square getShape() {
-            return shape;
-        }
-
-        public static ShapeUtil.Square getShapeWithOffset(ShapeUtil.Square shape, int offsetX, int offsetY) {
-            return new ShapeUtil.Square(shape.getSquareStart().add(offsetX, offsetY), shape.getSquareEnd().add(offsetX, offsetY));
-        }
-
-        public static ShapeUtil.Position getPositionWithOffset(ShapeUtil.Position position, int offsetX, int offsetY) {
-            return position.add(offsetX, offsetY);
-        }
-
-        public void setShape(ShapeUtil.Square shape) {
-            this.shape = shape;
-        }
-
-        public ShapeUtil.Square getDefaultShape() {
-            return defaultShape;
-        }
-
-        public boolean isPressed() {
-            return isPressed;
-        }
-
-        public void setPressed(boolean pressed) {
-            isPressed = pressed;
-        }
-
-        public ShapeUtil.Position getMin() {
-            return min;
-        }
-
-        public ShapeUtil.Position getMax() {
-            return max;
-        }
-
-        public boolean isInDefaultPosition() {
-            return this.shape.equals(defaultShape);
         }
     }
 }

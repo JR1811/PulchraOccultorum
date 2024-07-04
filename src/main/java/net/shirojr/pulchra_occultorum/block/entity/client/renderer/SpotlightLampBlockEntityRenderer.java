@@ -9,10 +9,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.RenderLayers;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -35,11 +35,11 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         // rotator.pitch = -0.4f;
-        rotator.pitch = blockEntity.getRotation().getY();
+        rotator.pitch = MathHelper.sin(blockEntity.getRotation().getY());
         // horizontal.yaw = 0.2f;
         horizontal.yaw = blockEntity.getRotation().getX();
 
-        LoggerUtil.devLogger("yaw: %s | pitch %s".formatted(blockEntity.getRotation().getX(), blockEntity.getRotation().getY()));
+        // LoggerUtil.devLogger("yaw: %s | pitch %s".formatted(blockEntity.getRotation().getX(), blockEntity.getRotation().getY()));
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
