@@ -5,7 +5,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.world.ServerWorld;
 import net.shirojr.pulchra_occultorum.init.CustomRegistries;
-import net.shirojr.pulchra_occultorum.init.OccultEvents;
 
 import java.util.List;
 

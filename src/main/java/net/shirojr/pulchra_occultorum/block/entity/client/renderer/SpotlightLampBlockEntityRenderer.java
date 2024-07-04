@@ -11,8 +11,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.block.SpotlightLampBlock;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.RenderLayers;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -35,14 +35,17 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         // rotator.pitch = -0.4f;
-        rotator.pitch = blockEntity.getRotation().getX();
+        rotator.pitch = blockEntity.getRotation().getY();
         // horizontal.yaw = 0.2f;
-        horizontal.yaw = blockEntity.getRotation().getY();
+        horizontal.yaw = blockEntity.getRotation().getX();
+
+        LoggerUtil.devLogger("yaw: %s | pitch %s".formatted(blockEntity.getRotation().getX(), blockEntity.getRotation().getY()));
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
+
         if (blockEntity.getStrength() < 1) {
             matrices.pop();
             return;
@@ -59,9 +62,9 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         Quaternionf rotation = new Quaternionf();
         Vector3f a = new Vector3f(0, 0, 0);
         Vector3f b = new Vector3f(side / 2, height, side / 2);
-        Vector3f c = new Vector3f(- side / 2, height, side / 2);
-        Vector3f d = new Vector3f(- side / 2, height, -side / 2);
-        Vector3f e = new Vector3f(side / 2, height, - side / 2);
+        Vector3f c = new Vector3f(-side / 2, height, side / 2);
+        Vector3f d = new Vector3f(-side / 2, height, -side / 2);
+        Vector3f e = new Vector3f(side / 2, height, -side / 2);
 
         float additionalPitchForBeam = (float) Math.toRadians(270);
         Quaternionf pitchRotation = new Quaternionf().rotateAxis(rotator.pitch + additionalPitchForBeam, 1, 0, 0);

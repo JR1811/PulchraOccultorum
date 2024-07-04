@@ -14,7 +14,8 @@ import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 
 import java.util.Optional;
 
-public record PositionPacket(String name, BlockPos blockPos, Optional<Float> normalizedX, Optional<Float> normalizedY) implements CustomPayload {
+public record PositionPacket(String name, BlockPos blockPos, Optional<Float> normalizedX,
+                             Optional<Float> normalizedY) implements CustomPayload {
 
     public static final CustomPayload.Id<PositionPacket> IDENTIFIER =
             new CustomPayload.Id<>(PulchraOccultorum.identifierOf("position"));
@@ -37,13 +38,13 @@ public record PositionPacket(String name, BlockPos blockPos, Optional<Float> nor
         if (!(context.player().getWorld() instanceof ServerWorld world)) return;
         if (!(world.getBlockEntity(this.blockPos()) instanceof SpotlightLampBlockEntity blockEntity)) return;
         if (this.name().equals("big_handle")) {
-            float lerpedX = MathHelper.lerp(this.normalizedX().orElse(0f), -  SpotlightLampBlockEntity.MAX_YAW_RANGE,  SpotlightLampBlockEntity.MAX_YAW_RANGE);
-            float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), - SpotlightLampBlockEntity.MAX_PITCH_RANGE, SpotlightLampBlockEntity.MAX_PITCH_RANGE);
-            blockEntity.setTargetRotation(new ShapeUtil.Position(lerpedX, lerpedY));
+            float lerpedX = MathHelper.lerp(this.normalizedX().orElse(0f), -SpotlightLampBlockEntity.MAX_YAW_RANGE, SpotlightLampBlockEntity.MAX_YAW_RANGE);
+            float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), -SpotlightLampBlockEntity.MAX_PITCH_RANGE, SpotlightLampBlockEntity.MAX_PITCH_RANGE);
+            blockEntity.syncedTargetRotationModification(() -> new ShapeUtil.Position(lerpedX, lerpedY));
         }
         if (this.name.equals("small_handle")) {
             float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), 0f, SpotlightLampBlockEntity.MAX_TURNING_SPEED);
-            blockEntity.setSpeed(lerpedY);
+            blockEntity.syncedSpeedModification(() -> lerpedY);
         }
     }
 }

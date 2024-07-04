@@ -8,10 +8,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +31,8 @@ import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data> {
     public static final float MAX_TURNING_SPEED = 20;
@@ -136,16 +142,22 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return targetRotation;
     }
 
-    public void setTargetRotation(ShapeUtil.Position targetRotation) {
-        this.targetRotation = targetRotation;
+    public void syncedTargetRotationModification(Supplier<ShapeUtil.Position> targetRotationConsumer) {
+        this.targetRotation = targetRotationConsumer.get();
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+        }
     }
 
     public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public void syncedSpeedModification(Supplier<Float> speedConsumer) {
+        this.speed = speedConsumer.get();
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+        }
     }
 
     @Override
@@ -153,6 +165,12 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         super.readNbt(nbt, registryLookup);
         // this.lampRotation = Rotation.fromNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         this.color = nbt.getInt(NbtKeys.BLOCK_COLOR);
+        this.speed = nbt.getFloat("speed");
+
+        NbtCompound rotationNbt = nbt.getCompound("rotation");
+        NbtCompound targetRotationNbt = nbt.getCompound("target_rotation");
+        this.rotation = ShapeUtil.Position.fromNbt(rotationNbt);
+        this.targetRotation = ShapeUtil.Position.fromNbt(targetRotationNbt);
     }
 
     @Override
@@ -160,6 +178,27 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         super.writeNbt(nbt, registryLookup);
         // this.lampRotation.toNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         nbt.putInt(NbtKeys.BLOCK_COLOR, this.color);
+        nbt.putFloat("speed", this.getSpeed());
+
+        NbtCompound rotationNbt = new NbtCompound();
+        NbtCompound targetRotationNbt = new NbtCompound();
+        this.rotation.toNbt(rotationNbt);
+        this.targetRotation.toNbt(targetRotationNbt);
+        nbt.put("rotation", rotationNbt);
+        nbt.put("target_rotation", targetRotationNbt);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        NbtCompound nbt = new NbtCompound();
+        this.writeNbt(nbt, registryLookup);
+        return nbt;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override

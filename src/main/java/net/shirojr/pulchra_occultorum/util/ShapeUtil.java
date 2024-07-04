@@ -1,5 +1,6 @@
 package net.shirojr.pulchra_occultorum.util;
 
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -50,6 +51,18 @@ public class ShapeUtil {
 
         public boolean equals(Position otherPosition) {
             return this.getX() == otherPosition.getX() && this.getY() == otherPosition.getY();
+        }
+
+        public static Position fromNbt(NbtCompound nbt) {
+            NbtCompound compound = nbt.getCompound("position");
+            return new Position(compound.getFloat("x"), compound.getFloat("y"));
+        }
+
+        public void toNbt(NbtCompound nbt) {
+            NbtCompound compound = new NbtCompound();
+            compound.putFloat("x", this.getX());
+            compound.putFloat("y", this.getY());
+            nbt.put("position", compound);
         }
 
         public static PacketCodec<RegistryByteBuf, Position> CODEC_POSITION = PacketCodec.tuple(
@@ -161,6 +174,23 @@ public class ShapeUtil {
 
         public boolean equals(Square otherSquare) {
             return this.getSquareStart().equals(otherSquare.getSquareStart()) && this.getSquareEnd().equals(otherSquare.getSquareEnd());
+        }
+
+        public static Square fromNbt(NbtCompound nbt) {
+            NbtCompound startNbt = nbt.getCompound("start");
+            NbtCompound endNbt = nbt.getCompound("end");
+            Position start = Position.fromNbt(startNbt);
+            Position end = Position.fromNbt(endNbt);
+            return new Square(start, end);
+        }
+
+        public void toNbt(NbtCompound nbt) {
+            NbtCompound startNbt = new NbtCompound();
+            NbtCompound endNbt = new NbtCompound();
+            this.getSquareStart().toNbt(startNbt);
+            this.getSquareEnd().toNbt(endNbt);
+            nbt.put("start", startNbt);
+            nbt.put("end", endNbt);
         }
 
         public static PacketCodec<RegistryByteBuf, Square> CODEC_SQUARE = PacketCodec.tuple(
