@@ -12,7 +12,6 @@ import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
 import net.shirojr.pulchra_occultorum.screen.widget.ScreenElement;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,20 +101,26 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
         for (ScreenElement entry : this.screenElementList) {
             if (entry.isPressed() || entry.isInDefaultPosition()) continue;
+            if (entry.canBeDoubleClicked()) {
+                entry.setTicksAfterClicked(entry.getTicksAfterClicked() + 1);
+            }
+            if (entry.getTicksAfterClicked() > 5) {
+                entry.setTicksAfterClicked(0);
+                entry.setCanBeDoubleClicked(false);
+            }
+
             if (entry.getName().equals("big_handle")) {
                 float normalizedX = (entry.getShape().getSquareStart().getX() - entry.getMinBoundary().getX()) /
                         (entry.getMaxBoundary().getX() - entry.getMinBoundary().getX());
                 float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
                         (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
-
-                ClientPlayNetworking.send(new PositionPacket(entry.getName(), handler.getBlockEntity().getPos(),
-                        Optional.of(normalizedX), Optional.of(normalizedY)));
+                sendPacket(entry, normalizedX, normalizedY);
             }
             if (entry.getName().equals("small_handle")) {
                 float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
                         (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
                 sendPacket(entry, null, normalizedY);
-                LoggerUtil.devLogger(String.valueOf(normalizedY));
+                // LoggerUtil.devLogger("entryStartY: %s | boundStartY: %s".formatted(entry.getShape().getSquareStart().getY(), entry.getMinBoundary().getY()));
             }
         }
     }
@@ -123,6 +128,12 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     private void sendPacket(ScreenElement entry, @Nullable Float x, @Nullable Float y) {
         ClientPlayNetworking.send(new PositionPacket(entry.getName(), handler.getBlockEntity().getPos(),
                 Optional.ofNullable(x), Optional.ofNullable(y)));
+    }
+
+    private void resetPosition(ScreenElement element) {
+        sendPacket(element, 0f, 0f);
+        element.setToDefaultPosition();
+        element.setCanBeDoubleClicked(false);
     }
 
     @Override
@@ -141,22 +152,31 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        for (var entry : screenElementList) {
+        for (ScreenElement entry : screenElementList) {
             if (entry.isPressed()) {
                 this.prevX = -1;
                 this.prevY = -1;
                 MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_LEVER_CLICK, 0.6f));
             }
             entry.setPressed(false);
+            if (!entry.canBeDoubleClicked()) {
+                entry.setCanBeDoubleClicked(true);
+            }
+            else {
+                resetPosition(entry);
+            }
         }
+
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         super.mouseMoved(mouseX, mouseY);
+
         for (ScreenElement entry : screenElementList) {
             if (!entry.isPressed()) continue;
+            entry.setCanBeDoubleClicked(false);
 
             int draggedHorizontalDistance = (int) mouseX - this.prevX;
             int draggedVerticalDistance = (int) mouseY - this.prevY;

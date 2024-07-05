@@ -9,7 +9,8 @@ public class ScreenElement {
     private final String name;
     private ShapeUtil.Square shape;
     private final ShapeUtil.Square defaultShape;
-    private boolean isPressed;
+    private boolean isPressed, canBeDoubleClicked;
+    private int ticksAfterClicked = 0;
     private final ShapeUtil.Position minBoundary;
     private final ShapeUtil.Position maxBoundary;
 
@@ -60,6 +61,22 @@ public class ScreenElement {
 
     public void setPressed(boolean pressed) {
         isPressed = pressed;
+    }
+
+    public boolean canBeDoubleClicked() {
+        return this.canBeDoubleClicked;
+    }
+
+    public void setCanBeDoubleClicked(boolean canBeDoubleClicked) {
+        this.canBeDoubleClicked = canBeDoubleClicked;
+    }
+
+    public int getTicksAfterClicked() {
+        return this.ticksAfterClicked;
+    }
+
+    public void setTicksAfterClicked(int ticksAfterClicked) {
+        this.ticksAfterClicked = ticksAfterClicked;
     }
 
     public ShapeUtil.Position getMinBoundary() {

@@ -114,7 +114,6 @@ public class SpotlightLampBlock extends BlockWithEntity {
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return Block.createCuboidShape(6, 0, 6, 10, 12, 10);
-
     }
 
     public static int luminanceFromBlockState(BlockState state) {

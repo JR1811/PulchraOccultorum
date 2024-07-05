@@ -58,6 +58,10 @@ public class ShapeUtil {
             return new Position(compound.getFloat("x"), compound.getFloat("y"));
         }
 
+        public String toString() {
+            return "x: %s | y: %s".formatted(this.getX(), this.getY());
+        }
+
         public void toNbt(NbtCompound nbt) {
             NbtCompound compound = new NbtCompound();
             compound.putFloat("x", this.getX());

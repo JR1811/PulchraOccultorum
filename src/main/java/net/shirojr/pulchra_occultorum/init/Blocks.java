@@ -41,12 +41,12 @@ public class Blocks {
                     List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
     public static final SafetyNetBlock SAFETY_NET = register("safety_net",
-            new SafetyNetBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.WHITE_WOOL)),
+            new SafetyNetBlock(AbstractBlock.Settings.copy(net.minecraft.block.Blocks.WHITE_WOOL).nonOpaque()),
             new BlockItemData(new Item.Settings(),
                     List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 
     public static final MonolithBlock MONOLITH = register("monolith",
-            new MonolithBlock(AbstractBlock.Settings.create()),
+            new MonolithBlock(AbstractBlock.Settings.create().nonOpaque()),
             new BlockItemData(new Item.Settings(),
                     List.of(ItemGroups.BLOCKS, net.minecraft.item.ItemGroups.FUNCTIONAL)));
 

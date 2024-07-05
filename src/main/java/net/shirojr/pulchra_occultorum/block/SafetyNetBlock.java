@@ -1,7 +1,7 @@
 package net.shirojr.pulchra_occultorum.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +11,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class SafetyNetBlock extends Block {
+public class SafetyNetBlock extends TransparentBlock {
     public SafetyNetBlock(Settings settings) {
         super(settings);
     }
