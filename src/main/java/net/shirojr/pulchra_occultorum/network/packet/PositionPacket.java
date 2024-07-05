@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 
 import java.util.Optional;

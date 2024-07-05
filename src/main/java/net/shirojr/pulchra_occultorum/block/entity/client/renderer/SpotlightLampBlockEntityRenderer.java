@@ -35,10 +35,11 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        rotator.pitch = blockEntity.getRotation().getY();
+        rotator.pitch = blockEntity.getRotation().getY() * (float) (Math.PI / 180.0);
         horizontal.yaw = blockEntity.getRotation().getX() * (float) (Math.PI / 180.0);
 
-        // LoggerUtil.devLogger("yaw: %s | pitch %s".formatted(blockEntity.getRotation().getX(), blockEntity.getRotation().getY()));
+        // LoggerUtil.devLogger(blockEntity.getRotation().toString() + " " + blockEntity.getTargetRotation().toString());
+        LoggerUtil.devLogger(rotator.pitch + " " + horizontal.yaw);
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);

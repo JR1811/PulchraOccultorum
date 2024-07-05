@@ -65,7 +65,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     private void rotationHandling() {
         ShapeUtil.Position rotation = this.getRotation();
         ShapeUtil.Position targetRotation = this.getTargetRotation();
-        LoggerUtil.devLogger("rot: %s | targetRot: %s | speed: %s".formatted(rotation.toString(), targetRotation.toString(), getSpeed()));
+        // LoggerUtil.devLogger("rot: %s | targetRot: %s | speed: %s".formatted(rotation.toString(), targetRotation.toString(), getSpeed()));
         if (rotation.equals(targetRotation)) return;
         if (this.getSpeed() <= 0) return;
 
