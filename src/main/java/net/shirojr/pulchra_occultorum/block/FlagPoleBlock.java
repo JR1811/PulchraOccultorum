@@ -213,7 +213,6 @@ public class FlagPoleBlock extends BlockWithEntity {
         for (int y = bottom.getY(); y <= top.getY(); y++) {
             list.add(new BlockPos(bottom.getX(), y, bottom.getZ()));
         }
-        // BlockPos.iterate(bottom, top).forEach(list::add);
         return list;
     }
 

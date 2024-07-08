@@ -92,6 +92,6 @@ public class ScreenElement {
     }
 
     public void setToDefaultPosition() {
-        this.shape.moveSquareToTarget(defaultShape.getSquareStart());
+        this.shape.moveSquareToTarget(defaultShape.getSquareStart());   //FIXME: moves start along
     }
 }

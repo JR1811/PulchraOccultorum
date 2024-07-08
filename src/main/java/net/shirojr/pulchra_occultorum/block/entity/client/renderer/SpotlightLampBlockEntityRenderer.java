@@ -39,7 +39,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         horizontal.yaw = blockEntity.getRotation().getX() * (float) (Math.PI / 180.0);
 
         // LoggerUtil.devLogger(blockEntity.getRotation().toString() + " " + blockEntity.getTargetRotation().toString());
-        LoggerUtil.devLogger(rotator.pitch + " " + horizontal.yaw);
+        // LoggerUtil.devLogger(rotator.pitch + " " + horizontal.yaw);
 
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);

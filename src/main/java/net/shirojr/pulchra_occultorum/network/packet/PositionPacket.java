@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 
 import java.util.Optional;
@@ -41,7 +42,7 @@ public record PositionPacket(String name, BlockPos blockPos, Optional<Float> nor
             float lerpedX = MathHelper.lerp(this.normalizedX().orElse(0f), -SpotlightLampBlockEntity.MAX_YAW_RANGE, SpotlightLampBlockEntity.MAX_YAW_RANGE);
             float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), -SpotlightLampBlockEntity.MAX_PITCH_RANGE, SpotlightLampBlockEntity.MAX_PITCH_RANGE);
             blockEntity.syncedTargetRotationModification(() -> new ShapeUtil.Position(lerpedX, lerpedY));
-            // LoggerUtil.devLogger("lerped X: " + lerpedX + "lerped Y: " + lerpedY);
+            LoggerUtil.devLogger("sent packet: %s | %s".formatted(lerpedX, lerpedY));
         }
         if (this.name.equals("small_handle")) {
             float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), 0f, SpotlightLampBlockEntity.MAX_TURNING_SPEED);

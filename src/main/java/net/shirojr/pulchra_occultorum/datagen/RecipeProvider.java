@@ -24,7 +24,6 @@ public class RecipeProvider extends FabricRecipeProvider {
                 .pattern(" w ")
                 .pattern("w w")
                 .input('w', ItemTags.WOOL)
-
                 .criterion(
                         FabricRecipeProvider.hasItem(Blocks.SAFETY_NET.asItem()),
                         FabricRecipeProvider.conditionsFromTag(ItemTags.WOOL)

@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
@@ -26,7 +27,6 @@ import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Tags;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 
 public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data> {
     public static final float MAX_TURNING_SPEED = 0.5f;
-    public static final float MAX_PITCH_RANGE = 30, MAX_YAW_RANGE = 180;
+    public static final float MAX_PITCH_RANGE = 60, MAX_YAW_RANGE = 180;
 
     private ShapeUtil.Position rotation, targetRotation;
     private int color = 0x000000;
@@ -57,6 +57,11 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
 
     public static void tick(World world, BlockPos pos, BlockState state, SpotlightLampBlockEntity blockEntity) {
         blockEntity.incrementTick(false);
+
+        if (world.isClient()) {
+            // LoggerUtil.devLogger(blockEntity.getTargetRotation().toString());
+        }
+
         int power = getPowerFromBase(world, pos, blockEntity);
         blockEntity.setStrength(power);
         if (!world.isClient()) blockEntity.rotationHandling();
@@ -65,7 +70,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     private void rotationHandling() {
         ShapeUtil.Position rotation = this.getRotation();
         ShapeUtil.Position targetRotation = this.getTargetRotation();
-        // LoggerUtil.devLogger("rot: %s | targetRot: %s | speed: %s".formatted(rotation.toString(), targetRotation.toString(), getSpeed()));
+
         if (rotation.equals(targetRotation)) return;
         if (this.getSpeed() <= 0) return;
 
@@ -83,14 +88,13 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
             newY = Math.max(rotation.getY() - this.getSpeed(), targetRotation.getY());
         }
         this.setRotation(new ShapeUtil.Position(newX, newY));
-/*        LoggerUtil.devLogger("cX: %s cY: %s | tX: %s tY: %s | speed: %s".formatted(
-                this.getRotation().getX(), this.getRotation().getY(),
-                this.getTargetRotation().getX(), this.getTargetRotation().getY(),
-                this.getSpeed()));*/
     }
 
     //region getter & setter
     private static int getPowerFromBase(World world, BlockPos originalPos, SpotlightLampBlockEntity blockEntity) {
+        if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(originalPos.getX()),
+                ChunkSectionPos.getSectionCoord(originalPos.getZ()))) return 0;
+
         BlockPos.Mutable posWalker = originalPos.mutableCopy();
 
         do posWalker.move(Direction.DOWN);
@@ -100,7 +104,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         int receivedPower = baseBlockState.isSolidBlock(world, posWalker) ? world.getReceivedRedstonePower(posWalker) : 0;
         int blockStatePower = baseBlockState.contains(Properties.POWER) ? world.getBlockState(posWalker).get(Properties.POWER) : 0;
         int finalPower = Math.max(receivedPower, blockStatePower);
-        if (world.getBlockState(originalPos).get(Properties.POWER) != finalPower && !world.isClient()) {
+        if (world.getBlockState(originalPos).contains(Properties.POWER) &&
+                world.getBlockState(originalPos).get(Properties.POWER) != finalPower &&
+                !world.isClient()) {
             // FIXME: also send update when the block gets changed?
             world.updateNeighbor(originalPos, Blocks.SPOTLIGHT_LAMP, posWalker);
         }
@@ -139,6 +145,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         this.targetRotation = targetRotationConsumer.get();
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
         }
     }
 
@@ -150,6 +157,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         this.speed = speedConsumer.get();
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
         }
     }
     //endregion
@@ -157,7 +165,6 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        // this.lampRotation = Rotation.fromNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         this.color = nbt.getInt(NbtKeys.BLOCK_COLOR);
         this.speed = nbt.getFloat("speed");
 
@@ -170,7 +177,6 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        // this.lampRotation.toNbt(nbt.getCompound(NbtKeys.SPOTLIGHT_ROTATION));
         nbt.putInt(NbtKeys.BLOCK_COLOR, this.color);
         nbt.putFloat("speed", this.getSpeed());
 

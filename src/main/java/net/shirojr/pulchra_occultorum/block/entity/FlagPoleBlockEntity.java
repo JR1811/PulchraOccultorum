@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.block.FlagPoleBlock;
@@ -45,9 +46,11 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         if (world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock) return;
         blockEntity.incrementTick(false);
         if (blockEntity.getFlagInventory().isEmpty()) return;
+
         blockEntity.modifyHoistedState(world, pos);
 
         if (world instanceof ServerWorld serverWorld) {
+
             if (blockEntity.getTick() % 10 == 0 && blockEntity.isHoistStateMoving()) {
                 if (blockEntity.getBaseBlockPos() != null && blockEntity.getTopBlockPos() != null) {
                     BlockPos soundPos = new BlockPos(
@@ -130,7 +133,10 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
 
     @SuppressWarnings("SameParameterValue")
     private void modifyHoistedState(World world, BlockPos pos) {
+        if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())))
+            return;
         BlockPos basePos = FlagPoleBlock.getBaseBlockPos(world, pos);
+        if (basePos == null) return;
         float redstonePower = world.getReceivedRedstonePower(basePos);
         float height = redstonePower / 15;
         this.setHoistedState(height);

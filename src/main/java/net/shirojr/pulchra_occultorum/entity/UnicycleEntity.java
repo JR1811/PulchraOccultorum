@@ -135,6 +135,7 @@ public class UnicycleEntity extends AbstractRideableEntity {
 
         if (!this.isLogicalSideForUpdatingMovement()) return;
         this.move(movementInput);
+
     }
 
     @Override

@@ -58,15 +58,15 @@ public class ShapeUtil {
             return new Position(compound.getFloat("x"), compound.getFloat("y"));
         }
 
-        public String toString() {
-            return "x: %s | y: %s".formatted(this.getX(), this.getY());
-        }
-
         public void toNbt(NbtCompound nbt) {
             NbtCompound compound = new NbtCompound();
             compound.putFloat("x", this.getX());
             compound.putFloat("y", this.getY());
             nbt.put("position", compound);
+        }
+
+        public String toString() {
+            return "x: %s | y: %s".formatted(this.getX(), this.getY());
         }
 
         public static PacketCodec<RegistryByteBuf, Position> CODEC_POSITION = PacketCodec.tuple(
@@ -115,7 +115,7 @@ public class ShapeUtil {
         }
 
         public void setSquareStart(Position squareStart) {
-            this.squareStart = squareStart;
+            this.squareStart = new Position(squareStart.getX(), squareStart.getY());
         }
 
         public Position getSquareEnd() {
@@ -123,7 +123,7 @@ public class ShapeUtil {
         }
 
         public void setSquareEnd(Position squareEnd) {
-            this.squareEnd = squareEnd;
+            this.squareEnd = new Position(squareEnd.getX(), squareEnd.getY());
         }
 
         public float getWidth() {

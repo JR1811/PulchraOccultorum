@@ -100,7 +100,6 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         this.tick++;
 
         for (ScreenElement entry : this.screenElementList) {
-            if (entry.isPressed() || entry.isInDefaultPosition()) continue;
             if (entry.canBeDoubleClicked()) {
                 entry.setTicksAfterClicked(entry.getTicksAfterClicked() + 1);
             }
@@ -108,6 +107,11 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 entry.setTicksAfterClicked(0);
                 entry.setCanBeDoubleClicked(false);
             }
+            if (entry.getName().equals("big_handle")) {
+                // LoggerUtil.devLogger(entry.getDefaultShape().getSquareStart().toString() + " | " + entry.getDefaultShape().getSquareEnd().toString());
+            }
+
+            if (entry.isPressed() || entry.isInDefaultPosition()) continue;
 
             if (entry.getName().equals("big_handle")) {
                 float normalizedX = (entry.getShape().getSquareStart().getX() - entry.getMinBoundary().getX()) /
@@ -120,7 +124,6 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
                         (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
                 sendPacket(entry, null, normalizedY);
-                // LoggerUtil.devLogger("entryStartY: %s | boundStartY: %s".formatted(entry.getShape().getSquareStart().getY(), entry.getMinBoundary().getY()));
             }
         }
     }
@@ -131,9 +134,9 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     }
 
     private void resetPosition(ScreenElement element) {
-        sendPacket(element, 0f, 0f);
         element.setToDefaultPosition();
         element.setCanBeDoubleClicked(false);
+        sendPacket(element, 0f, 0f);
     }
 
     @Override
@@ -156,13 +159,12 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
             if (entry.isPressed()) {
                 this.prevX = -1;
                 this.prevY = -1;
+                entry.setPressed(false);
                 MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_LEVER_CLICK, 0.6f));
             }
-            entry.setPressed(false);
             if (!entry.canBeDoubleClicked()) {
                 entry.setCanBeDoubleClicked(true);
-            }
-            else {
+            } else {
                 resetPosition(entry);
             }
         }
