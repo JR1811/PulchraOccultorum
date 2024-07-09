@@ -1,9 +1,11 @@
 package net.shirojr.pulchra_occultorum.network.packet;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
 import org.jetbrains.annotations.Nullable;
@@ -37,5 +39,16 @@ public record UnicycleMovementPacket(@Nullable UnicycleEntity.DirectionInput inp
         else buf.writeString(this.inputRight.getName());
         if (this.inputJump == null) buf.writeString("");
         else buf.writeString(this.inputJump.getName());
+    }
+
+    public void handlePacket(ServerPlayNetworking.Context context) {
+        ServerPlayerEntity player = context.player();
+        if (!(player.getVehicle() instanceof UnicycleEntity unicycleEntity)) return;
+        UnicycleEntity.DirectionInput[] input = new UnicycleEntity.DirectionInput[] {null, null, null};
+
+        if (this.inputLeft() != null) input[0] = this.inputLeft();
+        if (this.inputRight() != null) input[1] = this.inputRight();
+        if (this.inputJump() != null) input[2] = this.inputJump();
+        unicycleEntity.setDirectionInputs(input);
     }
 }

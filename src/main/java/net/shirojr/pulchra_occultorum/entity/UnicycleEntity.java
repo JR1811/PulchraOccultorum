@@ -2,7 +2,6 @@ package net.shirojr.pulchra_occultorum.entity;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +14,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +26,6 @@ import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class UnicycleEntity extends AbstractRideableEntity {
     public static final float JUMP_STRENGTH = 1.5f, INTERVAL_SPEED = 0.25f;
@@ -171,8 +168,6 @@ public class UnicycleEntity extends AbstractRideableEntity {
         if (goesForward) speed = 0.2f;
         if (goesBackward) speed = - 0.2f;
 
-
-        LoggerUtil.devLogger(String.valueOf(speed));
         if (speed == 0 && !jumped) return;
 
         this.velocityDirty = true;

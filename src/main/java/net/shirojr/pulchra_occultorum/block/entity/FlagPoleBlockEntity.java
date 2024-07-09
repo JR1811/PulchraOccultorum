@@ -33,7 +33,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     private static final int invSize = 1;
     private final SimpleInventory flagInventory = new SimpleInventory(invSize);
     private boolean hoisted = false;
-    private float hoistedState = 0.0f;
+    private float hoistedState = 0.0f, hoistedTargetState = 0.0f;
 
     public float flagAnimationProgress = 0;
 
@@ -98,12 +98,20 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public boolean isFullyHoisted() {
-        return getHoistedState() >= 1.0f;
+        return getHoistedState() == getHoistedTargetState();
     }
 
     public void setHoistedState(float hoistedState) {
         this.hoistedState = Math.clamp(hoistedState, 0, 1.0f);
         markDirty();
+    }
+
+    public float getHoistedTargetState() {
+        return this.hoistedTargetState;
+    }
+
+    public void setHoistedTargetState(float hoistedTargetState) {
+        this.hoistedTargetState = hoistedTargetState;
     }
 
     public int getFlagPoleCount() {

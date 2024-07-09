@@ -14,6 +14,7 @@ public class UnicycleItem extends Item {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
+        if (context.getWorld().isClient()) return ActionResult.SUCCESS;
         UnicycleEntity entity = new UnicycleEntity(Entities.UNICYCLE, context.getWorld());
         BlockPos pos = context.getBlockPos().offset(context.getSide()).up();
         pos = new BlockPos(pos.getX(), pos.getY(), pos.getZ());

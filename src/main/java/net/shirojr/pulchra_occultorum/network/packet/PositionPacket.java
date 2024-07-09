@@ -35,7 +35,7 @@ public record PositionPacket(String name, BlockPos blockPos, Optional<Float> nor
         return IDENTIFIER;
     }
 
-    public void handlePositionPacket(ServerPlayNetworking.Context context) {
+    public void handlePacket(ServerPlayNetworking.Context context) {
         if (!(context.player().getWorld() instanceof ServerWorld world)) return;
         if (!(world.getBlockEntity(this.blockPos()) instanceof SpotlightLampBlockEntity blockEntity)) return;
         if (this.name().equals("big_handle")) {

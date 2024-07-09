@@ -10,20 +10,7 @@ import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 public class CustomS2CNetworking {
     static {
-        ClientPlayNetworking.registerGlobalReceiver(UnicycleSoundPacket.IDENTIFIER, CustomS2CNetworking::handleUnicyclePacket);
-    }
-
-    private static void handleUnicyclePacket(UnicycleSoundPacket packet, ClientPlayNetworking.Context context) {
-        ClientWorld world = context.client().world;
-        int entityNetworkId = packet.entityNetworkId();
-        boolean shouldPlay = packet.shouldPlay();
-        if (world == null) return;
-        if (!(world.getEntityById(entityNetworkId) instanceof UnicycleEntity unicycleEntity)) return;
-
-        LoggerUtil.devLogger("world: %s | uuid: %s | isLoaded %s".formatted(world, entityNetworkId, shouldPlay));
-        SoundManager soundManager = SoundManager.getInstance();
-        if (shouldPlay) soundManager.play(unicycleEntity, new UnicycleRollSoundInstance(unicycleEntity, 60, 60));
-        else soundManager.stopAll(unicycleEntity);
+        ClientPlayNetworking.registerGlobalReceiver(UnicycleSoundPacket.IDENTIFIER, UnicycleSoundPacket::handlePacket);
     }
 
     public static void initialize() {

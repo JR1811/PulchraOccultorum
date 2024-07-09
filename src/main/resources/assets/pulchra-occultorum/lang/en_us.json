@@ -1,7 +1,4 @@
 {
-  "itemgroup.pulchra-occultorum.blocks": "Pulchra Occultorum Blocks",
-  "itemgroup.pulchra-occultorum.items": "Pulchra Occultorum Items",
-
   "block.pulchra-occultorum.flag_pole": "Flag Pole",
   "block.pulchra-occultorum.flag_pole.tooltip1": "Can be stacked on top of each other if supported properly",
   "block.pulchra-occultorum.flag_pole_base": "Flag Pole Base",
@@ -17,10 +14,14 @@
   "item.pulchra-occultorum.tarot_warlord": "The Warlord Tarot Card",
   "item.pulchra-occultorum.tarot_monolith": "Monolith Tarot Card",
 
+  "itemgroup.pulchra-occultorum.blocks": "Pulchra Occultorum Blocks",
+  "itemgroup.pulchra-occultorum.items": "Pulchra Occultorum Items",
+
   "sound.pulchra-occultorum.unicycle.land": "Unicycle landed",
   "sound.pulchra-occultorum.unicycle.clank": "Unicycle hurt",
   "sound.pulchra-occultorum.unicycle.roll": "Unicycle rolling",
 
+  "entity.pulchra-occultorum.unicycle": "Unicycle",
 
   "chat.pulchra-occultorum.flag_still_hoisted": "§6[Warning]§r Flag is still hoisted"
 }
