@@ -78,7 +78,7 @@ public class FlagPoleBlock extends BlockWithEntity {
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(POLE_STATE, BlockStateProperties.FlagPoleState.TOP);
+        return this.getDefaultState().with(POLE_STATE, BlockStateProperties.FlagPoleState.TOP).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing());
     }
 
     @Override
@@ -97,7 +97,12 @@ public class FlagPoleBlock extends BlockWithEntity {
             return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
         }
         if (!player.isCreative()) stack.decrement(1);
-        world.setBlockState(posForPlacement, this.getDefaultState().with(POLE_STATE, BlockStateProperties.FlagPoleState.TOP), NOTIFY_ALL_AND_REDRAW);
+
+        BlockState finalState = world.getBlockState(pos).with(POLE_STATE, BlockStateProperties.FlagPoleState.TOP);
+        if (world.getBlockState(posForPlacement).contains(Properties.HORIZONTAL_FACING)) {
+            finalState = finalState.with(Properties.HORIZONTAL_FACING, world.getBlockState(posForPlacement.down()).get(Properties.HORIZONTAL_FACING));
+        }
+        world.setBlockState(posForPlacement, finalState, NOTIFY_ALL_AND_REDRAW);
         world.playSound(null, posForPlacement, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 0.7f, 0.7f);
 
         return ItemActionResult.SUCCESS;
@@ -125,24 +130,24 @@ public class FlagPoleBlock extends BlockWithEntity {
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!isSupported(world, pos)) {
             boolean shouldDrop = false;
-            var flagPoleState = world.getBlockState(pos).getOrEmpty(BlockStateProperties.FLAG_POLE_STATE);
+            var flagPoleState = state.getOrEmpty(BlockStateProperties.FLAG_POLE_STATE);
             if (flagPoleState.isPresent() && flagPoleState.get().equals(BlockStateProperties.FlagPoleState.TOP)) {
                 shouldDrop = true;
             }
             world.breakBlock(pos, shouldDrop);
             return state;
         }
-        BlockStateProperties.FlagPoleState poleState = BlockStateProperties.FlagPoleState.MIDDLE;
-        if (!world.getBlockState(pos.up()).getBlock().equals(world.getBlockState(pos).getBlock()))
-            poleState = BlockStateProperties.FlagPoleState.TOP;
-        return this.getDefaultState().with(POLE_STATE, poleState);
+        var poleType = BlockStateProperties.FlagPoleState.MIDDLE;
+        if (!world.getBlockState(pos.up()).getBlock().equals(state.getBlock()))
+            poleType = BlockStateProperties.FlagPoleState.TOP;
+        return state.with(POLE_STATE, poleType);
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        BlockState stateAbove = world.getBlockState(pos.down());
-        if (stateAbove.getBlock() instanceof FlagPoleBlock) {
-            world.setBlockState(pos.down(), stateAbove.with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE), NOTIFY_ALL_AND_REDRAW);
+        BlockState stateBelow = world.getBlockState(pos.down());
+        if (stateBelow.getBlock() instanceof FlagPoleBlock) {
+            world.setBlockState(pos.down(), stateBelow.with(POLE_STATE, BlockStateProperties.FlagPoleState.MIDDLE), NOTIFY_ALL_AND_REDRAW);
         }
         super.onPlaced(world, pos, state, placer, itemStack);
     }

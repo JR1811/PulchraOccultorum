@@ -1,5 +1,6 @@
 package net.shirojr.pulchra_occultorum.block.entity.client.renderer;
 
+import net.minecraft.block.WallBannerBlock;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -14,6 +15,7 @@ import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.block.entity.FlagPoleBlockEntity;
@@ -48,6 +50,7 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
         float hoistedState = blockEntity.getHoistedState();
         float hoistedTargetState = blockEntity.getHoistedTargetState();
         float hoistedStepSize = 0.001f;
+        float offsetToPole = 0.2f;
         if (hoistedState < hoistedTargetState) {
             float newState = Math.min(hoistedState + hoistedStepSize, hoistedTargetState);
             blockEntity.setHoistedState(newState);
@@ -71,16 +74,26 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
         double maxHeight = blockEntity.getFlagPoleCount() - 1;
 
         matrices.push();
-
         double flagHeightOnPole = MathHelper.lerp(blockEntity.getHoistedState(), minHeight, maxHeight);
-        matrices.translate(0.6f, flagHeightOnPole + 0.2, 0.3125f);
-        matrices.translate(0.0f, 0.6, 0.0);
+        matrices.translate(0f, flagHeightOnPole + 0.2f, 0f);
 
-        verticalRotation(matrices, blockEntity, 90, blockEntity.isFullyHoisted());
-        horizontalRotation(matrices, blockEntity, 90, blockEntity.isFullyHoisted());
+        matrices.translate(0.5F, -0.16666667F, 0.5F);
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90));
+
+        verticalRotation(matrices, blockEntity, 0, true);
+        horizontalRotation(matrices, blockEntity, 0, true);
+        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+
+        float directionAngle = 0f;
+        switch (blockEntity.getDirection()) {
+            case EAST -> directionAngle = 90;
+            case SOUTH -> directionAngle = 180;
+            case WEST -> directionAngle = 270;
+        }
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(directionAngle));
 
         matrices.scale(scale, scale, scale);
-        matrices.translate(0.6,  0, 0.0);
+        matrices.translate(0.0F, offsetToPole, 0.1F);
 
         if (bannerPatternsComponent == null) {
             LoggerUtil.LOGGER.warn("Couldn't find Banner Pattern from ItemStack for Flag");

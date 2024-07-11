@@ -13,10 +13,12 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.block.FlagPoleBlock;
@@ -80,6 +82,10 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     public BlockPos getBaseBlockPos() {
         if (this.getWorld() == null) return null;
         return FlagPoleBlock.getBaseBlockPos(this.getWorld(), this.getPos());
+    }
+
+    public Direction getDirection() {
+        return this.getCachedState().get(Properties.HORIZONTAL_FACING);
     }
 
     public boolean isHoisted() {
@@ -213,5 +219,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         nbt.putFloat(NbtKeys.FLAG_HOISTED_STATE, getHoistedState());
         nbt.putFloat(NbtKeys.FLAG_HOISTED_TARGET_STATE, getHoistedTargetState());
         nbt.put(NbtKeys.FLAG_INVENTORY, this.flagInventory.toNbtList(registryLookup));
+        Direction testD = Direction.NORTH;
+        nbt.putString("test", testD.asString());
     }
 }
