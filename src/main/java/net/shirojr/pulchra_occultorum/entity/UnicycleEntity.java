@@ -171,6 +171,7 @@ public class UnicycleEntity extends AbstractRideableEntity {
         if (speed == 0 && !jumped) return;
 
         this.velocityDirty = true;
+        if (this.isInAir()) return;
         float zDirection = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
         float xDirection = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
         float jumpStrength = jumped ? this.getJumpVelocity(UnicycleEntity.JUMP_STRENGTH) : 0.0f;
