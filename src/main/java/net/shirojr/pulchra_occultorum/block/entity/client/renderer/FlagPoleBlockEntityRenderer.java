@@ -17,6 +17,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.block.entity.FlagPoleBlockEntity;
+import net.shirojr.pulchra_occultorum.network.packet.HoistedFlagStatePacket;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implements BlockEntityRenderer<T> {
@@ -31,7 +32,6 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
         ModelPartData modelPartData = modelData.getRoot();
         modelPartData.addChild("flag", ModelPartBuilder.create()
                         .uv(0, 0)
-                        // .cuboid(-10.0F, 0.0F, -2.0F, 20.0F, 40.0F, 1.0F),
                         .cuboid(0.0F, 0.0F, 0.0F, 20.0F, 40.0F, 1.0F),
                 ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 64);
@@ -44,6 +44,23 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
             if (blockEntity.flagAnimationProgress > 1) blockEntity.flagAnimationProgress = 0;
             blockEntity.flagAnimationProgress += tickDelta / 500;
         }
+
+        float hoistedState = blockEntity.getHoistedState();
+        float hoistedTargetState = blockEntity.getHoistedTargetState();
+        float hoistedStepSize = 0.001f;
+        if (hoistedState < hoistedTargetState) {
+            float newState = Math.min(hoistedState + hoistedStepSize, hoistedTargetState);
+            blockEntity.setHoistedState(newState);
+            HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
+            packet.send();
+        }
+        else if (hoistedState > hoistedTargetState) {
+            float newState = Math.max(hoistedState - hoistedStepSize, hoistedTargetState);
+            blockEntity.setHoistedState(newState);
+            HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
+            packet.send();
+        }
+
         ItemStack bannerStack = blockEntity.getFlagInventory().getStack(0).copy();
         BannerPatternsComponent bannerPatternsComponent = bannerStack.get(DataComponentTypes.BANNER_PATTERNS);
 
@@ -57,9 +74,6 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
 
         double flagHeightOnPole = MathHelper.lerp(blockEntity.getHoistedState(), minHeight, maxHeight);
         matrices.translate(0.6f, flagHeightOnPole + 0.2, 0.3125f);
-
-        // trans orig to pivot do scaling then move origin back then rot
-
         matrices.translate(0.0f, 0.6, 0.0);
 
         verticalRotation(matrices, blockEntity, 90, blockEntity.isFullyHoisted());
@@ -67,7 +81,6 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
 
         matrices.scale(scale, scale, scale);
         matrices.translate(0.6,  0, 0.0);
-
 
         if (bannerPatternsComponent == null) {
             LoggerUtil.LOGGER.warn("Couldn't find Banner Pattern from ItemStack for Flag");

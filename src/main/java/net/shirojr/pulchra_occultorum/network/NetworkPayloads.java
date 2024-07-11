@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
+import net.shirojr.pulchra_occultorum.network.packet.HoistedFlagStatePacket;
 import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleMovementPacket;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
@@ -15,6 +16,7 @@ public class NetworkPayloads {
         registerS2C(UnicycleSoundPacket.IDENTIFIER, UnicycleSoundPacket.CODEC);
         registerC2S(UnicycleMovementPacket.IDENTIFIER, UnicycleMovementPacket.CODEC);
         registerC2S(PositionPacket.IDENTIFIER, PositionPacket.CODEC);
+        registerC2S(HoistedFlagStatePacket.IDENTIFIER, HoistedFlagStatePacket.CODEC);
     }
 
     private static <T extends CustomPayload> void registerS2C(CustomPayload.Id<T> packetIdentifier, PacketCodec<RegistryByteBuf, T> codec) {

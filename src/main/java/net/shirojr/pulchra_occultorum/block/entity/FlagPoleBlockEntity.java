@@ -42,27 +42,25 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, FlagPoleBlockEntity blockEntity) {
+        if (!(world instanceof ServerWorld serverWorld)) return;
         if (!state.contains(BlockStateProperties.FLAG_POLE_STATE)) return;
         if (world.getBlockState(pos.down()).getBlock() instanceof FlagPoleBlock) return;
         blockEntity.incrementTick(false);
         if (blockEntity.getFlagInventory().isEmpty()) return;
 
-        blockEntity.modifyHoistedState(world, pos);
-
-        if (world instanceof ServerWorld serverWorld) {
-
-            if (blockEntity.getTick() % 10 == 0 && blockEntity.isHoistStateMoving()) {
-                if (blockEntity.getBaseBlockPos() != null && blockEntity.getTopBlockPos() != null) {
-                    BlockPos soundPos = new BlockPos(
-                            blockEntity.getTopBlockPos().getX(),
-                            MathHelper.lerp(blockEntity.getHoistedState(), blockEntity.getBaseBlockPos().getY(), blockEntity.getTopBlockPos().getY()),
-                            blockEntity.getTopBlockPos().getZ());
-                    serverWorld.playSound(null, soundPos,
-                            SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.BLOCKS,
-                            1.0f, MathHelper.lerp(serverWorld.getRandom().nextFloat(), 0.7f, 1.1f));
-                }
+        blockEntity.modifyTargetHoistedState(world, pos);
+        if (blockEntity.getTick() % 10 == 0 && blockEntity.isHoistStateMoving()) {
+            if (blockEntity.getBaseBlockPos() != null && blockEntity.getTopBlockPos() != null) {
+                BlockPos soundPos = new BlockPos(
+                        blockEntity.getPos().getX(),
+                        MathHelper.lerp(blockEntity.getHoistedState(), blockEntity.getBaseBlockPos().getY(), blockEntity.getTopBlockPos().getY()),
+                        blockEntity.getPos().getZ());
+                serverWorld.playSound(null, soundPos,
+                        SoundEvents.BLOCK_WOOL_PLACE, SoundCategory.BLOCKS,
+                        1.0f, MathHelper.lerp(serverWorld.getRandom().nextFloat(), 0.7f, 1.1f));
             }
         }
+
     }
 
     //region getter & setter
@@ -98,7 +96,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public boolean isFullyHoisted() {
-        return getHoistedState() == getHoistedTargetState();
+        return getHoistedState() >= 1f;
     }
 
     public void setHoistedState(float hoistedState) {
@@ -107,11 +105,14 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public float getHoistedTargetState() {
-        return this.hoistedTargetState;
+        return Math.clamp(this.hoistedTargetState, 0.0f, 1.0f);
     }
 
     public void setHoistedTargetState(float hoistedTargetState) {
-        this.hoistedTargetState = hoistedTargetState;
+        this.hoistedTargetState = Math.clamp(hoistedTargetState, 0, 1.0f);
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+        }
     }
 
     public int getFlagPoleCount() {
@@ -126,7 +127,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public boolean isHoistStateMoving() {
-        return !isFullyHoisted() && getHoistedState() > 0.0f;
+        return getHoistedState() != getHoistedTargetState() && getHoistedState() > 0.0f;
     }
 
     @Nullable
@@ -140,15 +141,18 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     //endregion
 
     @SuppressWarnings("SameParameterValue")
-    private void modifyHoistedState(World world, BlockPos pos) {
+    private void modifyTargetHoistedState(World world, BlockPos pos) {
         if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ())))
             return;
         BlockPos basePos = FlagPoleBlock.getBaseBlockPos(world, pos);
         if (basePos == null) return;
         float redstonePower = world.getReceivedRedstonePower(basePos);
         float height = redstonePower / 15;
-        this.setHoistedState(height);
+        this.setHoistedTargetState(height);
         markDirty();
+        if (world instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+        }
     }
 
     public boolean dropFlagInventory(PlayerEntity player) {
@@ -182,7 +186,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound nbt = new NbtCompound();
         this.writeNbt(nbt, registryLookup);
-        return nbt;
+        return createNbt(registryLookup);
     }
 
     @Override
@@ -192,7 +196,10 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
             setHoisted(nbt.getBoolean(NbtKeys.FLAG_IS_HOISTED));
         }
         if (nbt.contains(NbtKeys.FLAG_HOISTED_STATE)) {
-            setHoistedState(Math.clamp(nbt.getFloat(NbtKeys.FLAG_HOISTED_STATE), 0, 1.0f));
+            setHoistedState(Math.clamp(nbt.getFloat(NbtKeys.FLAG_HOISTED_STATE), 0f, 1f));
+        }
+        if(nbt.contains(NbtKeys.FLAG_HOISTED_TARGET_STATE)) {
+            setHoistedTargetState(Math.clamp(nbt.getFloat(NbtKeys.FLAG_HOISTED_TARGET_STATE), 0f, 1f));
         }
         if (nbt.contains(NbtKeys.FLAG_INVENTORY)) {
             this.flagInventory.readNbtList(nbt.getList(NbtKeys.FLAG_INVENTORY, NbtElement.COMPOUND_TYPE), registryLookup);
@@ -204,6 +211,7 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         super.writeNbt(nbt, registryLookup);
         nbt.putBoolean(NbtKeys.FLAG_IS_HOISTED, isHoisted());
         nbt.putFloat(NbtKeys.FLAG_HOISTED_STATE, getHoistedState());
+        nbt.putFloat(NbtKeys.FLAG_HOISTED_TARGET_STATE, getHoistedTargetState());
         nbt.put(NbtKeys.FLAG_INVENTORY, this.flagInventory.toNbtList(registryLookup));
     }
 }
