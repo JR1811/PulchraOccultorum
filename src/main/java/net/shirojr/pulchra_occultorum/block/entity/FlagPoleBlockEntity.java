@@ -105,6 +105,10 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         return getHoistedState() >= 1f;
     }
 
+    public boolean isAtTargetHoistedState() {
+        return getHoistedState() == getHoistedTargetState() && getHoistedState() != 0;
+    }
+
     public void setHoistedState(float hoistedState) {
         this.hoistedState = Math.clamp(hoistedState, 0, 1.0f);
         markDirty();

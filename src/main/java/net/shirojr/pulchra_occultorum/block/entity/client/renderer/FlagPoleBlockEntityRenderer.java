@@ -42,7 +42,7 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
     @Override
     public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (blockEntity.getFlagInventory().isEmpty()) return;
-        if (blockEntity.isFullyHoisted()) {
+        if (blockEntity.isAtTargetHoistedState()) {
             if (blockEntity.flagAnimationProgress > 1) blockEntity.flagAnimationProgress = 0;
             blockEntity.flagAnimationProgress += tickDelta / 500;
         }
@@ -56,8 +56,7 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
             blockEntity.setHoistedState(newState);
             HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
             packet.send();
-        }
-        else if (hoistedState > hoistedTargetState) {
+        } else if (hoistedState > hoistedTargetState) {
             float newState = Math.max(hoistedState - hoistedStepSize, hoistedTargetState);
             blockEntity.setHoistedState(newState);
             HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
@@ -80,8 +79,8 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
         matrices.translate(0.5F, -0.16666667F, 0.5F);
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90));
 
-        verticalRotation(matrices, blockEntity, 0, true);
-        horizontalRotation(matrices, blockEntity, 0, true);
+        verticalRotation(matrices, blockEntity, 0, blockEntity.isAtTargetHoistedState());
+        horizontalRotation(matrices, blockEntity, 0, blockEntity.isAtTargetHoistedState());
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
 
         float directionAngle = 0f;
@@ -127,14 +126,9 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
     @SuppressWarnings("SameParameterValue")
     private void verticalRotation(MatrixStack matrices, FlagPoleBlockEntity blockEntity, int baseRotation, boolean shouldSway) {
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(baseRotation));
-        if (shouldSway) {
-            float offsetFromPole = -0.5f;
-            double swaySpeed = 0.06;
-            // matrices.translate(0.0f, 0.0f, -0.5);
-            float verticalSwing = MathHelper.sin(blockEntity.flagAnimationProgress * MathHelper.TAU) * 3;
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(verticalSwing));
-            // matrices.translate(0.0f, 0.0f, -offsetFromPole);
-        }
+        if (!shouldSway) return;
+        float verticalSwing = MathHelper.sin(blockEntity.flagAnimationProgress * MathHelper.TAU) * 3;
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(verticalSwing));
     }
 
     @SuppressWarnings("SameParameterValue")
