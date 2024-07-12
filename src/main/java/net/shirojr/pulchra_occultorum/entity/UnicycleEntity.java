@@ -29,7 +29,7 @@ import java.util.Arrays;
 
 public class UnicycleEntity extends AbstractRideableEntity {
     public static final float JUMP_STRENGTH = 1.5f, INTERVAL_SPEED = 0.25f;
-    ;
+
     private boolean hasMovementInputs = false;
     private static final TrackedData<Float> LEFT_IMPORTANT_STATE = DataTracker.registerData(UnicycleEntity.class, TrackedDataHandlerRegistry.FLOAT);
     @Nullable
@@ -169,6 +169,9 @@ public class UnicycleEntity extends AbstractRideableEntity {
         if (goesBackward) speed = - 0.2f;
 
         if (speed == 0 && !jumped) return;
+        if (this.isTouchingWater()) {
+            speed *= 0.15f;
+        }
 
         this.velocityDirty = true;
         if (this.isInAir()) return;

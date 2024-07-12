@@ -80,8 +80,10 @@ public abstract class AbstractRideableEntity extends LivingEntity {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        if (startRiding(player)) {
-            return ActionResult.SUCCESS;
+        if (!player.getWorld().isClient()) {
+            if (startRiding(player)) {
+                return ActionResult.SUCCESS;
+            }
         }
         return super.interact(player, hand);
     }
