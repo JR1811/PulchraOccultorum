@@ -62,5 +62,6 @@ I can add and fix all the features, which are mentioned above, but right now I f
 
 If I see people being interested in the ideas and the content of this mod, I might change my mind, so tell me what you think and if you are interested in seeing more development being made on `Pulchra Occultorum` in the [Issues](https://github.com/JR1811/PulchraOccultorum/issues) site here on GitHub.
 
-That's all for now,
-Thank you!
+That's all for now, Thank you!
+
+ShiroJR
