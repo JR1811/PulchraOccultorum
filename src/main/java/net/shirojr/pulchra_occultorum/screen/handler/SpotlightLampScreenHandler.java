@@ -23,7 +23,6 @@ public class SpotlightLampScreenHandler extends ScreenHandler {
         }
     }
 
-
     public SpotlightLampBlockEntity getBlockEntity() {
         return blockEntity;
     }

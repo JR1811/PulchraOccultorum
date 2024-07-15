@@ -1,6 +1,5 @@
 package net.shirojr.pulchra_occultorum.screen;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -54,9 +53,6 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                         ScreenElement.getPositionWithOffset(smallHandle.getSquareEnd().add(0, 98), x, y)
                 )
         );
-        for (ScreenElement entry : screenElementList) {
-            sendPacket(entry, 0f, 0f);
-        }
     }
 
     @Override
@@ -107,30 +103,15 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 entry.setTicksAfterClicked(0);
                 entry.setCanBeDoubleClicked(false);
             }
-            if (entry.getName().equals("big_handle")) {
-                // LoggerUtil.devLogger(entry.getDefaultShape().getSquareStart().toString() + " | " + entry.getDefaultShape().getSquareEnd().toString());
-            }
 
             if (entry.isPressed() || entry.isInDefaultPosition()) continue;
 
-            if (entry.getName().equals("big_handle")) {
-                float normalizedX = (entry.getShape().getSquareStart().getX() - entry.getMinBoundary().getX()) /
-                        (entry.getMaxBoundary().getX() - entry.getMinBoundary().getX());
-                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
-                        (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
-                sendPacket(entry, normalizedX, normalizedY);
-            }
-            if (entry.getName().equals("small_handle")) {
-                float normalizedY = (entry.getShape().getSquareStart().getY() - entry.getMinBoundary().getY()) /
-                        (entry.getMaxBoundary().getY() - entry.getMinBoundary().getY());
-                sendPacket(entry, null, normalizedY);
-            }
         }
     }
 
     private void sendPacket(ScreenElement entry, @Nullable Float x, @Nullable Float y) {
-        ClientPlayNetworking.send(new PositionPacket(entry.getName(), handler.getBlockEntity().getPos(),
-                Optional.ofNullable(x), Optional.ofNullable(y)));
+        new PositionPacket(entry.getName(), handler.getBlockEntity().getPos(),
+                Optional.ofNullable(x), Optional.ofNullable(y)).sendPacket();
     }
 
     private void resetPosition(ScreenElement element) {
@@ -166,6 +147,13 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 entry.setCanBeDoubleClicked(true);
             } else {
                 resetPosition(entry);
+            }
+
+            if (entry.getName().equals("big_handle")) {
+                sendPacket(entry, entry.getNormalized().getX(), entry.getNormalized().getY());
+            }
+            if (entry.getName().equals("small_handle")) {
+                sendPacket(entry, null, entry.getNormalized().getY());
             }
         }
 

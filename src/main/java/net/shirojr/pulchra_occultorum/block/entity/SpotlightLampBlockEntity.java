@@ -27,6 +27,7 @@ import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Tags;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
@@ -52,15 +53,12 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
     public Data createData() {
-        return new Data(this.getColor(), this.getCachedState().get(Properties.POWER), getRotation(), this.getPos(), this.getSpeed());
+        return new Data(this.getColor(), this.getCachedState().get(Properties.POWER),
+                getRotation(), getTargetRotation(), this.getPos(), this.getSpeed());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, SpotlightLampBlockEntity blockEntity) {
         blockEntity.incrementTick(false);
-
-        if (world.isClient()) {
-            // LoggerUtil.devLogger(blockEntity.getTargetRotation().toString());
-        }
 
         int power = getPowerFromBase(world, pos, blockEntity);
         blockEntity.setStrength(power);
@@ -70,6 +68,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     private void rotationHandling() {
         ShapeUtil.Position rotation = this.getRotation();
         ShapeUtil.Position targetRotation = this.getTargetRotation();
+
+        LoggerUtil.devLogger(this.getRotation().toString() + " | " + this.getTargetRotation().toString());
 
         if (rotation.equals(targetRotation)) return;
         if (this.getSpeed() <= 0) return;
@@ -119,6 +119,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
 
     public void setColor(int color) {
         this.color = color;
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
+        }
     }
 
     public int getStrength() {
@@ -127,6 +131,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
 
     public void setStrength(int strength) {
         this.strength = strength;
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
+        }
     }
 
     public ShapeUtil.Position getRotation() {
@@ -135,13 +143,17 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
 
     public void setRotation(ShapeUtil.Position rotation) {
         this.rotation = rotation;
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
+        }
     }
 
     public ShapeUtil.Position getTargetRotation() {
         return targetRotation;
     }
 
-    public void syncedTargetRotationModification(Supplier<ShapeUtil.Position> targetRotationConsumer) {
+    public void setTargetRotation(Supplier<ShapeUtil.Position> targetRotationConsumer) {
         this.targetRotation = targetRotationConsumer.get();
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
@@ -153,7 +165,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return speed;
     }
 
-    public void syncedSpeedModification(Supplier<Float> speedConsumer) {
+    public void setSpeed(Supplier<Float> speedConsumer) {
         this.speed = speedConsumer.get();
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
@@ -218,7 +230,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
 
-    public record Data(int color, int strength, ShapeUtil.Position rotation,
+    public record Data(int color, int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation,
                        BlockPos pos, float speed) implements CustomPayload {
 
         public static final CustomPayload.Id<Data> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.identifierOf("spotlight_lamp_data"));
@@ -232,6 +244,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
                 PacketCodecs.INTEGER, Data::color,
                 PacketCodecs.INTEGER, Data::strength,
                 ShapeUtil.Position.CODEC_POSITION, Data::rotation,
+                ShapeUtil.Position.CODEC_POSITION, Data::targetRotation,
                 BlockPos.PACKET_CODEC, Data::pos,
                 PacketCodecs.FLOAT, Data::speed,
                 Data::new

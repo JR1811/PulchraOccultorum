@@ -44,7 +44,7 @@ public record UnicycleMovementPacket(@Nullable UnicycleEntity.DirectionInput inp
     public void handlePacket(ServerPlayNetworking.Context context) {
         ServerPlayerEntity player = context.player();
         if (!(player.getVehicle() instanceof UnicycleEntity unicycleEntity)) return;
-        UnicycleEntity.DirectionInput[] input = new UnicycleEntity.DirectionInput[] {null, null, null};
+        UnicycleEntity.DirectionInput[] input = new UnicycleEntity.DirectionInput[]{null, null, null};
 
         if (this.inputLeft() != null) input[0] = this.inputLeft();
         if (this.inputRight() != null) input[1] = this.inputRight();

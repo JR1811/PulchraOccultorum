@@ -9,11 +9,9 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.RenderLayers;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -48,6 +46,10 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
             return;
         }
 
+        if (!blockEntity.getRotation().equals(blockEntity.getTargetRotation())) {
+
+        }
+
         //region rays
         matrices.push();
         RenderSystem.disableDepthTest();
@@ -73,7 +75,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
         MatrixStack.Entry entry = matrices.peek();
         int primColor = ColorHelper.Argb.fromFloats(0.2f, 1.0F, 1.0F, 0.7F);
-        int secColor = ColorHelper.Argb.fromFloats(0.0f, 1.0F, 0.6F, 0.3F); // original: 16711935
+        int secColor = ColorHelper.Argb.fromFloats(0.0f, 1.0F, 0.6F, 0.3F);
 
         RenderLayer[] layers = new RenderLayer[]{/*RenderLayers.SPOTLIGHT_LAMP_RAY_DEPTH,*/ RenderLayers.SPOTLIGHT_LAMP_RAY};
         for (RenderLayer layer : layers) {
@@ -101,10 +103,6 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         //endregion
 
         matrices.pop();
-    }
-
-    private float rotationInDeg(int degrees) {
-        return degrees * (float) (Math.PI / 180.0);
     }
 
     private RenderLayer getRenderLayer(T blockEntity) {

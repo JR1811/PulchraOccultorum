@@ -92,6 +92,18 @@ public class ScreenElement {
     }
 
     public void setToDefaultPosition() {
-        this.shape.moveSquareToTarget(defaultShape.getSquareStart());   //FIXME: moves start along
+        this.shape.moveSquareToTarget(defaultShape.getSquareStart());
+    }
+
+    public ShapeUtil.Position getNormalized() {
+        float x = this.getShape().getSquareStart().getX();
+        float y = this.getShape().getSquareStart().getY();
+        float minX = this.getMinBoundary().getX();
+        float maxX = this.getMaxBoundary().getX() - this.getShape().getWidth();
+        float minY = this.getMinBoundary().getY();
+        float maxY = this.getMaxBoundary().getY() - this.getShape().getHeight();
+        float normalizedX = (x - minX) / (maxX - minX);
+        float normalizedY = (y - minY) / (maxY - minY);
+        return new ShapeUtil.Position(normalizedX, normalizedY);
     }
 }
