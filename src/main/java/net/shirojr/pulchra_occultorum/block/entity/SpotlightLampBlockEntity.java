@@ -5,6 +5,10 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,8 +21,12 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -43,10 +51,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     public static final float MAX_PITCH_RANGE = 60, MAX_YAW_RANGE = 180;
 
     private ShapeUtil.Position rotation, targetRotation;
-    private int color = 0x000000;
     private int strength = 0;
     private float speed = 0;
     private boolean isRotating = false;
+    private SimpleInventory inventory = new SimpleInventory(1);
 
     public SpotlightLampBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntities.SPOTLIGHT_LAMP_BLOCK_ENTITY, pos, state);
@@ -55,7 +63,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
     public Data createData() {
-        return new Data(this.getColor(), this.getCachedState().get(Properties.POWER),
+        return new Data(this.getCachedState().get(Properties.POWER),
                 getRotation(), getTargetRotation(), this.getPos(), this.getSpeed());
     }
 
@@ -64,9 +72,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
 
         blockEntity.setStrength(getPowerFromBase(world, pos, blockEntity));
         if (world.isClient()) return;
+        if (blockEntity.getStrength() <= 0) blockEntity.setSpeed(0.0f);
 
         blockEntity.rotationHandling();
-
         boolean changeSoundState = false;
         if (blockEntity.isRotating) {
             if (blockEntity.getRotation().equals(blockEntity.getTargetRotation()) || blockEntity.getSpeed() <= 0) {
@@ -80,7 +88,6 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
                 blockEntity.isRotating = true;
             }
         }
-
         if (changeSoundState) {
             for (ServerPlayerEntity player : PlayerLookup.tracking(blockEntity)) {
                 new SpotlightSoundPacket(pos, blockEntity.isRotating).sendPacket(player);
@@ -134,16 +141,27 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return finalPower;
     }
 
-    public int getColor() {
-        return color;
+    @Nullable
+    public ItemStack getColorStack() {
+        if (this.inventory.isEmpty()) return null;
+        return this.inventory.getStack(0);
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public void setColorStack(ItemStack stack) {
+        this.inventory.setStack(0, stack.copyWithCount(1));
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
             markDirty();
+            serverWorld.playSound(null, this.getPos(), SoundEvents.BLOCK_COPPER_GRATE_PLACE, SoundCategory.BLOCKS);
         }
+    }
+
+    public void clearInventory(boolean dropInventory, BlockPos pos) {
+        if (!(this.getWorld() instanceof ServerWorld serverWorld)) return;
+        if (this.getColorStack() != null) {
+            ItemScatterer.spawn(serverWorld, pos.getX(), pos.getY(), pos.getZ(), this.getColorStack());
+        }
+        setColorStack(ItemStack.EMPTY);
     }
 
     public int getStrength() {
@@ -198,7 +216,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.color = nbt.getInt(NbtKeys.BLOCK_COLOR);
+        this.inventory = new SimpleInventory(1);
+        Inventories.readNbt(nbt, this.inventory.getHeldStacks(), registryLookup);
+
         this.speed = nbt.getFloat("speed");
 
         NbtCompound rotationNbt = nbt.getCompound("rotation");
@@ -210,7 +230,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        nbt.putInt(NbtKeys.BLOCK_COLOR, this.color);
+        Inventories.writeNbt(nbt, this.inventory.getHeldStacks(), registryLookup);
         nbt.putFloat("speed", this.getSpeed());
 
         NbtCompound rotationNbt = new NbtCompound();
@@ -271,7 +291,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
 
-    public record Data(int color, int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation,
+    public record Data(int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation,
                        BlockPos pos, float speed) implements CustomPayload {
 
         public static final CustomPayload.Id<Data> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.identifierOf("spotlight_lamp_data"));
@@ -282,7 +302,6 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         }
 
         public static final PacketCodec<RegistryByteBuf, Data> CODEC = PacketCodec.tuple(
-                PacketCodecs.INTEGER, Data::color,
                 PacketCodecs.INTEGER, Data::strength,
                 ShapeUtil.Position.CODEC_POSITION, Data::rotation,
                 ShapeUtil.Position.CODEC_POSITION, Data::targetRotation,

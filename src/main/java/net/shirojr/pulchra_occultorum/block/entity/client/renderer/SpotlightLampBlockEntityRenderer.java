@@ -2,18 +2,29 @@ package net.shirojr.pulchra_occultorum.block.entity.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Stainable;
+import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.StainedGlassPaneBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
+import net.shirojr.pulchra_occultorum.util.ArgbHelper;
 import net.shirojr.pulchra_occultorum.util.RenderLayers;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -51,11 +62,6 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         }
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
 
-        if (blockEntity.getStrength() <= 0) {
-            matrices.pop();
-            return;
-        }
-
         //region rays
         matrices.push();
         RenderSystem.disableDepthTest();
@@ -65,11 +71,6 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         float height = blockEntity.getStrength() * 2;
         float side = 1.5f * height;
         Quaternionf rotation = new Quaternionf();
-        Vector3f a = new Vector3f(0, 0, 0);
-        Vector3f b = new Vector3f(side / 2, height, side / 2);
-        Vector3f c = new Vector3f(-side / 2, height, side / 2);
-        Vector3f d = new Vector3f(-side / 2, height, -side / 2);
-        Vector3f e = new Vector3f(side / 2, height, -side / 2);
 
         float additionalPitchForBeam = (float) Math.toRadians(270);
         Quaternionf pitchRotation = new Quaternionf().rotateAxis(rotator.pitch + additionalPitchForBeam, 1, 0, 0);
@@ -79,9 +80,51 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         matrices.multiply(rotation);
         matrices.translate(0, 0.25, 0);
 
+        ItemStack colorStack = hasStackWithColor(blockEntity);
+        if (colorStack != null && getStainable(colorStack) != null) {
+            matrices.push();
+            if (colorStack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof StainedGlassBlock) {
+                matrices.scale(1.2f, 0.2f, 1.2f);
+                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+                matrices.translate(0.0f, 0.0f, 1.0f);
+            } else {
+                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+                matrices.translate(0.0f, 0.0f, 0.2f);
+                matrices.scale(0.6f, 0.6f, 1.7f);
+
+            }
+            MinecraftClient.getInstance().getItemRenderer().renderItem(colorStack,    // get Entity color
+                    ModelTransformationMode.FIXED, light, overlay,
+                    matrices, vertexConsumers,
+                    blockEntity.getWorld(), (int) blockEntity.getPos().asLong());
+            matrices.pop();
+        }
+
+        if (blockEntity.getStrength() <= 0) {
+            matrices.pop();
+            matrices.pop();
+            return;
+        }
+
+        Vector3f a = new Vector3f(0, 0, 0);
+        Vector3f b = new Vector3f(side / 2, height, side / 2);
+        Vector3f c = new Vector3f(-side / 2, height, side / 2);
+        Vector3f d = new Vector3f(-side / 2, height, -side / 2);
+        Vector3f e = new Vector3f(side / 2, height, -side / 2);
+
         MatrixStack.Entry entry = matrices.peek();
         int primColor = ColorHelper.Argb.fromFloats(0.2f, 1.0F, 1.0F, 0.7F);
         int secColor = ColorHelper.Argb.fromFloats(0.0f, 1.0F, 0.6F, 0.3F);
+
+        Stainable stainable = getStainable(colorStack);
+        if (stainable != null) {
+            int argbFromItem = stainable.getColor().getEntityColor();
+            ArgbHelper primArgb = new ArgbHelper(argbFromItem).setBrightness(0.5f);
+            ArgbHelper secArgb = new ArgbHelper(argbFromItem).setBrightness(0.2f).setAlpha(0.001f);
+
+            primColor = primArgb.getArgb();
+            secColor = secArgb.getArgb();
+        }
 
         RenderLayer[] layers = new RenderLayer[]{/*RenderLayers.SPOTLIGHT_LAMP_RAY_DEPTH,*/ RenderLayers.SPOTLIGHT_LAMP_RAY};
         for (RenderLayer layer : layers) {
@@ -122,6 +165,22 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         BlockState state = blockEntity.getCachedState();
         if (!state.contains(Properties.POWER)) return false;
         return state.get(Properties.POWER) > 0;
+    }
+
+    @Nullable
+    private static ItemStack hasStackWithColor(SpotlightLampBlockEntity blockEntity) {
+        if (blockEntity.getColorStack() == null) return null;
+        if (!(blockEntity.getColorStack().getItem() instanceof BlockItem blockItem)) return null;
+        if (!(blockItem.getBlock() instanceof Stainable)) return null;
+        return blockEntity.getColorStack();
+    }
+
+    @Nullable
+    public static Stainable getStainable(@Nullable ItemStack stack) {
+        if (stack == null) return null;
+        if (!(stack.getItem() instanceof BlockItem blockItem)) return null;
+        if (!(blockItem.getBlock() instanceof Stainable stainable)) return null;
+        return stainable;
     }
 
     public static TexturedModelData getTexturedModelData() {

@@ -1,21 +1,20 @@
 package net.shirojr.pulchra_occultorum.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
+import net.minecraft.text.Text;
+import net.minecraft.util.*;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,6 +25,8 @@ import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Tags;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class SpotlightLampBlock extends BlockWithEntity {
     public static final MapCodec<SpotlightLampBlock> CODEC = createCodec(SpotlightLampBlock::new);
@@ -82,12 +83,43 @@ public class SpotlightLampBlock extends BlockWithEntity {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (player.isBlockBreakingRestricted(world, pos, GameMode.ADVENTURE)) return ActionResult.PASS;
         if (!world.isClient()) {
+            if (player.getMainHandStack().getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof Stainable) {
+                return super.onUse(state, world, pos, player, hit);
+            }
+            if (world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity) {
+                if (blockEntity.getStrength() <= 0) {
+                    player.sendMessage(Text.translatable("chat.pulchra-occultorum.missing_power"), true);
+                    return ActionResult.PASS;
+                }
+                if (player.isSneaking() && player.getMainHandStack().isEmpty()) {
+                    blockEntity.clearInventory(true, pos);
+                    return super.onUse(state, world, pos, player, hit);
+                }
+            }
+
             NamedScreenHandlerFactory factory = state.createScreenHandlerFactory(world, pos);
             if (factory != null) {
                 player.openHandledScreen(factory);
             }
         }
         return ActionResult.SUCCESS;
+    }
+
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!(world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity)) return ItemActionResult.FAIL;
+        if (!(stack.getItem() instanceof BlockItem blockItem) || !(blockItem.getBlock() instanceof Stainable)) {
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
+        blockEntity.clearInventory(true, pos);
+        if (blockEntity.getColorStack() == null || !blockEntity.getColorStack().isOf(blockItem)) {
+            blockEntity.setColorStack(stack);
+        }
+        if (!player.isCreative()) {
+            stack.decrement(1);
+        }
+        return ItemActionResult.SUCCESS;
     }
 
     @Override

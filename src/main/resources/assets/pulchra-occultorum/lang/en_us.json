@@ -24,5 +24,6 @@
 
   "entity.pulchra-occultorum.unicycle": "Unicycle",
 
-  "chat.pulchra-occultorum.flag_still_hoisted": "§6[Warning]§r Flag is still hoisted"
+  "chat.pulchra-occultorum.flag_still_hoisted": "§6[Warning]§r Flag is still hoisted",
+  "chat.pulchra-occultorum.missing_power": "§6[Warning]§r Block is missing redstone power"
 }

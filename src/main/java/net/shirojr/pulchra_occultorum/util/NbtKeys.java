@@ -17,5 +17,5 @@ public class NbtKeys {
     public static final String FLAG_INVENTORY = "saved_flags";
     public static final String FLAG_BANNER_DIRECTION = "banner_direction";
 
-    public static final String BLOCK_COLOR = "color";
+    public static final String INVENTORY = "inventory";
 }
