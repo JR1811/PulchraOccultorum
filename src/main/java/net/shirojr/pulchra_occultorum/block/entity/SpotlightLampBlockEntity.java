@@ -47,8 +47,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
 public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data>, SoundOrigin {
-    public static final float MAX_TURNING_SPEED = 0.5f;
-    public static final float MAX_PITCH_RANGE = 60, MAX_YAW_RANGE = 180;
+    public static final float MAX_TURNING_SPEED = 0.7f;
+    public static final float MIN_PITCH_RANGE = - 90, MAX_PITCH_RANGE = 50;
+    public static final float MIN_YAW_RANGE = - 180, MAX_YAW_RANGE = 180;
 
     private ShapeUtil.Position rotation, targetRotation;
     private int strength = 0;
@@ -80,7 +81,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
             if (blockEntity.getRotation().equals(blockEntity.getTargetRotation()) || blockEntity.getSpeed() <= 0) {
                 changeSoundState = true;
                 blockEntity.isRotating = false;
-                blockEntity.setSpeed(0.0f);
+                // blockEntity.setSpeed(0.0f);
             }
         } else {
             if (!blockEntity.getRotation().equals(blockEntity.getTargetRotation()) && blockEntity.getSpeed() > 0) {
@@ -156,10 +157,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         }
     }
 
-    public void clearInventory(boolean dropInventory, BlockPos pos) {
+    public void clearInventory(boolean dropInventory, BlockPos spawnPos) {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) return;
-        if (this.getColorStack() != null) {
-            ItemScatterer.spawn(serverWorld, pos.getX(), pos.getY(), pos.getZ(), this.getColorStack());
+        if (this.getColorStack() != null && dropInventory) {
+            ItemScatterer.spawn(serverWorld, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), this.getColorStack());
         }
         setColorStack(ItemStack.EMPTY);
     }

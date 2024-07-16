@@ -14,7 +14,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,8 +24,6 @@ import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Tags;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class SpotlightLampBlock extends BlockWithEntity {
     public static final MapCodec<SpotlightLampBlock> CODEC = createCodec(SpotlightLampBlock::new);
@@ -106,7 +103,16 @@ public class SpotlightLampBlock extends BlockWithEntity {
     }
 
     @Override
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!world.isClient() && world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity) {
+            blockEntity.clearInventory(true, pos);
+        }
+        return super.onBreak(world, pos, state, player);
+    }
+
+    @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (player.isBlockBreakingRestricted(world, pos, GameMode.ADVENTURE)) return ItemActionResult.FAIL;
         if (!(world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity)) return ItemActionResult.FAIL;
         if (!(stack.getItem() instanceof BlockItem blockItem) || !(blockItem.getBlock() instanceof Stainable)) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

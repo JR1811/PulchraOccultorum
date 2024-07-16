@@ -134,11 +134,19 @@ public class ShapeUtil {
             return MathHelper.abs(getSquareEnd().y - getSquareStart().y);
         }
 
+        public float getBoundaryWidth() {
+            return this.squareEnd.getX() - this.squareStart.getX();
+        }
+
+        public float getBoundaryHeight() {
+            return this.squareEnd.getY() - this.squareStart.getY();
+        }
+
         public void moveSquare(int x, int y) {
             this.moveSquareToTarget(this.getSquareStart().add(x, y));
         }
 
-        public void moveSquareWithBoundaries(int x, int y, Position start, Position end) {
+        public void moveElementWithinBoundaries(int x, int y, Position start, Position end) {
             float newStartX = this.getSquareStart().getX() + x;
             float newStartY = this.getSquareStart().getY() + y;
             float newEndX = this.getSquareEnd().getX() + x;

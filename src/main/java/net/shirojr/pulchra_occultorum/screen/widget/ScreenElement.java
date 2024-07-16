@@ -8,19 +8,25 @@ import java.util.List;
 public class ScreenElement {
     private final String name;
     private ShapeUtil.Square shape;
-    private final ShapeUtil.Square defaultShape;
     private boolean isPressed, canBeDoubleClicked;
     private int ticksAfterClicked = 0;
+    private int hoveredTicks = 0;
+
+    private final ShapeUtil.Square defaultShape;
     private final ShapeUtil.Position minBoundary;
     private final ShapeUtil.Position maxBoundary;
+    private final int maxTicksUntilToolTip;
 
-    public ScreenElement(String name, boolean isPressed, ShapeUtil.Square shape, ShapeUtil.Square defaultShape, ShapeUtil.Position minBoundary, ShapeUtil.Position maxBoundary) {
+    public ScreenElement(String name, boolean isPressed, int maxTicksUntilToolTip,
+                         ShapeUtil.Square shape, ShapeUtil.Square defaultShape,
+                         ShapeUtil.Position minBoundary, ShapeUtil.Position maxBoundary) {
         this.name = name;
         this.shape = shape;
         this.defaultShape = defaultShape;
         this.isPressed = isPressed;
         this.minBoundary = minBoundary;
         this.maxBoundary = maxBoundary;
+        this.maxTicksUntilToolTip = maxTicksUntilToolTip;
     }
 
     @Nullable
@@ -77,6 +83,22 @@ public class ScreenElement {
 
     public void setTicksAfterClicked(int ticksAfterClicked) {
         this.ticksAfterClicked = ticksAfterClicked;
+    }
+
+    public int getHoveredTicks() {
+        return hoveredTicks;
+    }
+
+    public void setHoveredTicks(int hoveredTicks) {
+        this.hoveredTicks = hoveredTicks;
+    }
+
+    public void incrementHoverTicks(int amount) {
+        this.setHoveredTicks(this.getHoveredTicks() + amount);
+    }
+
+    public int getMaxTicksUntilToolTip() {
+        return maxTicksUntilToolTip;
     }
 
     public ShapeUtil.Position getMinBoundary() {

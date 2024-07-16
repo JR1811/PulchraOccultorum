@@ -119,7 +119,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         Stainable stainable = getStainable(colorStack);
         if (stainable != null) {
             int argbFromItem = stainable.getColor().getEntityColor();
-            ArgbHelper primArgb = new ArgbHelper(argbFromItem).setBrightness(0.5f);
+            ArgbHelper primArgb = new ArgbHelper(argbFromItem).setBrightness(0.5f).setAlpha(0.6f);
             ArgbHelper secArgb = new ArgbHelper(argbFromItem).setBrightness(0.2f).setAlpha(0.001f);
 
             primColor = primArgb.getArgb();

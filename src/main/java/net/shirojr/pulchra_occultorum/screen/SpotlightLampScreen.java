@@ -1,6 +1,5 @@
 package net.shirojr.pulchra_occultorum.screen;
 
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -8,7 +7,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
+import net.minecraft.util.math.MathHelper;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
@@ -39,7 +38,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         ShapeUtil.Square smallHandle = new ShapeUtil.Square(159, 17, 165, 26);
 
         screenElementList.add(
-                new ScreenElement("big_handle", false,
+                new ScreenElement("big_handle", false, 40,
                         ScreenElement.getShapeWithOffset(bigHandle, x, y),
                         ScreenElement.getShapeWithOffset(bigHandle, x, y),
                         ScreenElement.getPositionWithOffset(bigHandle.getSquareStart().add(-66, -48), x, y),
@@ -48,13 +47,40 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         );
 
         screenElementList.add(
-                new ScreenElement("small_handle", false,
+                new ScreenElement("small_handle", false, 40,
                         ScreenElement.getShapeWithOffset(smallHandle, x, y),
                         ScreenElement.getShapeWithOffset(smallHandle, x, y),
                         ScreenElement.getPositionWithOffset(smallHandle.getSquareStart().add(0, 0), x, y),
                         ScreenElement.getPositionWithOffset(smallHandle.getSquareEnd().add(0, 98), x, y)
                 )
         );
+
+        initScreenElementPositions();
+    }
+
+    private void initScreenElementPositions() {
+        SpotlightLampBlockEntity blockEntity = handler.getBlockEntity();
+        ScreenElement bigHandle = ScreenElement.fromList("big_handle", screenElementList);
+        if (bigHandle != null) {
+            float normalizedYaw = (blockEntity.getTargetRotation().getX() - SpotlightLampBlockEntity.MIN_YAW_RANGE) /
+                    (SpotlightLampBlockEntity.MAX_YAW_RANGE - SpotlightLampBlockEntity.MIN_YAW_RANGE);
+            float normalizedPitch = (blockEntity.getTargetRotation().getY() - SpotlightLampBlockEntity.MIN_PITCH_RANGE) /
+                    (SpotlightLampBlockEntity.MAX_PITCH_RANGE - SpotlightLampBlockEntity.MIN_PITCH_RANGE);
+
+            int yawOnScreen = (int) (MathHelper.lerp(normalizedYaw,
+                    bigHandle.getMinBoundary().getX(), bigHandle.getMaxBoundary().getX() - bigHandle.getShape().getWidth()));
+            int pitchOnScreen = (int) (MathHelper.lerp(normalizedPitch,
+                    bigHandle.getMinBoundary().getY(), bigHandle.getMaxBoundary().getY() - bigHandle.getShape().getHeight()));
+            bigHandle.getShape().moveSquareToTarget(yawOnScreen, pitchOnScreen);
+        }
+
+        ScreenElement smallHandle = ScreenElement.fromList("small_handle", screenElementList);
+        if (smallHandle != null) {
+            float normalizedSpeed = blockEntity.getSpeed() / SpotlightLampBlockEntity.MAX_TURNING_SPEED;
+            int speedOnScreen = (int) (MathHelper.lerp(normalizedSpeed, smallHandle.getMinBoundary().getY(),
+                    smallHandle.getMaxBoundary().getY() - smallHandle.getShape().getHeight()));
+            smallHandle.getShape().moveSquareToTarget((int) smallHandle.getShape().getSquareStart().getX(), speedOnScreen);
+        }
     }
 
     @Override
@@ -76,14 +102,11 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 4210752, false);
         SpotlightLampBlockEntity blockEntity = handler.getBlockEntity();
-
-        Text yaw = Text.of("Yaw: %s".formatted(blockEntity.getRotation().getX()));
-        Text pitch = Text.of("Pitch:  %s".formatted(blockEntity.getRotation().getY()));
-        Text speed = Text.of("Speed:  %s".formatted(blockEntity.getSpeed()));
-
         int informationTextY = this.titleY + 123;
+
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 4210752, false);
+
         drawInformationText(context, "Yaw:", blockEntity.getRotation().getX(), informationTextY);
         informationTextY += 10;
         drawInformationText(context, "Pitch:", blockEntity.getRotation().getY(), informationTextY);
@@ -110,6 +133,25 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
+        for (ScreenElement entry : this.screenElementList) {
+            if (entry.isPressed()) {
+                entry.setHoveredTicks(0);
+                continue;
+            }
+            if (!entry.getShape().isPositionInSquare(new ShapeUtil.Position(mouseX, mouseY))) {
+                entry.setHoveredTicks(0);
+                continue;
+            }
+            if (entry.getHoveredTicks() > entry.getMaxTicksUntilToolTip()) {
+                // Text sneakKey = Text.translatable(MinecraftClient.getInstance().options.sneakKey.getBoundKeyTranslationKey());
+                List<Text> lines = List.of(
+                        Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover1"),
+                        Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover2")
+                        // Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover3", sneakKey.getString())
+                );
+                context.drawTooltip(this.textRenderer, lines, Optional.empty(), mouseX, mouseY);
+            }
+        }
     }
 
     @Override
@@ -123,6 +165,9 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 entry.setTicksAfterClicked(0);
                 entry.setCanBeDoubleClicked(false);
             }
+
+            entry.incrementHoverTicks(1);
+
         }
     }
 
@@ -134,7 +179,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     private void resetPosition(ScreenElement element) {
         element.setToDefaultPosition();
         element.setCanBeDoubleClicked(false);
-        sendPacket(element, 0f, 0f);
+        sendPacket(element, element.getNormalized().getX(), element.getNormalized().getY());
     }
 
     @Override
@@ -154,23 +199,22 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         for (ScreenElement entry : screenElementList) {
-            if (entry.isPressed()) {
-                if (entry.getName().equals("big_handle")) {
-                    sendPacket(entry, entry.getNormalized().getX(), entry.getNormalized().getY());
-                }
-                if (entry.getName().equals("small_handle")) {
-                    sendPacket(entry, null, entry.getNormalized().getY());
-                }
-                this.prevX = -1;
-                this.prevY = -1;
-                entry.setPressed(false);
-                MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_LEVER_CLICK, 0.6f));
+            if (!entry.isPressed()) continue;
+
+            if (entry.getName().equals("big_handle")) {
+                sendPacket(entry, entry.getNormalized().getX(), entry.getNormalized().getY());
             }
-            if (!entry.canBeDoubleClicked()) {
-                entry.setCanBeDoubleClicked(true);
-            } else {
-                resetPosition(entry);
+            if (entry.getName().equals("small_handle")) {
+                sendPacket(entry, null, entry.getNormalized().getY());
             }
+            this.prevX = -1;
+            this.prevY = -1;
+            entry.setPressed(false);
+            MinecraftClient.getInstance().getSoundManager().play(
+                    PositionedSoundInstance.master(SoundEvents.BLOCK_LEVER_CLICK, 0.6f));
+
+            if (!entry.canBeDoubleClicked()) entry.setCanBeDoubleClicked(true);
+            else resetPosition(entry);
         }
 
         return super.mouseReleased(mouseX, mouseY, button);
@@ -183,10 +227,10 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         for (ScreenElement entry : screenElementList) {
             if (!entry.isPressed()) continue;
             entry.setCanBeDoubleClicked(false);
-
             int draggedHorizontalDistance = (int) mouseX - this.prevX;
             int draggedVerticalDistance = (int) mouseY - this.prevY;
-            entry.getShape().moveSquareWithBoundaries(
+
+            entry.getShape().moveElementWithinBoundaries(
                     draggedHorizontalDistance, draggedVerticalDistance,
                     entry.getMinBoundary(), entry.getMaxBoundary()
             );
