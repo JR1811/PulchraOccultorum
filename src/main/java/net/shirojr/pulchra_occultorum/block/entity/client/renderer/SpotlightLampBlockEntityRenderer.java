@@ -7,6 +7,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -39,6 +40,15 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         matrices.push();
         matrices.translate(0.5, 1.5, 0.5);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+        if (blockEntity.getCachedState().contains(Properties.HORIZONTAL_FACING)) {
+            int deg = 0;
+            switch (blockEntity.getCachedState().get(Properties.HORIZONTAL_FACING)) {
+                case EAST -> deg = 90;
+                case SOUTH -> deg = 180;
+                case WEST -> deg = 270;
+            }
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(deg));
+        }
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
 
         if (blockEntity.getStrength() <= 0) {

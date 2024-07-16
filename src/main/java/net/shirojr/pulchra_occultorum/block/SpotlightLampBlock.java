@@ -47,7 +47,7 @@ public class SpotlightLampBlock extends BlockWithEntity {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState()
                 .with(Properties.POWER, 0)
-                .with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing());
+                .with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
