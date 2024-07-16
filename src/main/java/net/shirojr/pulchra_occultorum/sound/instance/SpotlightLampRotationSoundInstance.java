@@ -33,6 +33,5 @@ public class SpotlightLampRotationSoundInstance extends AbstractDynamicSoundInst
                 }
             }
         }
-        LoggerUtil.devLogger(String.valueOf(this.volume));
     }
 }
