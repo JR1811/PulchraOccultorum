@@ -14,6 +14,8 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -30,18 +32,32 @@ public class SpotlightLampBlock extends BlockWithEntity {
 
     public SpotlightLampBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(Properties.POWER, 0));
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(Properties.POWER, 0)
+                .with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.POWER);
+        builder.add(Properties.POWER, Properties.HORIZONTAL_FACING);
     }
 
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(Properties.POWER, 0);
+        return this.getDefaultState()
+                .with(Properties.POWER, 0)
+                .with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing());
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
     }
 
     @Override
