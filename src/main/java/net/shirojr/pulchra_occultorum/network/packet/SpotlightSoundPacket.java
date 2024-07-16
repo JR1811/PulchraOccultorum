@@ -8,24 +8,25 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
-import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
+import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.sound.SoundManager;
-import net.shirojr.pulchra_occultorum.sound.instance.UnicycleRollSoundInstance;
+import net.shirojr.pulchra_occultorum.sound.instance.SpotlightLampRotationSoundInstance;
 
-public record UnicycleSoundPacket(int entityNetworkId, boolean shouldPlay) implements CustomPayload {
+public record SpotlightSoundPacket(BlockPos pos, boolean shouldPlay) implements CustomPayload {
 
-    public static final CustomPayload.Id<UnicycleSoundPacket> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.identifierOf("unicycle_rolling"));
+    public static final Id<SpotlightSoundPacket> IDENTIFIER = new Id<>(PulchraOccultorum.identifierOf("spotlight_rotating"));
 
     @Override
     public Id<? extends CustomPayload> getId() {
         return IDENTIFIER;
     }
 
-    public static final PacketCodec<RegistryByteBuf, UnicycleSoundPacket> CODEC = PacketCodec.tuple(
-            PacketCodecs.VAR_INT, UnicycleSoundPacket::entityNetworkId,
-            PacketCodecs.BOOL, UnicycleSoundPacket::shouldPlay,
-            UnicycleSoundPacket::new
+    public static final PacketCodec<RegistryByteBuf, SpotlightSoundPacket> CODEC = PacketCodec.tuple(
+            BlockPos.PACKET_CODEC, SpotlightSoundPacket::pos,
+            PacketCodecs.BOOL, SpotlightSoundPacket::shouldPlay,
+            SpotlightSoundPacket::new
     );
 
     public void sendPacket(ServerPlayerEntity targetedPlayer) {
@@ -34,12 +35,11 @@ public record UnicycleSoundPacket(int entityNetworkId, boolean shouldPlay) imple
 
     public void handlePacket(ClientPlayNetworking.Context context) {
         ClientWorld world = context.client().world;
-        int entityNetworkId = this.entityNetworkId();
-        boolean shouldPlay = this.shouldPlay();
         if (world == null) return;
-        if (!(world.getEntityById(entityNetworkId) instanceof UnicycleEntity unicycleEntity)) return;
+        if (!(world.getBlockEntity(this.pos()) instanceof SpotlightLampBlockEntity blockEntity)) return;
         SoundManager soundManager = SoundManager.getInstance();
-        if (shouldPlay) soundManager.play(unicycleEntity, new UnicycleRollSoundInstance(unicycleEntity));
-        else soundManager.stopAll(unicycleEntity);
+        SpotlightLampRotationSoundInstance soundInstance = new SpotlightLampRotationSoundInstance(blockEntity);
+        if (this.shouldPlay()) soundManager.play(blockEntity, soundInstance);
+        else soundManager.stopAll(blockEntity);
     }
 }

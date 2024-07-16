@@ -1,6 +1,5 @@
 package net.shirojr.pulchra_occultorum.entity;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -23,11 +22,12 @@ import net.shirojr.pulchra_occultorum.init.SoundEvents;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
+import net.shirojr.pulchra_occultorum.util.SoundOrigin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class UnicycleEntity extends AbstractRideableEntity {
+public class UnicycleEntity extends AbstractRideableEntity implements SoundOrigin {
     public static final float JUMP_STRENGTH = 1.5f, INTERVAL_SPEED = 0.25f;
 
     private boolean hasMovementInputs = false;
@@ -54,19 +54,18 @@ public class UnicycleEntity extends AbstractRideableEntity {
     @Override
     public void tick() {
         super.tick();
-
     }
 
     @Override
     public void onStartedTrackingBy(ServerPlayerEntity player) {
         super.onStartedTrackingBy(player);
-        ServerPlayNetworking.send(player, new UnicycleSoundPacket(this.getId(), true));
+        new UnicycleSoundPacket(this.getId(), true).sendPacket(player);
     }
 
     @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         super.onStoppedTrackingBy(player);
-        ServerPlayNetworking.send(player, new UnicycleSoundPacket(this.getId(), false));
+        new UnicycleSoundPacket(this.getId(), false).sendPacket(player);
     }
 
     public DirectionInput[] getDirectionInputs() {
@@ -79,7 +78,6 @@ public class UnicycleEntity extends AbstractRideableEntity {
 
     public void setDirectionInputs(@Nullable DirectionInput[] input) {
         this.directionInputs = input;
-        LoggerUtil.devLogger("received packet" + Arrays.toString(input));
     }
 
     public float getLeftImportantState() {
@@ -166,7 +164,7 @@ public class UnicycleEntity extends AbstractRideableEntity {
         }
 
         if (goesForward) speed = 0.2f;
-        if (goesBackward) speed = - 0.2f;
+        if (goesBackward) speed = -0.2f;
 
         if (speed == 0 && !jumped) return;
         if (this.isTouchingWater()) {
@@ -229,6 +227,21 @@ public class UnicycleEntity extends AbstractRideableEntity {
     @Override
     public boolean isCollidable() {
         return true;
+    }
+
+    @Override
+    public String getUniqueId() {
+        return this.getUuid().toString();
+    }
+
+    @Override
+    public Vec3d getSoundPos() {
+        return this.getPos();
+    }
+
+    @Override
+    public boolean stoppedExisting() {
+        return this.isRemoved() || this.isDead();
     }
 
     public enum DirectionInput {

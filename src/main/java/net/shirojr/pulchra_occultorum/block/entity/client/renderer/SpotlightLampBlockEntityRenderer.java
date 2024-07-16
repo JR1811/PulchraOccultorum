@@ -46,10 +46,6 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
             return;
         }
 
-        if (!blockEntity.getRotation().equals(blockEntity.getTargetRotation())) {
-
-        }
-
         //region rays
         matrices.push();
         RenderSystem.disableDepthTest();

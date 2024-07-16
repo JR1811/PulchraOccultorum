@@ -16,5 +16,11 @@
     "sounds": [
       "pulchra-occultorum:unicycle_clank"
     ]
+  },
+  "spotlight_lamp_move": {
+    "subtitle": "sound.pulchra-occultorum.spotlight_lamp.move",
+    "sounds": [
+      "pulchra-occultorum:spotlight_lamp_move"
+    ]
   }
 }

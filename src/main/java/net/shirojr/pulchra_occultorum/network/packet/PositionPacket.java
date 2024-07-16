@@ -49,7 +49,7 @@ public record PositionPacket(String name, BlockPos blockPos, Optional<Float> nor
         }
         if (this.name.equals("small_handle")) {
             float lerpedY = MathHelper.lerp(this.normalizedY().orElse(0f), 0f, SpotlightLampBlockEntity.MAX_TURNING_SPEED);
-            blockEntity.setSpeed(() -> lerpedY);
+            blockEntity.setSpeed(lerpedY);
         }
     }
 }

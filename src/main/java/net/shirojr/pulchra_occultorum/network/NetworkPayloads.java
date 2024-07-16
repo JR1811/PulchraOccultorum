@@ -4,16 +4,15 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.shirojr.pulchra_occultorum.network.packet.HoistedFlagStatePacket;
-import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
-import net.shirojr.pulchra_occultorum.network.packet.UnicycleMovementPacket;
-import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
+import net.shirojr.pulchra_occultorum.network.packet.*;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
 @SuppressWarnings("SameParameterValue")
 public class NetworkPayloads {
     static {
         registerS2C(UnicycleSoundPacket.IDENTIFIER, UnicycleSoundPacket.CODEC);
+        registerS2C(SpotlightSoundPacket.IDENTIFIER, SpotlightSoundPacket.CODEC);
+
         registerC2S(UnicycleMovementPacket.IDENTIFIER, UnicycleMovementPacket.CODEC);
         registerC2S(PositionPacket.IDENTIFIER, PositionPacket.CODEC);
         registerC2S(HoistedFlagStatePacket.IDENTIFIER, HoistedFlagStatePacket.CODEC);

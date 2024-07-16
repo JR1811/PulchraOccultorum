@@ -11,6 +11,7 @@ public class SoundEvents {
     public static SoundEvent UNICYCLE_LAND = register("unicycle_land");
     public static SoundEvent UNICYCLE_ROLL = register("unicycle_roll");
     public static SoundEvent UNICYCLE_CLANK = register("unicycle_clank");
+    public static SoundEvent SPOTLIGHT_LAMP_MOVE = register("spotlight_lamp_move");
 
     private static SoundEvent register(String name) {
         Identifier identifier = PulchraOccultorum.identifierOf(name);

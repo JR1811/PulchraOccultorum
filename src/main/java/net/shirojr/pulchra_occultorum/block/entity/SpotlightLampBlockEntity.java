@@ -1,5 +1,6 @@
 package net.shirojr.pulchra_occultorum.block.entity;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,21 +22,23 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.init.BlockEntities;
 import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Tags;
+import net.shirojr.pulchra_occultorum.network.packet.SpotlightSoundPacket;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
+import net.shirojr.pulchra_occultorum.util.SoundOrigin;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data> {
+public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data>, SoundOrigin {
     public static final float MAX_TURNING_SPEED = 0.5f;
     public static final float MAX_PITCH_RANGE = 60, MAX_YAW_RANGE = 180;
 
@@ -43,8 +46,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     private int color = 0x000000;
     private int strength = 0;
     private float speed = 0;
-
-    public float flagAnimationProgress = 0;
+    private boolean isRotating = false;
 
     public SpotlightLampBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntities.SPOTLIGHT_LAMP_BLOCK_ENTITY, pos, state);
@@ -60,16 +62,35 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     public static void tick(World world, BlockPos pos, BlockState state, SpotlightLampBlockEntity blockEntity) {
         blockEntity.incrementTick(false);
 
-        int power = getPowerFromBase(world, pos, blockEntity);
-        blockEntity.setStrength(power);
-        if (!world.isClient()) blockEntity.rotationHandling();
+        blockEntity.setStrength(getPowerFromBase(world, pos, blockEntity));
+        if (world.isClient()) return;
+
+        blockEntity.rotationHandling();
+
+        boolean changeSoundState = false;
+        if (blockEntity.isRotating) {
+            if (blockEntity.getRotation().equals(blockEntity.getTargetRotation()) || blockEntity.getSpeed() <= 0) {
+                changeSoundState = true;
+                blockEntity.isRotating = false;
+                blockEntity.setSpeed(0.0f);
+            }
+        } else {
+            if (!blockEntity.getRotation().equals(blockEntity.getTargetRotation()) && blockEntity.getSpeed() > 0) {
+                changeSoundState = true;
+                blockEntity.isRotating = true;
+            }
+        }
+
+        if (changeSoundState) {
+            for (ServerPlayerEntity player : PlayerLookup.tracking(blockEntity)) {
+                new SpotlightSoundPacket(pos, blockEntity.isRotating).sendPacket(player);
+            }
+        }
     }
 
     private void rotationHandling() {
         ShapeUtil.Position rotation = this.getRotation();
         ShapeUtil.Position targetRotation = this.getTargetRotation();
-
-        LoggerUtil.devLogger(this.getRotation().toString() + " | " + this.getTargetRotation().toString());
 
         if (rotation.equals(targetRotation)) return;
         if (this.getSpeed() <= 0) return;
@@ -165,8 +186,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return speed;
     }
 
-    public void setSpeed(Supplier<Float> speedConsumer) {
-        this.speed = speedConsumer.get();
+    public void setSpeed(float speed) {
+        this.speed = speed;
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
             markDirty();
@@ -227,6 +248,26 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
         return new SpotlightLampScreenHandler(syncId, playerInventory, this.createData());
+    }
+
+    @Override
+    public String getUniqueId() {
+        return String.valueOf(this.hashCode());
+    }
+
+    @Override
+    public Vec3d getSoundPos() {
+        return this.getPos().toCenterPos();
+    }
+
+    @Override
+    public @Nullable Vec3d getVelocity() {
+        return null;
+    }
+
+    @Override
+    public boolean stoppedExisting() {
+        return this.isRemoved();
     }
 
 

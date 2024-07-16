@@ -1,15 +1,20 @@
 package net.shirojr.pulchra_occultorum.sound;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.entity.LivingEntity;
+import net.shirojr.pulchra_occultorum.util.SoundOrigin;
+import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractDynamicSoundInstance;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SoundManager {
     private static SoundManager instance;
-    private final Map<UUID, List<SoundInstance>> activeSounds = new HashMap<>();
+    private final Map<String, List<SoundInstance>> activeSounds = new HashMap<>();
 
     private SoundManager() {
     }
@@ -19,11 +24,11 @@ public class SoundManager {
         return instance;
     }
 
-    public void play(@NotNull LivingEntity livingEntity, SoundInstance... instances) {
-        if (!this.activeSounds.containsKey(livingEntity.getUuid())) {
-            this.activeSounds.put(livingEntity.getUuid(), new ArrayList<>());
+    public void play(@NotNull SoundOrigin origin, SoundInstance... instances) {
+        if (!this.activeSounds.containsKey(origin.getUniqueId())) {
+            this.activeSounds.put(origin.getUniqueId(), new ArrayList<>());
         }
-        List<SoundInstance> activeInstancesForEntity = this.activeSounds.get(livingEntity.getUuid());
+        List<SoundInstance> activeInstancesForEntity = this.activeSounds.get(origin.getUniqueId());
         for (SoundInstance soundInstance : instances) {
             if (activeInstancesForEntity.contains(soundInstance)) continue;
             MinecraftClient.getInstance().getSoundManager().play(soundInstance);
@@ -31,21 +36,30 @@ public class SoundManager {
         }
     }
 
-    public void stop(@NotNull LivingEntity livingEntity, SoundInstance... instances) {
-        List<SoundInstance> entriesForEntity = this.activeSounds.get(livingEntity.getUuid());
+    public void stop(@NotNull SoundOrigin origin, SoundInstance... instances) {
+        List<SoundInstance> entriesForEntity = this.activeSounds.get(origin.getUniqueId());
         if (entriesForEntity == null) return;
         for (SoundInstance soundInstance : instances) {
             if (!entriesForEntity.contains(soundInstance)) continue;
-            MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
-            entriesForEntity.remove(soundInstance);
+            if (soundInstance instanceof AbstractDynamicSoundInstance<?> dynamicSoundInstance) {
+                dynamicSoundInstance.finishSoundInstance();
+            } else {
+                MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
+            }
+
+            this.activeSounds.get(origin.getUniqueId()).remove(soundInstance);
         }
     }
 
-    public void stopAll(@NotNull LivingEntity livingEntity) {
-        List<SoundInstance> entriesForEntity = this.activeSounds.get(livingEntity.getUuid());
+    public void stopAll(@NotNull SoundOrigin origin) {
+        List<SoundInstance> entriesForEntity = this.activeSounds.get(origin.getUniqueId());
         for (SoundInstance soundInstance : entriesForEntity) {
-            MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
+            if (soundInstance instanceof AbstractDynamicSoundInstance<?> dynamicSoundInstance) {
+                dynamicSoundInstance.finishSoundInstance();
+            } else {
+                MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
+            }
         }
-        this.activeSounds.remove(livingEntity.getUuid());
+        this.activeSounds.remove(origin.getUniqueId());
     }
 }
