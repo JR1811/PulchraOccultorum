@@ -41,7 +41,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
         lamp.render(matrices, vertexConsumers.getBuffer(getRenderLayer(blockEntity)), light, overlay);
 
-        if (blockEntity.getStrength() < 1) {
+        if (blockEntity.getStrength() <= 0) {
             matrices.pop();
             return;
         }
