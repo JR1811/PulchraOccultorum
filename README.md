@@ -39,8 +39,6 @@ Currently, this mod is by no means complete. Here is a list of issues which may 
 
 - Unicycle movement is unforgiving for beginners and may have unexpected velocity changes underwater or when rolling down small slopes
 - Whip Item applies passive mob frenzy not as planned and turns the item around in the hand wrongly when used
-- Spotlight lamp block screen doesn't save handle position. So when reopening the screen, the new rotation might not be as expected
-- Spotlight lamp block doesn't keep rotating if the screen is closed
 - ...
 
 ## Originally Planned content
