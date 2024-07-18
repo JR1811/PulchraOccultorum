@@ -44,11 +44,6 @@ public record UnicycleMovementPacket(Optional<UnicycleEntity.DirectionInput> inp
     }
 
     public void handlePacket(ServerPlayNetworking.Context context) {
-        Optional<Item> externalItem = Registries.ITEM.stream().filter(
-                item -> Registries.ITEM.getId(item).equals(Identifier.of("external-cool-mod", "fancy_axe"))
-        ).findFirst();
-
-
         ServerPlayerEntity player = context.player();
         if (!(player.getVehicle() instanceof UnicycleEntity unicycleEntity)) return;
         UnicycleEntity.DirectionInput[] input = new UnicycleEntity.DirectionInput[]{null, null, null};
