@@ -20,12 +20,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.init.SoundEvents;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleSoundPacket;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
-import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
 import net.shirojr.pulchra_occultorum.util.SoundOrigin;
+import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractRideableEntity;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
 
 public class UnicycleEntity extends AbstractRideableEntity implements SoundOrigin {
     public static final float JUMP_STRENGTH = 1.5f, INTERVAL_SPEED = 0.25f;

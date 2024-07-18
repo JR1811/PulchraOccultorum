@@ -16,6 +16,9 @@ import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
 import net.shirojr.pulchra_occultorum.network.packet.UnicycleMovementPacket;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public class ClientEvents {
     private static final UnicycleEntity.DirectionInput[] directionInputs = new UnicycleEntity.DirectionInput[3];
     private static boolean wasRightPressed = false, wasLeftPressed = false, wasJumpPressed = false, shouldSendPacket = false;
@@ -80,10 +83,15 @@ public class ClientEvents {
 
         if (shouldSendPacket) {
             if (client.player instanceof ClientPlayerEntity player && player.getVehicle() instanceof UnicycleEntity unicycleEntity) {
+                LoggerUtil.devLogger(Arrays.toString(directionInputs));
                 if (unicycleEntity.isLogicalSideForUpdatingMovement()) {
                     unicycleEntity.setDirectionInputs(directionInputs);
                 } else {
-                    ClientPlayNetworking.send(new UnicycleMovementPacket(directionInputs[0], directionInputs[1], directionInputs[2]));
+                    ClientPlayNetworking.send(new UnicycleMovementPacket(
+                            Optional.ofNullable(directionInputs[0]),
+                            Optional.ofNullable(directionInputs[1]),
+                            Optional.ofNullable(directionInputs[2]))
+                    );
                 }
             }
             shouldSendPacket = false;
@@ -102,7 +110,7 @@ public class ClientEvents {
 
         int imageSize = 32, pedalsSize = 11;
         int spaceBetween = 10;
-        int x = drawContext.getScaledWindowWidth() / 2 - pedalsSize, y = drawContext.getScaledWindowHeight() / 2  - pedalsSize;
+        int x = drawContext.getScaledWindowWidth() / 2 - pedalsSize, y = drawContext.getScaledWindowHeight() / 2 - pedalsSize;
         int xLeft = (x - spaceBetween), xRight = (x + pedalsSize + spaceBetween);
         int z = 2;
 

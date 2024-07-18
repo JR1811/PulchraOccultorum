@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -15,6 +16,7 @@ import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
 import net.shirojr.pulchra_occultorum.screen.widget.ScreenElement;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,17 +62,18 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
     private void initScreenElementPositions() {
         SpotlightLampBlockEntity blockEntity = handler.getBlockEntity();
+
         ScreenElement bigHandle = ScreenElement.fromList("big_handle", screenElementList);
         if (bigHandle != null) {
             float normalizedYaw = (blockEntity.getTargetRotation().getX() - SpotlightLampBlockEntity.MIN_YAW_RANGE) /
                     (SpotlightLampBlockEntity.MAX_YAW_RANGE - SpotlightLampBlockEntity.MIN_YAW_RANGE);
             float normalizedPitch = (blockEntity.getTargetRotation().getY() - SpotlightLampBlockEntity.MIN_PITCH_RANGE) /
                     (SpotlightLampBlockEntity.MAX_PITCH_RANGE - SpotlightLampBlockEntity.MIN_PITCH_RANGE);
-
             int yawOnScreen = (int) (MathHelper.lerp(normalizedYaw,
                     bigHandle.getMinBoundary().getX(), bigHandle.getMaxBoundary().getX() - bigHandle.getShape().getWidth()));
             int pitchOnScreen = (int) (MathHelper.lerp(normalizedPitch,
                     bigHandle.getMinBoundary().getY(), bigHandle.getMaxBoundary().getY() - bigHandle.getShape().getHeight()));
+
             bigHandle.getShape().moveSquareToTarget(yawOnScreen, pitchOnScreen);
         }
 
@@ -79,6 +82,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
             float normalizedSpeed = blockEntity.getSpeed() / SpotlightLampBlockEntity.MAX_TURNING_SPEED;
             int speedOnScreen = (int) (MathHelper.lerp(normalizedSpeed, smallHandle.getMinBoundary().getY(),
                     smallHandle.getMaxBoundary().getY() - smallHandle.getShape().getHeight()));
+
             smallHandle.getShape().moveSquareToTarget((int) smallHandle.getShape().getSquareStart().getX(), speedOnScreen);
         }
     }

@@ -18,16 +18,16 @@ public record SpotlightSoundPacket(BlockPos pos, boolean shouldPlay) implements 
 
     public static final Id<SpotlightSoundPacket> IDENTIFIER = new Id<>(PulchraOccultorum.identifierOf("spotlight_rotating"));
 
-    @Override
-    public Id<? extends CustomPayload> getId() {
-        return IDENTIFIER;
-    }
-
     public static final PacketCodec<RegistryByteBuf, SpotlightSoundPacket> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, SpotlightSoundPacket::pos,
             PacketCodecs.BOOL, SpotlightSoundPacket::shouldPlay,
             SpotlightSoundPacket::new
     );
+
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return IDENTIFIER;
+    }
 
     public void sendPacket(ServerPlayerEntity targetedPlayer) {
         ServerPlayNetworking.send(targetedPlayer, this);

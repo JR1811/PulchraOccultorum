@@ -1,6 +1,5 @@
 package net.shirojr.pulchra_occultorum.block.entity.client.renderer;
 
-import net.minecraft.block.WallBannerBlock;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -15,7 +14,6 @@ import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.shirojr.pulchra_occultorum.block.entity.FlagPoleBlockEntity;
@@ -55,12 +53,12 @@ public class FlagPoleBlockEntityRenderer<T extends FlagPoleBlockEntity> implemen
             float newState = Math.min(hoistedState + hoistedStepSize, hoistedTargetState);
             blockEntity.setHoistedState(newState);
             HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
-            packet.send();
+            packet.sendPacket();
         } else if (hoistedState > hoistedTargetState) {
             float newState = Math.max(hoistedState - hoistedStepSize, hoistedTargetState);
             blockEntity.setHoistedState(newState);
             HoistedFlagStatePacket packet = new HoistedFlagStatePacket(newState, blockEntity.getPos());
-            packet.send();
+            packet.sendPacket();
         }
 
         ItemStack bannerStack = blockEntity.getFlagInventory().getStack(0).copy();

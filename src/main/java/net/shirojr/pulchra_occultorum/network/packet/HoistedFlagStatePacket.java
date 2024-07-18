@@ -16,24 +16,24 @@ public record HoistedFlagStatePacket(float hoistedState, BlockPos pos) implement
     public static final CustomPayload.Id<HoistedFlagStatePacket> IDENTIFIER =
             new CustomPayload.Id<>(PulchraOccultorum.identifierOf("hoisted_state"));
 
-    @Override
-    public Id<? extends CustomPayload> getId() {
-        return IDENTIFIER;
-    }
-
     public static final PacketCodec<RegistryByteBuf, HoistedFlagStatePacket> CODEC = PacketCodec.tuple(
             PacketCodecs.FLOAT, HoistedFlagStatePacket::hoistedState,
             BlockPos.PACKET_CODEC, HoistedFlagStatePacket::pos,
             HoistedFlagStatePacket::new
     );
 
+    @Override
+    public Id<? extends CustomPayload> getId() {
+        return IDENTIFIER;
+    }
+
+    public void sendPacket() {
+        ClientPlayNetworking.send(this);
+    }
+
     public void handlePacket(ServerPlayNetworking.Context context) {
         if (!(context.player().getWorld() instanceof ServerWorld serverWorld)) return;
         if (!(serverWorld.getBlockEntity(this.pos()) instanceof FlagPoleBlockEntity blockEntity)) return;
         blockEntity.setHoistedState(this.hoistedState());
-    }
-
-    public void send() {
-        ClientPlayNetworking.send(this);
     }
 }
