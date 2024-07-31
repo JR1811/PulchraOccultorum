@@ -45,8 +45,6 @@ Currently, this mod is by no means complete. Here is a list of issues which may 
 
 - Safety Net Block had coloured variants (like wool), slab variants and stair variants planned
 - Tarot and Occult Event system is only really implemented in the back end without much content yet. At least four more cards with events were planned
-- Spotlight lamp block's light rays were supposed to be colourable using the screen
-- Spotlight lamp block's light ray length and power
 - A microphone item with `Simple Voice Chat API` integration. Using this item would've muted/lowered the volume of everyone in a radius around the user
 - A new set of blocks for a Greenhouse feature was planned, which, when used for an enclosed space and sunlight above, increased the temperature and/or humidity of that space, to allow for faster plant growth and even allowed new more exotic plants to survive
 - A feature where two players can hold a third player above them, like an acrobatic pyramid
