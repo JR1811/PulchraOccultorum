@@ -10,6 +10,8 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -79,26 +81,36 @@ public class SpotlightLampBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (player.isBlockBreakingRestricted(world, pos, GameMode.ADVENTURE)) return ActionResult.PASS;
-        if (!world.isClient()) {
-            if (player.getMainHandStack().getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof Stainable) {
-                return super.onUse(state, world, pos, player, hit);
-            }
-            if (world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity) {
-                if (blockEntity.getStrength() <= 0) {
-                    player.sendMessage(Text.translatable("chat.pulchra-occultorum.missing_power"), true);
-                    return ActionResult.PASS;
-                }
-                if (player.isSneaking() && player.getMainHandStack().isEmpty()) {
-                    blockEntity.clearInventory(true, pos);
-                    return super.onUse(state, world, pos, player, hit);
-                }
-            }
 
+        if (player.getMainHandStack().getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof Stainable) {
+            return super.onUse(state, world, pos, player, hit);
+        }
+        if (world.getBlockEntity(pos) instanceof SpotlightLampBlockEntity blockEntity) {
+            if (blockEntity.getStrength() <= 0) {
+                if (!world.isClient()) player.sendMessage(Text.translatable("chat.pulchra-occultorum.missing_power"), true);
+                return ActionResult.PASS;
+            }
+            if (player.isSneaking()) {
+                if (player.getMainHandStack().isEmpty() && !blockEntity.getColorStack().isEmpty()) {
+                    if (!world.isClient()) {
+                        blockEntity.clearInventory(true, pos);
+                        world.playSound(null, blockEntity.getPos(),
+                                SoundEvents.BLOCK_COPPER_GRATE_BREAK, SoundCategory.BLOCKS, 2.0f, 0.8f);
+                    }
+                    return ActionResult.SUCCESS;
+                } else {
+                    return ActionResult.FAIL;
+                }
+            }
+        }
+
+        if (!world.isClient()) {
             NamedScreenHandlerFactory factory = state.createScreenHandlerFactory(world, pos);
             if (factory != null) {
                 player.openHandledScreen(factory);
             }
         }
+
         return ActionResult.SUCCESS;
     }
 
@@ -119,8 +131,10 @@ public class SpotlightLampBlock extends BlockWithEntity {
         }
 
         blockEntity.clearInventory(true, pos);
-        if (blockEntity.getColorStack() == null || !blockEntity.getColorStack().isOf(blockItem)) {
+        if (blockEntity.getColorStack().isEmpty() || !blockEntity.getColorStack().isOf(blockItem)) {
             blockEntity.setColorStack(stack);
+            world.playSound(null, blockEntity.getPos(),
+                    SoundEvents.BLOCK_COPPER_GRATE_PLACE, SoundCategory.BLOCKS, 2.0f, 1.2f);
         }
         if (!player.isCreative()) {
             stack.decrement(1);

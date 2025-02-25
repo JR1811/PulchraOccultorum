@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Stainable;
 import net.minecraft.block.StainedGlassBlock;
-import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
@@ -12,11 +11,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -31,6 +27,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity> implements BlockEntityRenderer<T> {
     private final List<ModelPart> modelParts = new ArrayList<>();
     private final ModelPart lamp, horizontal, rotator, blades;
@@ -169,7 +166,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
 
     @Nullable
     private static ItemStack hasStackWithColor(SpotlightLampBlockEntity blockEntity) {
-        if (blockEntity.getColorStack() == null) return null;
+        if (blockEntity.getColorStack().isEmpty()) return null;
         if (!(blockEntity.getColorStack().getItem() instanceof BlockItem blockItem)) return null;
         if (!(blockItem.getBlock() instanceof Stainable)) return null;
         return blockEntity.getColorStack();

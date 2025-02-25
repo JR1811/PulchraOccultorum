@@ -2,9 +2,9 @@ package net.shirojr.pulchra_occultorum.screen;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -14,9 +14,9 @@ import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.network.packet.PositionPacket;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
 import net.shirojr.pulchra_occultorum.screen.widget.ScreenElement;
+import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.Optional;
 
 public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandler> {
     private int prevX = -1, prevY = -1;
+    private int originX = -1, originY = -1;
 
     private final List<ScreenElement> screenElementList = new ArrayList<>();
 
@@ -40,7 +41,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         ShapeUtil.Square smallHandle = new ShapeUtil.Square(159, 17, 165, 26);
 
         screenElementList.add(
-                new ScreenElement("big_handle", false, 40,
+                new ScreenElement("big_handle", false, 20,
                         ScreenElement.getShapeWithOffset(bigHandle, x, y),
                         ScreenElement.getShapeWithOffset(bigHandle, x, y),
                         ScreenElement.getPositionWithOffset(bigHandle.getSquareStart().add(-66, -48), x, y),
@@ -49,7 +50,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         );
 
         screenElementList.add(
-                new ScreenElement("small_handle", false, 40,
+                new ScreenElement("small_handle", false, 20,
                         ScreenElement.getShapeWithOffset(smallHandle, x, y),
                         ScreenElement.getShapeWithOffset(smallHandle, x, y),
                         ScreenElement.getPositionWithOffset(smallHandle.getSquareStart().add(0, 0), x, y),
@@ -150,13 +151,21 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                 // Text sneakKey = Text.translatable(MinecraftClient.getInstance().options.sneakKey.getBoundKeyTranslationKey());
                 List<Text> lines = List.of(
                         Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover1"),
-                        Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover2")
+                        Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover2"),
+                        Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover3")
                         // Text.translatable("screen.pulchra-occultorum.spotlight_lamp.hover3", sneakKey.getString())
                 );
                 context.drawTooltip(this.textRenderer, lines, Optional.empty(), mouseX, mouseY);
             }
         }
     }
+
+    @Override
+    public void resize(MinecraftClient client, int width, int height) {
+        super.resize(client, width, height);
+        //FIXME: handles shift in wrong places
+    }
+
 
     @Override
     protected void handledScreenTick() {
@@ -171,7 +180,6 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
             }
 
             entry.incrementHoverTicks(1);
-
         }
     }
 
@@ -191,8 +199,8 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         for (ScreenElement entry : screenElementList) {
             if (entry.getShape().isPositionInSquare(new ShapeUtil.Position((int) mouseX, (int) mouseY))) {
                 entry.setPressed(true);
-                this.prevX = (int) mouseX;
-                this.prevY = (int) mouseY;
+                this.prevX = this.originX = (int) mouseX;
+                this.prevY = this.originY = (int) mouseY;
                 MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_LEVER_CLICK, 0.5f));
                 break;
             }
@@ -228,11 +236,29 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     public void mouseMoved(double mouseX, double mouseY) {
         super.mouseMoved(mouseX, mouseY);
 
-        for (ScreenElement entry : screenElementList) {
+        for (ScreenElement entry : this.screenElementList) {
             if (!entry.isPressed()) continue;
             entry.setCanBeDoubleClicked(false);
             int draggedHorizontalDistance = (int) mouseX - this.prevX;
             int draggedVerticalDistance = (int) mouseY - this.prevY;
+
+            if (Screen.hasShiftDown()) {
+
+                int distanceX = (int) (mouseX - this.originX);
+                int distanceY = (int) (mouseY - this.originY);
+
+                LoggerUtil.devLogger("distance X: %s | origin X: %s".formatted(distanceX, originX));
+                LoggerUtil.devLogger("distance Y: %s | origin Y: %s".formatted(distanceY, originY + "\n"));
+
+
+                if (Math.abs(distanceX) > Math.abs(distanceY)) {
+                    draggedVerticalDistance = 0;
+                    this.prevX = this.originX;
+                } else {
+                    draggedHorizontalDistance = 0;
+                    this.prevY = this.originY;
+                }
+            }
 
             entry.getShape().moveElementWithinBoundaries(
                     draggedHorizontalDistance, draggedVerticalDistance,

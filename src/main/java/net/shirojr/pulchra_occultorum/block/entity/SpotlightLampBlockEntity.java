@@ -6,7 +6,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -21,12 +20,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -38,7 +34,6 @@ import net.shirojr.pulchra_occultorum.init.Blocks;
 import net.shirojr.pulchra_occultorum.init.Tags;
 import net.shirojr.pulchra_occultorum.network.packet.SpotlightSoundPacket;
 import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
-import net.shirojr.pulchra_occultorum.util.NbtKeys;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import net.shirojr.pulchra_occultorum.util.SoundOrigin;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractTickingBlockEntity;
@@ -48,8 +43,8 @@ import java.util.function.Supplier;
 
 public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity implements ExtendedScreenHandlerFactory<SpotlightLampBlockEntity.Data>, SoundOrigin {
     public static final float MAX_TURNING_SPEED = 0.7f;
-    public static final float MIN_PITCH_RANGE = - 90, MAX_PITCH_RANGE = 50;
-    public static final float MIN_YAW_RANGE = - 180, MAX_YAW_RANGE = 180;
+    public static final float MIN_PITCH_RANGE = -90, MAX_PITCH_RANGE = 50;
+    public static final float MIN_YAW_RANGE = -180, MAX_YAW_RANGE = 180;
 
     private ShapeUtil.Position rotation, targetRotation;
     private int strength = 0;
@@ -142,9 +137,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return finalPower;
     }
 
-    @Nullable
     public ItemStack getColorStack() {
-        if (this.inventory.isEmpty()) return null;
+        if (this.inventory.isEmpty()) return ItemStack.EMPTY;
         return this.inventory.getStack(0);
     }
 
@@ -153,13 +147,12 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         if (this.getWorld() instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
             markDirty();
-            serverWorld.playSound(null, this.getPos(), SoundEvents.BLOCK_COPPER_GRATE_PLACE, SoundCategory.BLOCKS);
         }
     }
 
     public void clearInventory(boolean dropInventory, BlockPos spawnPos) {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) return;
-        if (this.getColorStack() != null && dropInventory) {
+        if (!this.getColorStack().isEmpty() && dropInventory) {
             ItemScatterer.spawn(serverWorld, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), this.getColorStack());
         }
         setColorStack(ItemStack.EMPTY);

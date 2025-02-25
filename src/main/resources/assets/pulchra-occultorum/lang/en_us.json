@@ -29,5 +29,8 @@
 
   "screen.pulchra-occultorum.spotlight_lamp.hover1": "Drag to move",
   "screen.pulchra-occultorum.spotlight_lamp.hover2": "Double click to reset",
-  "screen.pulchra-occultorum.spotlight_lamp.hover3": "[%s] and Drag to snap"
+  "screen.pulchra-occultorum.spotlight_lamp.hover3": "§e[Shift]§r and Drag to align to axis",
+  "screen.pulchra-occultorum.spotlight_lamp.input.yaw": "Yaw",
+  "screen.pulchra-occultorum.spotlight_lamp.input.pitch": "Pitch",
+  "screen.pulchra-occultorum.spotlight_lamp.input.speed": "Speed"
 }

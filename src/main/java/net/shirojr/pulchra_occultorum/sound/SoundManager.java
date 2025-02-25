@@ -1,7 +1,6 @@
 package net.shirojr.pulchra_occultorum.sound;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.shirojr.pulchra_occultorum.util.SoundOrigin;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractDynamicSoundInstance;
@@ -41,11 +40,9 @@ public class SoundManager {
         if (entriesForEntity == null) return;
         for (SoundInstance soundInstance : instances) {
             if (!entriesForEntity.contains(soundInstance)) continue;
-            if (soundInstance instanceof AbstractDynamicSoundInstance<?> dynamicSoundInstance) {
+            if (soundInstance instanceof AbstractDynamicSoundInstance<?> dynamicSoundInstance)
                 dynamicSoundInstance.finishSoundInstance();
-            } else {
-                MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
-            }
+            else MinecraftClient.getInstance().getSoundManager().stop(soundInstance);
 
             this.activeSounds.get(origin.getUniqueId()).remove(soundInstance);
         }
