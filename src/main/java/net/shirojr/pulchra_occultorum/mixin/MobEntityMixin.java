@@ -1,16 +1,15 @@
 package net.shirojr.pulchra_occultorum.mixin;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.shirojr.pulchra_occultorum.item.WhipItem;
+import net.shirojr.pulchra_occultorum.network.packet.MobEntitySyncPacket;
 import net.shirojr.pulchra_occultorum.util.Fright;
 import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.NbtKeys;
@@ -23,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(MobEntity.class)
@@ -33,7 +31,7 @@ public abstract class MobEntityMixin extends LivingEntity implements EquipmentHo
     protected GoalSelector goalSelector;
 
     @Unique
-    private static final TrackedData<Integer> FRIGHTENED_TICKS = DataTracker.registerData(MobEntityMixin.class, TrackedDataHandlerRegistry.INTEGER);
+    private int frightenedTicks;
 
     @Unique
     @Nullable
@@ -42,11 +40,7 @@ public abstract class MobEntityMixin extends LivingEntity implements EquipmentHo
 
     protected MobEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-    }
-
-    @Inject(method = "initDataTracker", at = @At("TAIL"))
-    private void addToDataTracker(DataTracker.Builder builder, CallbackInfo ci) {
-        builder.add(FRIGHTENED_TICKS, 0);
+        this.frightenedTicks = 0;
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
@@ -77,7 +71,7 @@ public abstract class MobEntityMixin extends LivingEntity implements EquipmentHo
     private void addFrightenedTickHandling(CallbackInfo ci) {
         MobEntity fleeingEntity = (MobEntity) (Object) this;
         if (fleeingEntity.getWorld().isClient()) return;
-        int frightenedTicksLeft = dataTracker.get(FRIGHTENED_TICKS);
+        int frightenedTicksLeft = pulchraOccultorum$getFrightenedTicksLeft();
         if (frightenedTicksLeft < 1) return;
         frightenedTicksLeft = frightenedTicksLeft - 1;
         pulchraOccultorum$setFrightenedTicksLeft(frightenedTicksLeft);
@@ -86,12 +80,14 @@ public abstract class MobEntityMixin extends LivingEntity implements EquipmentHo
 
     @Override
     public int pulchraOccultorum$getFrightenedTicksLeft() {
-        return this.dataTracker.get(FRIGHTENED_TICKS);
+        return this.frightenedTicks;
     }
 
     @Override
     public void pulchraOccultorum$setFrightenedTicksLeft(int ticks) {
-        this.dataTracker.set(FRIGHTENED_TICKS, ticks);
+        this.frightenedTicks = ticks;
+        if (this.getWorld().isClient()) return;
+        new MobEntitySyncPacket(this.getId(), this.pulchraOccultorum$getFrightenedTicksLeft()).sendPacket(PlayerLookup.tracking(this));
     }
 
     @Override

@@ -12,6 +12,7 @@ public class NetworkPayloads {
     static {
         registerS2C(UnicycleSoundPacket.IDENTIFIER, UnicycleSoundPacket.CODEC);
         registerS2C(SpotlightSoundPacket.IDENTIFIER, SpotlightSoundPacket.CODEC);
+        registerS2C(MobEntitySyncPacket.IDENTIFIER, MobEntitySyncPacket.CODEC);
 
         registerC2S(UnicycleMovementPacket.IDENTIFIER, UnicycleMovementPacket.CODEC);
         registerC2S(PositionPacket.IDENTIFIER, PositionPacket.CODEC);
