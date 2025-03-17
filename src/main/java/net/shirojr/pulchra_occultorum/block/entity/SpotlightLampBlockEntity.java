@@ -270,6 +270,11 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
     @Override
+    public World getSoundOriginWorld() {
+        return this.getWorld();
+    }
+
+    @Override
     public Vec3d getSoundPos() {
         return this.getPos().toCenterPos();
     }

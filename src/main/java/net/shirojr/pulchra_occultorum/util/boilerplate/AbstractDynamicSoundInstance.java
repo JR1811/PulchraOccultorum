@@ -7,7 +7,6 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.SoundOrigin;
 
 public abstract class AbstractDynamicSoundInstance<T extends SoundOrigin> extends MovingSoundInstance {
@@ -39,7 +38,7 @@ public abstract class AbstractDynamicSoundInstance<T extends SoundOrigin> extend
 
     @Override
     public void tick() {
-        if (origin.getWorld().getTickManager().shouldTick()) this.currentTick++;
+        if (origin.getSoundOriginWorld().getTickManager().shouldTick()) this.currentTick++;
         else return;
         if (this.origin.stoppedExisting()) {
             this.finishSoundInstance();
@@ -85,7 +84,7 @@ public abstract class AbstractDynamicSoundInstance<T extends SoundOrigin> extend
     }
 
     protected static void defaultSoundHandling(AbstractDynamicSoundInstance<? extends SoundOrigin> soundInstance) {
-        boolean shouldTick = soundInstance.origin.getWorld().getTickManager().shouldTick();
+        boolean shouldTick = soundInstance.origin.getSoundOriginWorld().getTickManager().shouldTick();
         if (!shouldTick) {
             soundInstance.clampedDistance = 0.0f;
             soundInstance.volume = 0.0f;

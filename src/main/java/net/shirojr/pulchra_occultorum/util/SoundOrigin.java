@@ -21,7 +21,7 @@ public interface SoundOrigin {
      */
     String getUniqueId();
 
-    World getWorld();
+    World getSoundOriginWorld();
 
     Vec3d getSoundPos();
 

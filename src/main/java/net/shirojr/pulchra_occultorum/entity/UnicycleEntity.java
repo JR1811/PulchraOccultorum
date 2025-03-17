@@ -232,6 +232,11 @@ public class UnicycleEntity extends AbstractRideableEntity implements SoundOrigi
     }
 
     @Override
+    public World getSoundOriginWorld() {
+        return this.getWorld();
+    }
+
+    @Override
     public Vec3d getSoundPos() {
         return this.getPos();
     }
