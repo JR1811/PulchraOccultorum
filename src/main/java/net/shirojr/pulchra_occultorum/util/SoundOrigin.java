@@ -26,7 +26,7 @@ public interface SoundOrigin {
     Vec3d getSoundPos();
 
     @Nullable
-    Vec3d getVelocity();
+    Vec3d getSoundOriginVelocity();
 
     boolean stoppedExisting();
 }

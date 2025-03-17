@@ -242,6 +242,11 @@ public class UnicycleEntity extends AbstractRideableEntity implements SoundOrigi
     }
 
     @Override
+    public @Nullable Vec3d getSoundOriginVelocity() {
+        return this.getVelocity();
+    }
+
+    @Override
     public boolean stoppedExisting() {
         return this.isRemoved() || this.isDead();
     }

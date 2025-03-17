@@ -97,8 +97,8 @@ public abstract class AbstractDynamicSoundInstance<T extends SoundOrigin> extend
     }
 
     protected void transformSoundForMovement() {
-        if (this.origin.getVelocity() == null) return;
-        double horizontalVelocity = this.origin.getVelocity().horizontalLength();
+        if (this.origin.getSoundOriginVelocity() == null) return;
+        double horizontalVelocity = this.origin.getSoundOriginVelocity().horizontalLength();
         if (horizontalVelocity <= 0) this.volume = 0.0f;
         else this.pitch = (float) MathHelper.lerp(horizontalVelocity, 0.9f, 1.2f);
     }

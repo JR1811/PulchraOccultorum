@@ -280,7 +280,7 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
     @Override
-    public @Nullable Vec3d getVelocity() {
+    public @Nullable Vec3d getSoundOriginVelocity() {
         return null;
     }
 
