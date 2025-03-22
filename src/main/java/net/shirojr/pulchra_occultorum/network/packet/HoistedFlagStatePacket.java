@@ -14,7 +14,7 @@ import net.shirojr.pulchra_occultorum.block.entity.FlagPoleBlockEntity;
 public record HoistedFlagStatePacket(float hoistedState, BlockPos pos) implements CustomPayload {
 
     public static final CustomPayload.Id<HoistedFlagStatePacket> IDENTIFIER =
-            new CustomPayload.Id<>(PulchraOccultorum.identifierOf("hoisted_state"));
+            new CustomPayload.Id<>(PulchraOccultorum.getId("hoisted_state"));
 
     public static final PacketCodec<RegistryByteBuf, HoistedFlagStatePacket> CODEC = PacketCodec.tuple(
             PacketCodecs.FLOAT, HoistedFlagStatePacket::hoistedState,

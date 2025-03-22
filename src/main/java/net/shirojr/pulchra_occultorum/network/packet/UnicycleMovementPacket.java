@@ -1,14 +1,11 @@
 package net.shirojr.pulchra_occultorum.network.packet;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.Item;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
 
@@ -20,7 +17,7 @@ public record UnicycleMovementPacket(Optional<UnicycleEntity.DirectionInput> inp
         implements CustomPayload {
 
     public static final CustomPayload.Id<UnicycleMovementPacket> IDENTIFIER =
-            new CustomPayload.Id<>(PulchraOccultorum.identifierOf("unicycle_moving"));
+            new CustomPayload.Id<>(PulchraOccultorum.getId("unicycle_moving"));
 
     public static final PacketCodec<RegistryByteBuf, UnicycleMovementPacket> CODEC = PacketCodec.tuple(
             PacketCodecs.optional(PacketCodecs.BYTE.xmap(index ->

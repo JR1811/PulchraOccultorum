@@ -24,7 +24,7 @@ public class BlockEntities {
     private static <T extends BlockEntity> BlockEntityType<T> register(String name,
                                                                        BlockEntityType.BlockEntityFactory<? extends T> entityFactory,
                                                                        Block... blocks) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, PulchraOccultorum.identifierOf(name),
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, PulchraOccultorum.getId(name),
                 BlockEntityType.Builder.<T>create(entityFactory, blocks).build());
     }
 

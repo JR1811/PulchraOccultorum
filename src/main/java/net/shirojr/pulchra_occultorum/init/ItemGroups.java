@@ -27,7 +27,7 @@ public class ItemGroups {
     }
 
     private static RegistryKey<ItemGroup> getRegistryKey(String name) {
-        return RegistryKey.of(RegistryKeys.ITEM_GROUP, PulchraOccultorum.identifierOf(name));
+        return RegistryKey.of(RegistryKeys.ITEM_GROUP, PulchraOccultorum.getId(name));
     }
 
     public static void initialize() {

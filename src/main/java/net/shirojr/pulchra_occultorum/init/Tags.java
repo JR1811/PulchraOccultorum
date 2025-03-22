@@ -13,7 +13,7 @@ public class Tags {
 
         @SuppressWarnings("SameParameterValue")
         private static TagKey<Block> createTag(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.identifierOf(name));
+            return TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.getId(name));
         }
 
         private static void register() {

@@ -16,7 +16,7 @@ import net.shirojr.pulchra_occultorum.sound.instance.SpotlightLampRotationSoundI
 
 public record SpotlightSoundPacket(BlockPos pos, boolean shouldPlay) implements CustomPayload {
 
-    public static final Id<SpotlightSoundPacket> IDENTIFIER = new Id<>(PulchraOccultorum.identifierOf("spotlight_rotating"));
+    public static final Id<SpotlightSoundPacket> IDENTIFIER = new Id<>(PulchraOccultorum.getId("spotlight_rotating"));
 
     public static final PacketCodec<RegistryByteBuf, SpotlightSoundPacket> CODEC = PacketCodec.tuple(
             BlockPos.PACKET_CODEC, SpotlightSoundPacket::pos,

@@ -15,19 +15,19 @@ import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 
 import java.util.Optional;
 
-public record PositionPacket(String name, BlockPos blockPos, Optional<Float> normalizedX,
-                             Optional<Float> normalizedY) implements CustomPayload {
+public record HandlePositionPacket(String name, BlockPos blockPos, Optional<Float> normalizedX,
+                                   Optional<Float> normalizedY) implements CustomPayload {
 
-    public static final CustomPayload.Id<PositionPacket> IDENTIFIER =
-            new CustomPayload.Id<>(PulchraOccultorum.identifierOf("position"));
+    public static final CustomPayload.Id<HandlePositionPacket> IDENTIFIER =
+            new CustomPayload.Id<>(PulchraOccultorum.getId("position"));
 
-    public static final PacketCodec<RegistryByteBuf, PositionPacket> CODEC =
+    public static final PacketCodec<RegistryByteBuf, HandlePositionPacket> CODEC =
             PacketCodec.tuple(
-                    PacketCodecs.STRING, PositionPacket::name,
-                    BlockPos.PACKET_CODEC, PositionPacket::blockPos,
-                    PacketCodecs.optional(PacketCodecs.FLOAT), PositionPacket::normalizedX,
-                    PacketCodecs.optional(PacketCodecs.FLOAT), PositionPacket::normalizedY,
-                    PositionPacket::new
+                    PacketCodecs.STRING, HandlePositionPacket::name,
+                    BlockPos.PACKET_CODEC, HandlePositionPacket::blockPos,
+                    PacketCodecs.optional(PacketCodecs.FLOAT), HandlePositionPacket::normalizedX,
+                    PacketCodecs.optional(PacketCodecs.FLOAT), HandlePositionPacket::normalizedY,
+                    HandlePositionPacket::new
             );
 
     @Override

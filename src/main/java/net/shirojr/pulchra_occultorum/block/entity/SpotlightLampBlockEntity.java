@@ -66,7 +66,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     public static void tick(World world, BlockPos pos, BlockState state, SpotlightLampBlockEntity blockEntity) {
         blockEntity.incrementTick(false);
 
-        blockEntity.setStrength(getPowerFromBase(world, pos, blockEntity));
+        int powerFromBase = getPowerFromBase(world, pos, blockEntity);
+        if (powerFromBase != blockEntity.getStrength()) {
+            blockEntity.setStrength(powerFromBase);
+        }
         if (world.isClient()) return;
         if (blockEntity.getStrength() <= 0) blockEntity.setSpeed(0.0f);
 
@@ -124,17 +127,18 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         do posWalker.move(Direction.DOWN);
         while (world.getBlockState(posWalker).isIn(Tags.Blocks.SENDS_UPDATE_POWER_VERTICALLY));
 
+        posWalker.move(Direction.UP);
+
         BlockState baseBlockState = world.getBlockState(posWalker);
-        int receivedPower = baseBlockState.isSolidBlock(world, posWalker) ? world.getReceivedRedstonePower(posWalker) : 0;
-        int blockStatePower = baseBlockState.contains(Properties.POWER) ? world.getBlockState(posWalker).get(Properties.POWER) : 0;
-        int finalPower = Math.max(receivedPower, blockStatePower);
+        int receivedPower = world.getReceivedRedstonePower(posWalker.toImmutable());
+
         if (world.getBlockState(originalPos).contains(Properties.POWER) &&
-                world.getBlockState(originalPos).get(Properties.POWER) != finalPower &&
+                world.getBlockState(originalPos).get(Properties.POWER) != receivedPower &&
                 !world.isClient()) {
             // FIXME: also send update when the block gets changed?
             world.updateNeighbor(originalPos, Blocks.SPOTLIGHT_LAMP, posWalker);
         }
-        return finalPower;
+        return receivedPower;
     }
 
     public ItemStack getColorStack() {
@@ -290,10 +294,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
 
-    public record Data(int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation,
-                       BlockPos pos, float speed) implements CustomPayload {
+    public record Data(int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation, BlockPos pos, float speed) implements CustomPayload {
 
-        public static final CustomPayload.Id<Data> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.identifierOf("spotlight_lamp_data"));
+        public static final CustomPayload.Id<Data> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.getId("spotlight_lamp_data"));
 
         @Override
         public Id<? extends CustomPayload> getId() {

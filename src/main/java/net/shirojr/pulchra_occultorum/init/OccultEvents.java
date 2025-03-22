@@ -27,7 +27,7 @@ public class OccultEvents {
 
 
     private static <T extends OccultEvent> T register(String name, T occultEvent) {
-        return Registry.register(CustomRegistries.OCCULT_EVENTS, PulchraOccultorum.identifierOf(name), occultEvent);
+        return Registry.register(CustomRegistries.OCCULT_EVENTS, PulchraOccultorum.getId(name), occultEvent);
     }
 
     public static void initialize() {

@@ -33,7 +33,7 @@ public class ModelProvider extends FabricModelProvider {
                 .coordinate(createFlagPoleBlockState()));
 
         blockStateModelGenerator.blockStateCollector.accept(
-                BlockStateModelGenerator.createSingletonBlockState(Blocks.FLAG_POLE_BASE, PulchraOccultorum.identifierOf("block/flag_pole_base")));
+                BlockStateModelGenerator.createSingletonBlockState(Blocks.FLAG_POLE_BASE, PulchraOccultorum.getId("block/flag_pole_base")));
 
         blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier
                 .create(Blocks.MONOLITH)
@@ -51,18 +51,18 @@ public class ModelProvider extends FabricModelProvider {
         itemModelGenerator.register(Items.TAROT_WARLORD, Models.GENERATED);
         itemModelGenerator.register(Items.TAROT_MONOLITH, Models.GENERATED);
         itemModelGenerator.register(Blocks.SPOTLIGHT_LAMP.asItem(), new Model(Optional.of(
-                PulchraOccultorum.identifierOf("block/spotlight_lamp_for_item")
+                PulchraOccultorum.getId("block/spotlight_lamp_for_item")
         ), Optional.empty()));
     }
 
     private Identifier getIdentifier(String name) {
-        return PulchraOccultorum.identifierOf(name);
+        return PulchraOccultorum.getId(name);
     }
 
     private BlockStateVariantMap createFlagPoleBlockState() {
         return BlockStateVariantMap.create(BlockStateProperties.FLAG_POLE_STATE).register(flagPoleState -> {
             String path = "block/" + flagPoleState.asString();
-            return BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf(path));
+            return BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.getId(path));
         });
     }
 
@@ -70,16 +70,16 @@ public class ModelProvider extends FabricModelProvider {
         return BlockStateVariantMap.create(Properties.DOUBLE_BLOCK_HALF).register(part ->
                 switch (part) {
                     case UPPER ->
-                            BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/monolith_top"));
+                            BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.getId("block/monolith_top"));
                     case LOWER ->
-                            BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/monolith_bottom"));
+                            BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.getId("block/monolith_bottom"));
                 }
         );
     }
 
     private BlockStateVariantMap createSpotlightBlockState() {
         return BlockStateVariantMap.create(Properties.POWER).register(part ->
-                BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.identifierOf("block/spotlight_lamp_for_item"))
+                BlockStateVariant.create().put(VariantSettings.MODEL, PulchraOccultorum.getId("block/spotlight_lamp_for_item"))
         );
     }
 }

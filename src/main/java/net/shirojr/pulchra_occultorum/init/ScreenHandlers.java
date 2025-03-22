@@ -18,7 +18,7 @@ public class ScreenHandlers {
             );
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> registerExtended(String name, ScreenHandlerType<T> screenHandlerType) {
-        return Registry.register(Registries.SCREEN_HANDLER, PulchraOccultorum.identifierOf(name), screenHandlerType);
+        return Registry.register(Registries.SCREEN_HANDLER, PulchraOccultorum.getId(name), screenHandlerType);
     }
 
     public static void initialize() {

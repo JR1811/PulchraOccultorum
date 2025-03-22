@@ -15,7 +15,7 @@ import java.util.Collection;
 
 public record MobEntitySyncPacket(int entityId, int frightenedTicks) implements CustomPayload {
     public static final CustomPayload.Id<MobEntitySyncPacket> IDENTIFIER =
-            new CustomPayload.Id<>(PulchraOccultorum.identifierOf("mob_entity_sync"));
+            new CustomPayload.Id<>(PulchraOccultorum.getId("mob_entity_sync"));
 
     public static final PacketCodec<RegistryByteBuf, MobEntitySyncPacket> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT, MobEntitySyncPacket::entityId,

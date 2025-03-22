@@ -32,5 +32,8 @@
   "screen.pulchra-occultorum.spotlight_lamp.hover3": "§e[Shift]§r and Drag to align to axis",
   "screen.pulchra-occultorum.spotlight_lamp.input.yaw": "Yaw",
   "screen.pulchra-occultorum.spotlight_lamp.input.pitch": "Pitch",
-  "screen.pulchra-occultorum.spotlight_lamp.input.speed": "Speed"
+  "screen.pulchra-occultorum.spotlight_lamp.input.speed": "Speed",
+  "screen.pulchra-occultorum.spotlight_lamp.text.pitch": "Pitch:",
+  "screen.pulchra-occultorum.spotlight_lamp.text.yaw": "Yaw:",
+  "screen.pulchra-occultorum.spotlight_lamp.text.speed": "Speed:"
 }

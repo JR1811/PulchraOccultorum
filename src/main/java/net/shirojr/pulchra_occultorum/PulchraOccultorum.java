@@ -34,7 +34,7 @@ public class PulchraOccultorum implements ModInitializer {
         LoggerUtil.devLogger("Initialized common entrypoint");
     }
 
-    public static Identifier identifierOf(String name) {
+    public static Identifier getId(String name) {
         return Identifier.of(MOD_ID, name);
     }
 }

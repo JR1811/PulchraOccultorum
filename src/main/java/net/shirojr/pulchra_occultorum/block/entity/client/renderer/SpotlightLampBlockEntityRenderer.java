@@ -155,7 +155,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         String texturePath;
         if (isLit(blockEntity)) texturePath = "textures/entity/spotlight_lamp.png";
         else texturePath = "textures/entity/spotlight_lamp_off.png";
-        return RenderLayer.getEntityCutout(PulchraOccultorum.identifierOf(texturePath));
+        return RenderLayer.getEntityCutout(PulchraOccultorum.getId(texturePath));
     }
 
     private boolean isLit(T blockEntity) {

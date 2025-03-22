@@ -4,7 +4,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.PulchraOccultorumClient;
@@ -19,7 +18,7 @@ public class UnicycleEntityRenderer extends LivingEntityRenderer<UnicycleEntity,
 
     @Override
     public Identifier getTexture(UnicycleEntity entity) {
-        return PulchraOccultorum.identifierOf("textures/entity/unicycle.png");
+        return PulchraOccultorum.getId("textures/entity/unicycle.png");
     }
 
     @Override

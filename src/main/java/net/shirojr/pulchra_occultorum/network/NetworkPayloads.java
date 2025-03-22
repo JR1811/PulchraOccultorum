@@ -15,7 +15,8 @@ public class NetworkPayloads {
         registerS2C(MobEntitySyncPacket.IDENTIFIER, MobEntitySyncPacket.CODEC);
 
         registerC2S(UnicycleMovementPacket.IDENTIFIER, UnicycleMovementPacket.CODEC);
-        registerC2S(PositionPacket.IDENTIFIER, PositionPacket.CODEC);
+        registerC2S(HandlePositionPacket.IDENTIFIER, HandlePositionPacket.CODEC);
+        registerC2S(SpotlightTextFieldPacket.IDENTIFIER, SpotlightTextFieldPacket.CODEC);
         registerC2S(HoistedFlagStatePacket.IDENTIFIER, HoistedFlagStatePacket.CODEC);
     }
 

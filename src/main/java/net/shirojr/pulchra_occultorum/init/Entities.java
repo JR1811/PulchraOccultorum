@@ -28,7 +28,7 @@ public class Entities {
                     .build());
 
     private static <E extends Entity, T extends EntityType<E>> T register(String name, T entityType) {
-        return Registry.register(Registries.ENTITY_TYPE, PulchraOccultorum.identifierOf(name), entityType);
+        return Registry.register(Registries.ENTITY_TYPE, PulchraOccultorum.getId(name), entityType);
     }
 
     public static void initialize() {

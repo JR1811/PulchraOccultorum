@@ -104,7 +104,7 @@ public class ClientEvents {
         if (!(player.getVehicle() instanceof UnicycleEntity unicycleEntity)) return;
         unicycleEntity.setLeftImportantState((MathHelper.sin(unicycleEntity.age * UnicycleEntity.INTERVAL_SPEED)));
 
-        Identifier pedalIdentifier = PulchraOccultorum.identifierOf("textures/gui/unicycle_pedals.png");
+        Identifier pedalIdentifier = PulchraOccultorum.getId("textures/gui/unicycle_pedals.png");
         float alphaLeft = MathHelper.clamp(unicycleEntity.getLeftImportantState(), 0, 1);
         float alphaRight = MathHelper.abs(MathHelper.clamp(unicycleEntity.getLeftImportantState(), -1, 0));
 

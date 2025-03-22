@@ -14,7 +14,7 @@ public class SoundEvents {
     public static SoundEvent SPOTLIGHT_LAMP_MOVE = register("spotlight_lamp_move");
 
     private static SoundEvent register(String name) {
-        Identifier identifier = PulchraOccultorum.identifierOf(name);
+        Identifier identifier = PulchraOccultorum.getId(name);
         SoundEvent soundEvent = SoundEvent.of(identifier);
         return Registry.register(Registries.SOUND_EVENT, identifier, soundEvent);
     }

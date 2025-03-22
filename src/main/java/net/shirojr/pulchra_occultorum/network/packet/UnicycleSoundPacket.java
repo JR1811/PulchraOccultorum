@@ -15,7 +15,7 @@ import net.shirojr.pulchra_occultorum.sound.instance.UnicycleRollSoundInstance;
 
 public record UnicycleSoundPacket(int entityNetworkId, boolean shouldPlay) implements CustomPayload {
 
-    public static final CustomPayload.Id<UnicycleSoundPacket> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.identifierOf("unicycle_rolling"));
+    public static final CustomPayload.Id<UnicycleSoundPacket> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.getId("unicycle_rolling"));
 
     @Override
     public Id<? extends CustomPayload> getId() {

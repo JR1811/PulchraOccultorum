@@ -35,7 +35,7 @@ public class Items {
 
 
     private static <T extends Item> T register(String name, T item, @Nullable List<RegistryKey<ItemGroup>> itemGroups) {
-        Registry.register(Registries.ITEM, PulchraOccultorum.identifierOf(name), item);
+        Registry.register(Registries.ITEM, PulchraOccultorum.getId(name), item);
         if (itemGroups != null) {
             addToItemGroups(item, itemGroups);
         }

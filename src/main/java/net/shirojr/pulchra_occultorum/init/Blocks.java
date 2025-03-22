@@ -54,10 +54,10 @@ public class Blocks {
     private static <T extends Block> T register(String name, T block, @Nullable BlockItemData blockItemData) {
         if (blockItemData != null) {
             BlockItem blockItem = new BlockItem(block, blockItemData.itemSettings());
-            Registry.register(Registries.ITEM, PulchraOccultorum.identifierOf(name), blockItem);
+            Registry.register(Registries.ITEM, PulchraOccultorum.getId(name), blockItem);
             Items.addToItemGroups(blockItem, blockItemData.itemGroups());
         }
-        return Registry.register(Registries.BLOCK, PulchraOccultorum.identifierOf(name), block);
+        return Registry.register(Registries.BLOCK, PulchraOccultorum.getId(name), block);
     }
 
     private static <T extends Block> T registerWithDefaultBlockItem(String name, T block) {

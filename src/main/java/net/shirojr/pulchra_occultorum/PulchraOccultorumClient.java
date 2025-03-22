@@ -24,11 +24,11 @@ public class PulchraOccultorumClient implements ClientModInitializer {
     public static SoundManager soundManager = SoundManager.getInstance();
 
     public static final EntityModelLayer UNICYCLE_ENTITY_LAYER =
-            new EntityModelLayer(PulchraOccultorum.identifierOf("unicycle_entity_layer"), "main");
+            new EntityModelLayer(PulchraOccultorum.getId("unicycle_entity_layer"), "main");
     public static final EntityModelLayer SPOTLIGHT_LAMP_BLOCK_ENTITY_LAYER =
-            new EntityModelLayer(PulchraOccultorum.identifierOf("spotlight_lamp_block_entity_layer"), "main");
+            new EntityModelLayer(PulchraOccultorum.getId("spotlight_lamp_block_entity_layer"), "main");
     public static final EntityModelLayer FLAG_POLE_BLOCK_ENTITY_LAYER =
-            new EntityModelLayer(PulchraOccultorum.identifierOf("flag_pole_block_entity_layer"), "main");
+            new EntityModelLayer(PulchraOccultorum.getId("flag_pole_block_entity_layer"), "main");
 
     @Override
     public void onInitializeClient() {

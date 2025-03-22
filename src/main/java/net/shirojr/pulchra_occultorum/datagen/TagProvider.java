@@ -14,9 +14,9 @@ import java.util.concurrent.CompletableFuture;
 public class TagProvider {
     public static class BlockTags extends FabricTagProvider.BlockTagProvider {
         private static final TagKey<Block> SUPPORTS_FLAG_POLE =
-                TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.identifierOf("supports_flag_pole"));
+                TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.getId("supports_flag_pole"));
         private static final TagKey<Block> SENDS_UPDATE_POWER_VERTICALLY =
-                TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.identifierOf("sends_update_power_vertically"));
+                TagKey.of(RegistryKeys.BLOCK, PulchraOccultorum.getId("sends_update_power_vertically"));
 
 
         public BlockTags(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
