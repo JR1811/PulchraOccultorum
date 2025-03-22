@@ -157,8 +157,9 @@ public class FlagPoleBlockEntity extends AbstractTickingBlockEntity {
         BlockPos basePos = FlagPoleBlock.getBaseBlockPos(world, pos);
         if (basePos == null) return;
         float redstonePower = world.getReceivedRedstonePower(basePos);
-        float height = redstonePower / 15;
-        this.setHoistedTargetState(height);
+        float normalizedHeight = redstonePower / 15;
+        if (getHoistedState() == normalizedHeight) return;
+        this.setHoistedTargetState(normalizedHeight);
         markDirty();
         if (world instanceof ServerWorld serverWorld) {
             serverWorld.getChunkManager().markForUpdate(this.getPos());
