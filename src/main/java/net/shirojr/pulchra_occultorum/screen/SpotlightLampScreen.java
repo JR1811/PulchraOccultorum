@@ -73,10 +73,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
         this.pitch = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.pitch"));
-        this.pitch.setTextPredicate(inputFormat);
-        this.pitch.setMaxLength(10);
         this.pitch.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getRotation().getY()));
-        this.addSelectableChild(this.pitch);
         this.pitch.setChangedListener(string -> new SpotlightTextFieldPacket(
                         this.getScreenHandler().getBlockEntity().getPos(),
                         Optional.empty(),
@@ -86,10 +83,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         );
         this.yaw = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 25, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.yaw"));
-        this.yaw.setTextPredicate(inputFormat);
-        this.yaw.setMaxLength(10);
         this.yaw.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getRotation().getX()));
-        this.addSelectableChild(this.yaw);
         this.yaw.setChangedListener(string -> new SpotlightTextFieldPacket(
                         this.getScreenHandler().getBlockEntity().getPos(),
                         Optional.of(Float.parseFloat(string)),
@@ -99,10 +93,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         );
         this.speed = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 50, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.speed"));
-        this.speed.setTextPredicate(inputFormat);
-        this.speed.setMaxLength(10);
         this.speed.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getSpeed()));
-        this.addSelectableChild(this.speed);
         this.speed.setChangedListener(string -> new SpotlightTextFieldPacket(
                         this.getScreenHandler().getBlockEntity().getPos(),
                         Optional.empty(),
@@ -112,6 +103,11 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         );
 
         this.textFields = List.of(pitch, yaw, speed);
+        this.textFields.forEach(widget -> {
+            widget.setMaxLength(10);
+            widget.setTextPredicate(inputFormat);
+            this.addSelectableChild(widget);
+        });
     }
 
     private void initScreenElementPositions() {
@@ -195,6 +191,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void renderScreenElement(ScreenElement element, DrawContext context, int u, int v) {
         int pressedSpriteOffset = element.isPressed() ? v + 9 : v;
         context.drawTexture(PulchraOccultorum.getId("textures/gui/spotlight.png"),

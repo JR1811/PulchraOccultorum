@@ -56,7 +56,7 @@ public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> yaw, O
                 finalYaw = yaw.orElse(0f);
             }
 
-            blockEntity.setTargetRotation(() -> new ShapeUtil.Position(finalYaw, finalPitch));
+            blockEntity.setTargetRotation(() -> new ShapeUtil.Position(finalPitch, finalYaw));
         }
         speed.ifPresent(value -> blockEntity.setSpeed(Math.max(0, value)));
     }
