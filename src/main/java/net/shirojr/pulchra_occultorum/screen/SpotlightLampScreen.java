@@ -74,32 +74,56 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         this.pitch = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.pitch"));
         this.pitch.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getRotation().getY()));
-        this.pitch.setChangedListener(string -> new SpotlightTextFieldPacket(
-                        this.getScreenHandler().getBlockEntity().getPos(),
-                        Optional.empty(),
-                        Optional.of(Float.parseFloat(string)),
-                        Optional.empty()
-                ).sendPacket()
+        this.pitch.setChangedListener(string -> {
+                    float value;
+                    try {
+                        value = Float.parseFloat(string);
+                    } catch (Exception e) {
+                        value = 0;
+                    }
+                    new SpotlightTextFieldPacket(
+                            this.getScreenHandler().getBlockEntity().getPos(),
+                            Optional.empty(),
+                            Optional.of(value),
+                            Optional.empty()
+                    ).sendPacket();
+                }
         );
         this.yaw = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 25, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.yaw"));
         this.yaw.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getRotation().getX()));
-        this.yaw.setChangedListener(string -> new SpotlightTextFieldPacket(
-                        this.getScreenHandler().getBlockEntity().getPos(),
-                        Optional.of(Float.parseFloat(string)),
-                        Optional.empty(),
-                        Optional.empty()
-                ).sendPacket()
+        this.yaw.setChangedListener(string -> {
+                    float value;
+                    try {
+                        value = Float.parseFloat(string);
+                    } catch (Exception e) {
+                        value = 0;
+                    }
+                    new SpotlightTextFieldPacket(
+                            this.getScreenHandler().getBlockEntity().getPos(),
+                            Optional.of(value),
+                            Optional.empty(),
+                            Optional.empty()
+                    ).sendPacket();
+                }
         );
         this.speed = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 50, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.speed"));
         this.speed.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getSpeed()));
-        this.speed.setChangedListener(string -> new SpotlightTextFieldPacket(
-                        this.getScreenHandler().getBlockEntity().getPos(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(Float.parseFloat(string))
-                ).sendPacket()
+        this.speed.setChangedListener(string -> {
+                    float value;
+                    try {
+                        value = Float.parseFloat(string);
+                    } catch (Exception e) {
+                        value = 0;
+                    }
+                    new SpotlightTextFieldPacket(
+                            this.getScreenHandler().getBlockEntity().getPos(),
+                            Optional.empty(),
+                            Optional.empty(),
+                            Optional.of(value)
+                    ).sendPacket();
+                }
         );
 
         this.textFields = List.of(pitch, yaw, speed);
@@ -174,11 +198,11 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         int inputX = this.titleX + 185;
         int inputY = this.titleY + 16;
         context.drawText(this.textRenderer, Text.of("Input"), inputX, this.titleY, 4210752, false);
-        drawInformationText(context, "Yaw:",  null, inputX, inputY);
+        drawInformationText(context, "Yaw:", null, inputX, inputY);
         inputY += 25;
-        drawInformationText(context, "Pitch:",  null, inputX, inputY);
+        drawInformationText(context, "Pitch:", null, inputX, inputY);
         inputY += 25;
-        drawInformationText(context, "Speed:",  null, inputX, inputY);
+        drawInformationText(context, "Speed:", null, inputX, inputY);
     }
 
     private void drawInformationText(DrawContext context, String display, @Nullable Float value, int x, int y) {
