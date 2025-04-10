@@ -35,5 +35,8 @@
   "screen.pulchra-occultorum.spotlight_lamp.input.speed": "Speed",
   "screen.pulchra-occultorum.spotlight_lamp.text.pitch": "Pitch:",
   "screen.pulchra-occultorum.spotlight_lamp.text.yaw": "Yaw:",
-  "screen.pulchra-occultorum.spotlight_lamp.text.speed": "Speed:"
+  "screen.pulchra-occultorum.spotlight_lamp.text.speed": "Speed:",
+  "screen.pulchra-occultorum.spotlight_lamp.hover_submit1": "Submits values from the Text Fields to the Block Entity.",
+  "screen.pulchra-occultorum.spotlight_lamp.hover_submit2": "Values are not capped, so technically you could make the",
+  "screen.pulchra-occultorum.spotlight_lamp.hover_submit3": "Spotlight spin for a long time"
 }

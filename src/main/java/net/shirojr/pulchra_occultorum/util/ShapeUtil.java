@@ -6,13 +6,13 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("unused")
 public class ShapeUtil {
     public static class Position {
         private float x, y;
 
         public Position(int x, int y) {
-            this.x = (float) x;
-            this.y = (float) y;
+            this((float) x, (float) y);
         }
 
         public Position(float x, float y) {
@@ -89,7 +89,7 @@ public class ShapeUtil {
             this.squareEnd = posEnd;
         }
 
-        public Square (int startX, int startY, int endX, int endY) {
+        public Square(int startX, int startY, int endX, int endY) {
             this(new Position(startX, startY), new Position(endX, endY));
         }
 

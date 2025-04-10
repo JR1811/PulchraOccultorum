@@ -5,7 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ScreenElement {
+@SuppressWarnings("unused")
+public class DragScreenElement {
     private final String name;
     private ShapeUtil.Square shape;
     private boolean isPressed, canBeDoubleClicked;
@@ -16,10 +17,11 @@ public class ScreenElement {
     private final ShapeUtil.Position minBoundary;
     private final ShapeUtil.Position maxBoundary;
     private final int maxTicksUntilToolTip;
+    private final boolean isDraggable;
 
-    public ScreenElement(String name, boolean isPressed, int maxTicksUntilToolTip,
-                         ShapeUtil.Square shape, ShapeUtil.Square defaultShape,
-                         ShapeUtil.Position minBoundary, ShapeUtil.Position maxBoundary) {
+    public DragScreenElement(String name, boolean isPressed, int maxTicksUntilToolTip,
+                             ShapeUtil.Square shape, ShapeUtil.Square defaultShape,
+                             ShapeUtil.Position minBoundary, ShapeUtil.Position maxBoundary, boolean isDraggable) {
         this.name = name;
         this.shape = shape;
         this.defaultShape = defaultShape;
@@ -27,11 +29,12 @@ public class ScreenElement {
         this.minBoundary = minBoundary;
         this.maxBoundary = maxBoundary;
         this.maxTicksUntilToolTip = maxTicksUntilToolTip;
+        this.isDraggable = isDraggable;
     }
 
     @Nullable
-    public static ScreenElement fromList(String name, List<ScreenElement> elements) {
-        for (ScreenElement element : elements) {
+    public static DragScreenElement fromList(String name, List<DragScreenElement> elements) {
+        for (DragScreenElement element : elements) {
             if (element.getName().equals(name)) return element;
         }
         return null;
@@ -115,6 +118,10 @@ public class ScreenElement {
 
     public void setToDefaultPosition() {
         this.shape.moveSquareToTarget(defaultShape.getSquareStart());
+    }
+
+    public boolean isDraggable() {
+        return isDraggable;
     }
 
     public ShapeUtil.Position getNormalized() {

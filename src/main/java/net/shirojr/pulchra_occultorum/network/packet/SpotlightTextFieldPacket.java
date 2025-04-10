@@ -14,7 +14,7 @@ import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 
 import java.util.Optional;
 
-public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> yaw, Optional<Float> pitch,
+public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> pitch, Optional<Float> yaw,
                                        Optional<Float> speed) implements CustomPayload {
 
     public static final Id<SpotlightTextFieldPacket> IDENTIFIER =
@@ -23,8 +23,8 @@ public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> yaw, O
     public static final PacketCodec<RegistryByteBuf, SpotlightTextFieldPacket> CODEC =
             PacketCodec.tuple(
                     BlockPos.PACKET_CODEC, SpotlightTextFieldPacket::blockPos,
-                    PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::yaw,
                     PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::pitch,
+                    PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::yaw,
                     PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::speed,
                     SpotlightTextFieldPacket::new
             );
@@ -56,7 +56,7 @@ public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> yaw, O
                 finalYaw = yaw.orElse(0f);
             }
 
-            blockEntity.setTargetRotation(() -> new ShapeUtil.Position(finalPitch, finalYaw));
+            blockEntity.setTargetRotation(() -> new ShapeUtil.Position(finalYaw, finalPitch));
         }
         speed.ifPresent(value -> blockEntity.setSpeed(Math.max(0, value)));
     }
