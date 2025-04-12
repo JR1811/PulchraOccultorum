@@ -180,6 +180,11 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         return stainable;
     }
 
+    @Override
+    public int getRenderDistance() {
+        return 256;
+    }
+
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
