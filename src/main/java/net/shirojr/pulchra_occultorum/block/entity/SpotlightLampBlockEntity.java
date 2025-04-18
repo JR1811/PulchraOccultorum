@@ -17,6 +17,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -49,7 +50,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     private ShapeUtil.Position rotation, targetRotation;
     private int strength = 0;
     private float speed = 0;
+    private float widthMultiplier = 1.5f;
     private boolean isRotating = false;
+    private boolean isSilent = false;
     private SimpleInventory inventory = new SimpleInventory(1);
 
     public SpotlightLampBlockEntity(BlockPos pos, BlockState state) {
@@ -69,6 +72,12 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         int powerFromBase = getPowerFromBase(world, pos, blockEntity);
         if (powerFromBase != blockEntity.getStrength()) {
             blockEntity.setStrength(powerFromBase);
+        }
+        boolean isDampened = isDampened(world, pos);
+        if (isDampened && !blockEntity.isSilent()) {
+            blockEntity.setSilent(true);
+        } else if (!isDampened && blockEntity.isSilent()) {
+            blockEntity.setSilent(false);
         }
         if (world.isClient()) return;
         if (blockEntity.getStrength() <= 0) blockEntity.setSpeed(0.0f);
@@ -141,6 +150,15 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         return receivedPower;
     }
 
+    public static boolean isDampened(World world, BlockPos originalPos) {
+        BlockPos.Mutable posWalker = originalPos.mutableCopy();
+
+        do posWalker.move(Direction.DOWN);
+        while (world.getBlockState(posWalker).isIn(Tags.Blocks.SENDS_UPDATE_POWER_VERTICALLY));
+        BlockState baseState = world.getBlockState(posWalker.toImmutable());
+        return baseState.isIn(BlockTags.WOOL) || baseState.isIn(BlockTags.WOOL_CARPETS);
+    }
+
     public ItemStack getColorStack() {
         if (this.inventory.isEmpty()) return ItemStack.EMPTY;
         return this.inventory.getStack(0);
@@ -209,6 +227,33 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
             markDirty();
         }
     }
+
+    public boolean isSilent() {
+        return isSilent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.isSilent = silent;
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            if (isRotating) {
+                PlayerLookup.tracking(this).forEach(serverPlayer -> new SpotlightSoundPacket(this.getPos(), !silent).sendPacket(serverPlayer));
+            }
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
+        }
+    }
+
+    public float getWidthMultiplier() {
+        return widthMultiplier;
+    }
+
+    public void setWidthMultiplier(float widthMultiplier) {
+        this.widthMultiplier = widthMultiplier;
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().markForUpdate(this.getPos());
+            markDirty();
+        }
+    }
     //endregion
 
     @Override
@@ -223,6 +268,13 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         NbtCompound targetRotationNbt = nbt.getCompound("target_rotation");
         this.rotation = ShapeUtil.Position.fromNbt(rotationNbt);
         this.targetRotation = ShapeUtil.Position.fromNbt(targetRotationNbt);
+
+        if (nbt.contains("silent")) {
+            this.setSilent(nbt.getBoolean("silent"));
+        }
+        if (nbt.contains("width")) {
+            this.setWidthMultiplier(nbt.getFloat("width"));
+        }
     }
 
     @Override
@@ -237,6 +289,9 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         this.targetRotation.toNbt(targetRotationNbt);
         nbt.put("rotation", rotationNbt);
         nbt.put("target_rotation", targetRotationNbt);
+
+        nbt.putBoolean("silent", this.isSilent());
+        nbt.putFloat("width", this.getWidthMultiplier());
     }
 
     @Override
@@ -294,7 +349,8 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
     }
 
 
-    public record Data(int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation, BlockPos pos, float speed) implements CustomPayload {
+    public record Data(int strength, ShapeUtil.Position rotation, ShapeUtil.Position targetRotation, BlockPos pos,
+                       float speed) implements CustomPayload {
 
         public static final CustomPayload.Id<Data> IDENTIFIER = new CustomPayload.Id<>(PulchraOccultorum.getId("spotlight_lamp_data"));
 

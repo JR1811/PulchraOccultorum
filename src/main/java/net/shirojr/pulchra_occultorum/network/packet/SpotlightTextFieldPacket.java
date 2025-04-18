@@ -15,7 +15,8 @@ import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import java.util.Optional;
 
 public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> pitch, Optional<Float> yaw,
-                                       Optional<Float> speed) implements CustomPayload {
+                                       Optional<Float> speed,
+                                       Optional<Float> widthMultiplier) implements CustomPayload {
 
     public static final Id<SpotlightTextFieldPacket> IDENTIFIER =
             new Id<>(PulchraOccultorum.getId("spotlight_text_field_target_position"));
@@ -26,6 +27,7 @@ public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> pitch,
                     PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::pitch,
                     PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::yaw,
                     PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::speed,
+                    PacketCodecs.optional(PacketCodecs.FLOAT), SpotlightTextFieldPacket::widthMultiplier,
                     SpotlightTextFieldPacket::new
             );
 
@@ -59,5 +61,6 @@ public record SpotlightTextFieldPacket(BlockPos blockPos, Optional<Float> pitch,
             blockEntity.setTargetRotation(() -> new ShapeUtil.Position(finalYaw, finalPitch));
         }
         speed.ifPresent(value -> blockEntity.setSpeed(Math.max(0, value)));
+        widthMultiplier.ifPresent(value -> blockEntity.setWidthMultiplier(Math.max(0, value)));
     }
 }

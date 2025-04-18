@@ -66,7 +66,7 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
         matrices.translate(0, 0.95, 0);
 
         float height = blockEntity.getStrength() * 2;
-        float side = 1.5f * height;
+        float side = blockEntity.getWidthMultiplier() * height;
         Quaternionf rotation = new Quaternionf();
 
         float additionalPitchForBeam = (float) Math.toRadians(270);

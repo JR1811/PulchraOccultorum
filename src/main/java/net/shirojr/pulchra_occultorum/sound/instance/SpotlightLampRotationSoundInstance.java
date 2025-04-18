@@ -3,9 +3,7 @@ package net.shirojr.pulchra_occultorum.sound.instance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
-import net.shirojr.pulchra_occultorum.entity.UnicycleEntity;
 import net.shirojr.pulchra_occultorum.init.SoundEvents;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.boilerplate.AbstractDynamicSoundInstance;
 
 public class SpotlightLampRotationSoundInstance extends AbstractDynamicSoundInstance<SpotlightLampBlockEntity> {
@@ -13,6 +11,14 @@ public class SpotlightLampRotationSoundInstance extends AbstractDynamicSoundInst
 
     public SpotlightLampRotationSoundInstance(SpotlightLampBlockEntity entity) {
         super(entity, SoundEvents.SPOTLIGHT_LAMP_MOVE, SoundCategory.NEUTRAL, MAX_SOUND_DISTANCE, 30, 30);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (origin.isSilent()) {
+            finishSoundInstance();
+        }
     }
 
     @Override

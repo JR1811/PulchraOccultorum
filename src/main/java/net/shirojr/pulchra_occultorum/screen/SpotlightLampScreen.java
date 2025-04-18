@@ -18,7 +18,6 @@ import net.shirojr.pulchra_occultorum.screen.handler.SpotlightLampScreenHandler;
 import net.shirojr.pulchra_occultorum.screen.widget.ButtonScreenElement;
 import net.shirojr.pulchra_occultorum.screen.widget.DragScreenElement;
 import net.shirojr.pulchra_occultorum.screen.widget.SpotlightTextFieldWidget;
-import net.shirojr.pulchra_occultorum.util.LoggerUtil;
 import net.shirojr.pulchra_occultorum.util.ShapeUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,14 +30,14 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
     private int prevX = -1, prevY = -1;
     private int originX = -1, originY = -1;
 
-    private SpotlightTextFieldWidget pitch, yaw, speed;
+    private SpotlightTextFieldWidget pitch, yaw, speed, widthMultiplier;
     private List<TextFieldWidget> textFields;
 
     private final List<DragScreenElement> dragScreenElementList = new ArrayList<>();
     private final ButtonScreenElement submitButton = new ButtonScreenElement(
-            PulchraOccultorum.getId("textures/gui/spotlight_input.png"), 135, 90, 9, 9, 187, 0, 0, 9, 20,
+            PulchraOccultorum.getId("textures/gui/spotlight_input.png"), 135, 110, 9, 9, 187, 0, 0, 9, 20,
             () -> {
-                float pitch, yaw, speed;
+                float pitch, yaw, speed, widthMultiplier;
 
                 try {
                     pitch = Float.parseFloat(this.pitch.getText());
@@ -58,11 +57,18 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
                     speed = this.getScreenHandler().getBlockEntity().getSpeed();
                 }
 
+                try {
+                    widthMultiplier = Float.parseFloat(this.widthMultiplier.getText());
+                } catch (Exception e) {
+                    widthMultiplier = this.getScreenHandler().getBlockEntity().getWidthMultiplier();
+                }
+
                 new SpotlightTextFieldPacket(
                         this.getScreenHandler().getBlockEntity().getPos(),
                         Optional.of(pitch),
                         Optional.of(yaw),
-                        Optional.of(speed)
+                        Optional.of(speed),
+                        Optional.of(widthMultiplier)
                 ).sendPacket();
                 initScreenElementPositions();
             }
@@ -115,13 +121,17 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         this.speed = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 50, 80, 20,
                 Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.speed"));
         this.speed.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getSpeed()));
-        this.textFields = List.of(pitch, yaw, speed);
+        this.widthMultiplier = new SpotlightTextFieldWidget(this.textRenderer, textFieldInputX, textFieldInputY + 75, 80, 20,
+                Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.width"));
+        this.widthMultiplier.setText(String.valueOf(this.getScreenHandler().getBlockEntity().getWidthMultiplier()));
+
+        this.textFields = List.of(pitch, yaw, speed, widthMultiplier);
         this.textFields.forEach(widget -> {
             widget.setMaxLength(12);
             widget.setTextPredicate(inputFormat);
             this.addSelectableChild(widget);
         });
-        this.submitButton.moveTo(textFieldInputX + 90, textFieldInputY + 75);
+        this.submitButton.moveTo(textFieldInputX + 90, textFieldInputY + 95);
     }
 
     private void initScreenElementPositions() {
@@ -152,7 +162,7 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
 
         int textFieldInputX = this.width / 2 + 142;
         int textFieldInputY = this.height / 2 - 66;
-        this.submitButton.moveTo(textFieldInputX + 90, textFieldInputY + 75);
+        this.submitButton.moveTo(textFieldInputX + 90, textFieldInputY + 95);
     }
 
     @Override
@@ -184,27 +194,28 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
         context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 4210752, false);
 
         // main window
-        drawInformationText(context, "Pitch:", blockEntity.getRotation().getY(), this.titleX, informationTextY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.pitch"), blockEntity.getRotation().getY(), this.titleX, informationTextY);
         informationTextY += 10;
-        drawInformationText(context, "Yaw:", blockEntity.getRotation().getX(), this.titleX, informationTextY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.yaw"), blockEntity.getRotation().getX(), this.titleX, informationTextY);
         informationTextY += 10;
-        drawInformationText(context, "Speed:", blockEntity.getSpeed(), this.titleX, informationTextY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.speed"), blockEntity.getSpeed(), this.titleX, informationTextY);
 
         // input window
         int inputX = this.titleX + 185;
         int inputY = this.titleY + 16;
         context.drawText(this.textRenderer, Text.of("Input"), inputX, this.titleY, 4210752, false);
-        drawInformationText(context, "Pitch:", null, inputX, inputY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.pitch"), null, inputX, inputY);
         inputY += 25;
-        drawInformationText(context, "Yaw:", null, inputX, inputY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.yaw"), null, inputX, inputY);
         inputY += 25;
-        drawInformationText(context, "Speed:", null, inputX, inputY);
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.speed"), null, inputX, inputY);
+        inputY += 25;
+        drawInformationText(context, Text.translatable("screen.pulchra-occultorum.spotlight_lamp.text.width"), null, inputX, inputY);
     }
 
-    private void drawInformationText(DrawContext context, String display, @Nullable Float value, int x, int y) {
+    private void drawInformationText(DrawContext context, Text text, @Nullable Float value, int x, int y) {
         int horizontalValueOffset = 40;
-        Text valueName = Text.of(display);
-        context.drawText(this.textRenderer, valueName, x, y, 4210752, false);
+        context.drawText(this.textRenderer, text, x, y, 4210752, false);
         if (value != null) {
             Text formattedValue = Text.of(String.valueOf(value));
             context.drawText(this.textRenderer, formattedValue, x + horizontalValueOffset, y, 4210752, false);
@@ -353,14 +364,8 @@ public class SpotlightLampScreen extends HandledScreen<SpotlightLampScreenHandle
             int draggedVerticalDistance = (int) mouseY - this.prevY;
 
             if (Screen.hasShiftDown()) {
-
                 int distanceX = (int) (mouseX - this.originX);
                 int distanceY = (int) (mouseY - this.originY);
-
-                LoggerUtil.devLogger("distance X: %s | origin X: %s".formatted(distanceX, originX));
-                LoggerUtil.devLogger("distance Y: %s | origin Y: %s".formatted(distanceY, originY + "\n"));
-
-
                 if (Math.abs(distanceX) > Math.abs(distanceY)) {
                     draggedVerticalDistance = 0;
                     this.prevX = this.originX;
