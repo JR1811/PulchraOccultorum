@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Stainable;
 import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.shirojr.pulchra_occultorum.PulchraOccultorum;
 import net.shirojr.pulchra_occultorum.block.entity.SpotlightLampBlockEntity;
 import net.shirojr.pulchra_occultorum.util.ArgbHelper;
@@ -183,6 +185,15 @@ public class SpotlightLampBlockEntityRenderer<T extends SpotlightLampBlockEntity
     @Override
     public int getRenderDistance() {
         return 256;
+    }
+
+    public boolean rendersOutsideBoundingBox(BeaconBlockEntity beaconBlockEntity) {
+        return true;
+    }
+
+    @Override
+    public boolean isInRenderDistance(T blockEntity, Vec3d pos) {
+        return BlockEntityRenderer.super.isInRenderDistance(blockEntity, pos);
     }
 
     public static TexturedModelData getTexturedModelData() {
