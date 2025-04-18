@@ -136,10 +136,10 @@ public class SpotlightLampBlockEntity extends AbstractTickingBlockEntity impleme
         do posWalker.move(Direction.DOWN);
         while (world.getBlockState(posWalker).isIn(Tags.Blocks.SENDS_UPDATE_POWER_VERTICALLY));
 
-        posWalker.move(Direction.UP);
+        int emittedPower = world.getEmittedRedstonePower(posWalker.toImmutable(), Direction.DOWN);
 
-        BlockState baseBlockState = world.getBlockState(posWalker);
-        int receivedPower = world.getReceivedRedstonePower(posWalker.toImmutable());
+        posWalker.move(Direction.UP);
+        int receivedPower = Math.max(world.getReceivedRedstonePower(posWalker.toImmutable()), emittedPower);
 
         if (world.getBlockState(originalPos).contains(Properties.POWER) &&
                 world.getBlockState(originalPos).get(Properties.POWER) != receivedPower &&
